@@ -1,6 +1,6 @@
 # Madex IT Solutions – neue Website
 
-Interaktiver Neuaufbau von [madex-it.ch](https://madex-it.ch/) mit Next.js 15, TypeScript, React Three Fiber (Three.js), Framer Motion und Lenis. Alle Inhalte, Seiten und das Menü der bisherigen Website wurden übernommen – komplett auf Deutsch (Schweiz).
+Interaktiver Neuaufbau von [madex-it.ch](https://madex-it.ch/) mit Next.js 16, React 19, TypeScript, React Three Fiber (Three.js), Framer Motion und Lenis. Alle Inhalte, Seiten und das Menü der bisherigen Website wurden übernommen – komplett auf Deutsch (Schweiz).
 
 ## Schnellstart
 
