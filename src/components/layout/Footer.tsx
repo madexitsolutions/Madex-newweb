@@ -30,7 +30,7 @@ export function Footer() {
           <div className="ft__grid">
             <div className="ft__brand">
               <div className="ft__logo">
-                <Image src="/media/brand/business-logo.webp" alt="Madex IT Solutions" width={936} height={201} />
+                <Image src="/brand/logo-light.png" alt="Madex IT Solutions" width={936} height={201} unoptimized />
               </div>
               <address className="ft__addr">
                 {site.legalName}
@@ -109,10 +109,6 @@ export function Footer() {
             </nav>
           </div>
 
-          <div className="ft__giant" aria-hidden="true">
-            Madex IT Solutions
-          </div>
-
           <div className="ft__bottom">
             <span>
               © {year} {site.legalName} · UID {site.uid}
@@ -129,10 +125,10 @@ export function Footer() {
         <style>{`
           .ft{position:relative;overflow:hidden;padding:clamp(90px,10vw,150px) 0 28px;background:radial-gradient(90% 70% at 15% 0%,rgba(2,141,134,.28),transparent 60%),var(--night)}
           .ft__cta{display:grid;gap:10px;padding-bottom:clamp(60px,7vw,110px);border-bottom:1px solid rgba(255,255,255,.1)}
-          .ft__title{font-size:clamp(38px,5.6vw,96px);font-weight:700;letter-spacing:-.035em;line-height:.95;margin:0 0 20px;max-width:13ch}
+          .ft__title{font-size:clamp(34px,4.4vw,72px);font-weight:700;letter-spacing:-.035em;line-height:.95;margin:0 0 20px;max-width:13ch}
           .ft__cta-row{display:flex;flex-wrap:wrap;gap:14px}
           .ft__grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-block:clamp(50px,6vw,90px)}
-          .ft__logo{display:inline-block;background:#fff;border-radius:16px;padding:10px 14px;margin-bottom:22px}
+          .ft__logo{display:block;margin-bottom:24px}
           .ft__logo img{width:170px;height:auto}
           .ft__addr{font-style:normal;color:var(--on-dark-soft);margin-bottom:18px;line-height:1.7}
           .ft__contact,.ft__col ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
@@ -142,13 +138,10 @@ export function Footer() {
           .ft__col a{color:var(--on-dark-soft);transition:color .3s}
           .ft__social-h{margin-top:30px}
           .ft__social{display:flex!important;flex-wrap:wrap;gap:10px 18px!important}
-          .ft__giant{font:700 clamp(36px,8vw,150px)/.9 var(--font-display);letter-spacing:-.05em;white-space:nowrap;text-align:center;
-            background:linear-gradient(180deg,rgba(79,224,210,.35),rgba(79,224,210,0));-webkit-background-clip:text;background-clip:text;color:transparent;
-            margin:0 calc(-1*var(--gutter));user-select:none}
-          .ft__bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:14px;color:var(--on-dark-soft)}
+          .ft__bottom{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding:24px 84px 0 0;border-top:1px solid rgba(255,255,255,.1);font-size:14px;color:var(--on-dark-soft)}
           .ft__bottom ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
           @media(max-width:1000px){.ft__grid{grid-template-columns:1fr 1fr}}
-          @media(max-width:560px){.ft__grid{grid-template-columns:minmax(0,1fr)}.ft__giant{font-size:15vw;white-space:normal}}
+          @media(max-width:560px){.ft__grid{grid-template-columns:minmax(0,1fr)}}
         `}</style>
       </footer>
     </FooterReveal>

@@ -22,7 +22,7 @@ const checks = [
 export default function FreeCheckPage() {
   return (
     <>
-      <PageHero
+      <PageHero scene="check"
         eyebrow="Kostenlose Prüfung"
         title="Bereit zum Wachstum Ihres Unternehmens?"
         lead="Wenn Sie mit Madex IT Solutions zusammenarbeiten, nehmen wir Ihnen die Arbeit ab, damit Sie sich auf mehr Website-Traffic, Anfragen und Kunden konzentrieren können."

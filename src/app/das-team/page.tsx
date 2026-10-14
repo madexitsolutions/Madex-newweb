@@ -19,7 +19,7 @@ const beliefs = ["Skalierung", "Verbreitung", "Verbesserung", "Integrität"];
 export default function TeamPage() {
   return (
     <>
-      <PageHero
+      <PageHero scene="team"
         eyebrow="Das Team"
         title="Treffen Sie die Umsatzrevolutionäre von Madex IT Solutions."
         lead="Wir glauben an ein talentiertes Team, das für unsere Kunden die besten Ergebnisse erzielen will."

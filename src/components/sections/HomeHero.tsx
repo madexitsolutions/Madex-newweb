@@ -74,7 +74,7 @@ export function HomeHero() {
         @keyframes marquee{to{transform:translateX(-50%)}}
         .hh__inner{position:relative;padding-top:170px;padding-bottom:120px;pointer-events:none}
         .hh__inner a,.hh__inner button{pointer-events:auto}
-        .hh__title{font-size:clamp(38px,4.7vw,84px);line-height:1;letter-spacing:-.035em;font-weight:700;max-width:16ch;margin-bottom:30px;text-shadow:0 10px 50px rgba(1,27,30,.5)}
+        .hh__title{font-size:clamp(34px,4.2vw,72px);line-height:1.02;letter-spacing:-.035em;font-weight:700;max-width:none;margin-bottom:26px;text-shadow:0 10px 50px rgba(1,27,30,.5)}
         .hh__lead{color:var(--on-dark-soft);margin-bottom:38px}
         .hh__lead strong{font-weight:500;font-size:1.1em}
         .hh__ctas{display:flex;flex-wrap:wrap;gap:14px}
@@ -82,7 +82,7 @@ export function HomeHero() {
         .hh__scroll{display:flex;flex-direction:column;align-items:center;gap:10px;text-transform:uppercase;letter-spacing:.3em;font-size:11px}
         .hh__line{width:1px;height:46px;background:linear-gradient(var(--teal-glow),transparent);animation:lineDrop 2s var(--ease-in-out) infinite;transform-origin:top}
         @keyframes lineDrop{0%{transform:scaleY(0)}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
-        @media(max-width:900px){.hh{justify-content:flex-start}.hh__inner{padding-top:170px;padding-bottom:52vh}.hh__regions,.hh__tag{display:none}.hh__foot{justify-content:center}
+        @media(max-width:900px){.hh{justify-content:flex-start}.hh__inner{padding-top:170px;padding-bottom:min(62vh,500px)}.hh__regions,.hh__tag{display:none}.hh__foot{justify-content:center}
           .hero-fallback__mark{margin:50vh 0 0;width:70vw}}
       `}</style>
     </section>

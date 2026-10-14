@@ -19,7 +19,7 @@ export const metadata: Metadata = pageMeta({
 export default function MarketingSolutionsPage() {
   return (
     <>
-      <PageHero
+      <PageHero scene="solutions"
         eyebrow="Marketing Lösungen"
         title="Wir führen mit kundenorientierten Strategien."
         lead="Wachstum durch personalisierte Erlebnisse für eine echte End-to-End-Geschäftsentwicklung."

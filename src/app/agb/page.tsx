@@ -15,7 +15,7 @@ export default function AgbPage() {
   const blocks = (legal.agb as Block[]).slice(1);
   return (
     <>
-      <PageHero eyebrow="Rechtliches" title="Allgemeine Geschäftsbedingungen" lead="Aktuelle Version vom 04.09.2022" crumbs={[{ name: "AGB", path: "/agb" }]} compact mark={false} />
+      <PageHero eyebrow="Rechtliches" title="Allgemeine Geschäftsbedingungen" lead="Aktuelle Version vom 04.09.2022" crumbs={[{ name: "AGB", path: "/agb" }]} compact scene="legal" />
       <section className="section white">
         <div className="container">
           <LegalBody blocks={blocks} />

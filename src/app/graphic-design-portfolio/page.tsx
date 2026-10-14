@@ -15,7 +15,7 @@ export const metadata: Metadata = pageMeta({
 export default function GraphicPortfolioPage() {
   return (
     <>
-      <PageHero
+      <PageHero scene="design"
         eyebrow="Graphic Design Portfolio"
         title="Social Media Designs, die sofort auffallen."
         lead="Wir gestalten visuelle Inhalte, die Ihre Marke stärken, Vertrauen aufbauen und im Feed herausstechen."

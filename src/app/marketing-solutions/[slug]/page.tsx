@@ -10,8 +10,20 @@ import { Parallax, Reveal, ScrollZoom, SplitText, StaggerGroup, StaggerItem, Til
 import { Link } from "@/components/layout/Transition";
 import { getService, services } from "@/content/services";
 import { pageMeta } from "@/lib/seo";
+import type { HeroSceneKey } from "@/components/three/heroes/registry";
 
 export const dynamicParams = false;
+
+const SCENES: Record<string, HeroSceneKey> = {
+  "website-development": "web",
+  "digital-marketing": "digital",
+  "seo-optimierung": "seo",
+  "photo-werbevideos": "video",
+  "social-media-marketing": "social",
+  "google-marketing": "google",
+  "graphic-design": "design",
+  "analyse-und-planung": "analysis",
+};
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
@@ -34,7 +46,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 
   return (
     <>
-      <PageHero
+      <PageHero scene={SCENES[s.slug]}
         eyebrow={s.eyebrow}
         title={s.heroTitle}
         lead={s.short}

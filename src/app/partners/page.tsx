@@ -38,7 +38,7 @@ function partnerName(url: string): string {
 export default function PartnersPage() {
   return (
     <>
-      <PageHero eyebrow="Starke Partner. Starke Lösungen." title="Gemeinsam stärker für unsere Kunden." crumbs={[{ name: "Partner", path: "/partners" }]} />
+      <PageHero scene="partners" eyebrow="Starke Partner. Starke Lösungen." title="Gemeinsam stärker für unsere Kunden." crumbs={[{ name: "Partner", path: "/partners" }]} />
 
       <section className="section white" aria-labelledby="pt-intro">
         <div className="container grid-2">

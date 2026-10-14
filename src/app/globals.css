@@ -162,10 +162,10 @@ p {
 
 .section {
   position: relative;
-  padding-block: clamp(80px, 11vw, 170px);
+  padding-block: clamp(72px, 9vw, 140px);
 }
 .section--tight {
-  padding-block: clamp(56px, 7vw, 110px);
+  padding-block: clamp(52px, 6vw, 96px);
 }
 
 .dark {
@@ -223,28 +223,28 @@ p {
 }
 
 .display {
-  font-size: clamp(38px, 5.4vw, 92px);
+  font-size: clamp(36px, 4.6vw, 78px);
   line-height: 0.98;
   letter-spacing: -0.035em;
   font-weight: 700;
 }
 .h1 {
-  font-size: clamp(36px, 4.8vw, 80px);
+  font-size: clamp(32px, 3.9vw, 62px);
   line-height: 1;
   letter-spacing: -0.03em;
   font-weight: 700;
 }
 .h2 {
-  font-size: clamp(30px, 3.6vw, 58px);
+  font-size: clamp(27px, 2.9vw, 46px);
   letter-spacing: -0.03em;
   font-weight: 700;
 }
 .h3 {
-  font-size: clamp(22px, 2vw, 32px);
+  font-size: clamp(20px, 1.6vw, 26px);
   font-weight: 700;
 }
 .lead {
-  font-size: clamp(18px, 1.5vw, 23px);
+  font-size: clamp(16.5px, 1.2vw, 19.5px);
   line-height: 1.55;
   font-weight: 300;
   max-width: 62ch;
@@ -467,6 +467,9 @@ p {
 }
 
 /* ---------- Reveal helpers (motion handled in JS, CSS = no-JS fallback) ---------- */
+.split-row {
+  text-wrap: balance;
+}
 .split-line {
   display: block;
   overflow: hidden;

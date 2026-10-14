@@ -19,7 +19,7 @@ const jobs = [{ title: "Outbound Call Agent – Terminierung", type: "Vollzeit",
 export default function CareerPage() {
   return (
     <>
-      <PageHero
+      <PageHero scene="career"
         eyebrow="Karriere"
         title="Treten Sie unserem Team von Revolutionären bei."
         lead="Kommen Sie zu uns und werden Sie die Expertin oder der Experte, auf die sich Unternehmen verlassen, um ihre digitalen Herausforderungen zu lösen."

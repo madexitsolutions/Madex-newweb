@@ -34,7 +34,7 @@ const platforms = [
 export default function AboutPage() {
   return (
     <>
-      <PageHero eyebrow="Über uns" title="Erfahrung ist wichtig. In jedem Aspekt des Lebens." lead="Gemeinsam entwickeln wir Ideen und lassen Dinge geschehen." crumbs={[{ name: "Über uns", path: "/uber-uns" }]}>
+      <PageHero scene="about" eyebrow="Über uns" title="Erfahrung ist wichtig. In jedem Aspekt des Lebens." lead="Gemeinsam entwickeln wir Ideen und lassen Dinge geschehen." crumbs={[{ name: "Über uns", path: "/uber-uns" }]}>
         <Button href="/das-team">Das Team kennenlernen</Button>
       </PageHero>
 

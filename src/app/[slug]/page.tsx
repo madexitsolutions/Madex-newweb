@@ -107,7 +107,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <PageHero
+      <PageHero scene="laptop" sceneProps={{ image: media(post.cover) }}
         eyebrow={isProject ? `Website Portfolio · ${formatDate(post.date)}` : `Blog · ${formatDate(post.date)}`}
         title={isProject ? post.client : post.title}
         lead={isProject ? post.title : undefined}

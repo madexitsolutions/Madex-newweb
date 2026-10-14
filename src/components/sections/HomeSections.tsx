@@ -137,7 +137,9 @@ export function PartnerMarquee({ logos }: { logos: string[] }) {
       </Marquee>
       <style>{`
         .pm{overflow:hidden}
-        .pm__head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:40px;flex-wrap:wrap}
+        .pm__head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:40px;flex-wrap:wrap}
+        .pm__head .h2{margin:0}
+        .pm__head .link-arrow{margin-bottom:8px}
         .pm__logo{display:grid;place-items:center;width:150px;height:110px;margin:0 12px;border-radius:20px;background:var(--mist);filter:grayscale(1);opacity:.75;transition:filter .4s,opacity .4s,transform .4s var(--ease-out)}
         .pm__logo:hover{filter:none;opacity:1;transform:scale(1.08)}
         .pm__logo img{width:116px;height:64px;object-fit:contain}

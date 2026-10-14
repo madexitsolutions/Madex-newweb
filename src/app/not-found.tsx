@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 export default function NotFound() {
   return (
     <section className="nf dark">
-      <BackdropCanvas className="nf__canvas" withMark />
+      <BackdropCanvas className="nf__canvas" scene="lost" />
       <div className="container nf__inner">
         <p className="eyebrow">Fehler 404</p>
         <h1 className="display">

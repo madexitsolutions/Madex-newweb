@@ -13,7 +13,7 @@ export default function PrivacyPage() {
   const c = site.contact;
   return (
     <>
-      <PageHero eyebrow="Rechtliches" title="Datenschutz" lead="Wie wir auf dieser Website mit Ihren Daten umgehen." crumbs={[{ name: "Datenschutz", path: "/datenschutz" }]} compact mark={false} />
+      <PageHero eyebrow="Rechtliches" title="Datenschutz" lead="Wie wir auf dieser Website mit Ihren Daten umgehen." crumbs={[{ name: "Datenschutz", path: "/datenschutz" }]} compact scene="legal" />
       <section className="section white">
         <div className="container legal">
           <h2>Verantwortliche Stelle</h2>

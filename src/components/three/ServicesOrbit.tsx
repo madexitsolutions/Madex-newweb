@@ -29,10 +29,11 @@ function Node({ index, count, active, onSelect, onHover }: { index: number; coun
       halo.current.lookAt(state.camera.position);
     }
   });
+  const noRay = () => null;
   return (
     <group position={pos}>
+      {/* stable, invisible hit area – visual scaling never moves the pointer target */}
       <mesh
-        ref={mesh}
         onClick={(e) => {
           e.stopPropagation();
           onSelect(index);
@@ -42,15 +43,20 @@ function Node({ index, count, active, onSelect, onHover }: { index: number; coun
           onHover(index);
           document.body.style.cursor = "pointer";
         }}
-        onPointerOut={() => {
+        onPointerOut={(e) => {
+          e.stopPropagation();
           onHover(null);
           document.body.style.cursor = "";
         }}
       >
+        <sphereGeometry args={[0.46, 12, 12]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+      <mesh ref={mesh} raycast={noRay}>
         <icosahedronGeometry args={[0.2, 1]} />
         <meshStandardMaterial color={index % 3 === 2 ? "#028D86" : "#025159"} emissive="#4fe0d2" emissiveIntensity={0.25} roughness={0.2} metalness={0.4} flatShading />
       </mesh>
-      <mesh ref={halo}>
+      <mesh ref={halo} raycast={noRay}>
         <ringGeometry args={[0.22, 0.25, 48]} />
         <meshBasicMaterial color="#4fe0d2" transparent opacity={0.7} side={THREE.DoubleSide} />
       </mesh>
@@ -83,14 +89,22 @@ function Links({ count, active }: { count: number; active: number }) {
   );
 }
 
-export default function ServicesOrbit({ count, active, onSelect, onHover }: { count: number; active: number; onSelect: (i: number) => void; onHover: (i: number | null) => void }) {
+/**
+ * `focus` (driven by the HTML list) rotates the orbit; `highlight` (pointer on a
+ * node) only lights the node up. Rotating on node hover would move the node away
+ * from the cursor and cause hover flicker.
+ */
+export default function ServicesOrbit({ count, focus, highlight, onSelect, onHover }: { count: number; focus: number; highlight: number | null; onSelect: (i: number) => void; onHover: (i: number | null) => void }) {
+  const active = highlight ?? focus;
   const orbit = useRef<THREE.Group>(null);
   const { size } = useThree();
   useFrame((state, d) => {
     if (!orbit.current) return;
-    if (active >= 0) {
-      // bring the active node to the front (towards +z)
-      const target = -((active / count) * Math.PI * 2) + Math.PI / 2;
+    if (highlight !== null) {
+      // hold still while the pointer is on a node
+    } else if (focus >= 0) {
+      // bring the focused node to the front (towards +z)
+      const target = -((focus / count) * Math.PI * 2) + Math.PI / 2;
       let cur = orbit.current.rotation.y;
       const diff = Math.atan2(Math.sin(target - cur), Math.cos(target - cur));
       cur += diff * Math.min(1, d * 4);

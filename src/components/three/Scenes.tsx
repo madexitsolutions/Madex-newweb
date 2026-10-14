@@ -2,16 +2,18 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { CanvasShell } from "./CanvasShell";
 import { MarkSvg } from "@/components/ui/MarkSvg";
 import type { RingItem } from "./ProjectRing";
+import { heroScenes, type HeroSceneKey } from "./heroes/registry";
 
 const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 const ShaderBackdrop = dynamic(() => import("./ShaderBackdrop"), { ssr: false });
 const ServicesOrbit = dynamic(() => import("./ServicesOrbit"), { ssr: false });
 const ProjectRing = dynamic(() => import("./ProjectRing"), { ssr: false });
 const FloatingMark = dynamic(() => import("./FloatingMark"), { ssr: false });
+const SceneLights = dynamic(() => import("./SceneLights"), { ssr: false });
 
 function useScrollProgress(distance = 1) {
   const ref = useRef(0);
@@ -45,8 +47,9 @@ export function HeroCanvas({ className }: { className?: string }) {
   );
 }
 
-export function BackdropCanvas({ className, intensity = 1, withMark = false }: { className?: string; intensity?: number; withMark?: boolean }) {
+export function BackdropCanvas({ className, intensity = 1, withMark = false, scene, sceneProps }: { className?: string; intensity?: number; withMark?: boolean; scene?: HeroSceneKey; sceneProps?: { image?: string } }) {
   const progress = useScrollProgress(1);
+  const Themed = scene ? heroScenes[scene] : null;
   return (
     <CanvasShell
       className={className}
@@ -56,15 +59,22 @@ export function BackdropCanvas({ className, intensity = 1, withMark = false }: {
       fallback={<div className="backdrop-fallback" />}
     >
       <ShaderBackdrop intensity={intensity} />
-      {withMark && <FloatingMark scrollRef={progress} />}
+      {Themed ? (
+        <Suspense fallback={null}>
+          <SceneLights />
+          <Themed {...sceneProps} />
+        </Suspense>
+      ) : (
+        withMark && <FloatingMark scrollRef={progress} />
+      )}
     </CanvasShell>
   );
 }
 
-export function OrbitCanvas({ className, count, active, onSelect, onHover }: { className?: string; count: number; active: number; onSelect: (i: number) => void; onHover: (i: number | null) => void }) {
+export function OrbitCanvas({ className, count, focus, highlight, onSelect, onHover }: { className?: string; count: number; focus: number; highlight: number | null; onSelect: (i: number) => void; onHover: (i: number | null) => void }) {
   return (
     <CanvasShell className={className} camera={{ position: [0, 1.4, 7.4], fov: 40 }} fallback={<div className="orbit-fallback"><MarkSvg /></div>}>
-      <ServicesOrbit count={count} active={active} onSelect={onSelect} onHover={onHover} />
+      <ServicesOrbit count={count} focus={focus} highlight={highlight} onSelect={onSelect} onHover={onHover} />
     </CanvasShell>
   );
 }

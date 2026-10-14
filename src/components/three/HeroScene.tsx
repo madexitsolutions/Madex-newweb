@@ -211,8 +211,8 @@ function HeroMark({ scrollRef }: { scrollRef: React.RefObject<number> }) {
   const { viewport, size } = useThree();
   const mobile = size.width < 900;
   const x = mobile ? 0 : viewport.width * 0.25;
-  const y = mobile ? -viewport.height * 0.22 : 0.1;
-  const s = mobile ? 0.6 : Math.min(1, size.width / 1600) * 0.68;
+  const y = mobile ? -viewport.height / 2 + 1.2 : 0.1;
+  const s = mobile ? 0.48 : Math.min(1, size.width / 1600) * 0.68;
   return (
     <group position={[x, y, 0]} scale={s}>
       <MarkModel scrollRef={scrollRef} />

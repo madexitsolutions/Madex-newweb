@@ -22,7 +22,7 @@ const cats = [
 export default function PortfolioPage() {
   return (
     <>
-      <PageHero eyebrow="Portfolio" title="Durchsuchen Sie unser Portfolio." lead="Hier finden Sie einige unserer neuesten Projekte, die wir erstellt haben." crumbs={[{ name: "Portfolio", path: "/portfolio" }]} />
+      <PageHero scene="portfolio" eyebrow="Portfolio" title="Durchsuchen Sie unser Portfolio." lead="Hier finden Sie einige unserer neuesten Projekte, die wir erstellt haben." crumbs={[{ name: "Portfolio", path: "/portfolio" }]} />
       <section className="section light" aria-label="Portfolio-Kategorien">
         <div className="container">
           <StaggerGroup className="pf">

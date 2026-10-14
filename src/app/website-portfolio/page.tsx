@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMeta({
 export default function WebsitePortfolioPage() {
   return (
     <>
-      <PageHero
+      <PageHero scene="portfolio"
         eyebrow="Website Portfolio"
         title="Ihre Chance: kostenlose Website mit unserem Online-Marketing-Paket."
         lead="Bei uns erhalten Sie mehr als erstklassiges Online-Marketing und Website-Wartung – wir schenken Ihnen eine moderne, professionelle Website."

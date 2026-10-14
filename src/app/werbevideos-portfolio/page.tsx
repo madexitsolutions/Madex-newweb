@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMeta({
 export default function VideoPortfolioPage() {
   return (
     <>
-      <PageHero
+      <PageHero scene="video"
         eyebrow="Werbevideos Portfolio"
         title="Geschichten, die Marken in Bewegung setzen."
         lead="Jedes Video ist einzigartig und wurde individuell auf die Bedürfnisse und Ziele unserer Kunden abgestimmt."

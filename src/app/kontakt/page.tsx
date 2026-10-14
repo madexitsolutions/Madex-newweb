@@ -21,7 +21,7 @@ export default function ContactPage() {
   ];
   return (
     <>
-      <PageHero
+      <PageHero scene="contact"
         eyebrow="Kontakt"
         title="Wir sind hier, um Ihnen beim Wachstum zu helfen."
         lead="Sie können uns gerne über Ihre bevorzugte Kontaktmethode erreichen. Wir freuen uns darauf, herauszufinden, wie unser Team für digitales Marketing zu Ihrem Erfolg beitragen kann."

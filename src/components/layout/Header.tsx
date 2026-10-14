@@ -72,7 +72,7 @@ export function Header() {
       <header className={`hd${scrolled ? " hd--scrolled" : ""}${hidden && !open && !mobile ? " hd--hidden" : ""}`}>
         <div className="hd__bar">
           <Link href="/" className="hd__logo" aria-label="Madex IT Solutions – Startseite">
-            <Image src="/media/brand/business-logo.webp" alt="Madex IT Solutions" width={936} height={201} priority className="hd__logo-img" />
+            <Image src="/brand/logo-light.png" alt="Madex IT Solutions" width={936} height={201} priority unoptimized className="hd__logo-img" />
           </Link>
 
           <nav className="hd__nav" aria-label="Hauptnavigation">
@@ -225,9 +225,9 @@ export function Header() {
           color:#fff;transition:background .5s,box-shadow .5s,border-color .5s;border:1px solid transparent}
         .hd--scrolled .hd__bar{background:rgba(1,27,30,.72);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
           border-color:rgba(255,255,255,.09);box-shadow:0 20px 50px -30px rgba(0,0,0,.6)}
-        .hd__logo{flex:none;display:block;padding:6px 10px;border-radius:14px;background:#fff;transition:transform .4s var(--ease-out)}
+        .hd__logo{flex:none;display:flex;align-items:center;height:44px;padding:0 4px;transition:transform .5s var(--ease-out),opacity .3s}
         .hd__logo:hover{transform:scale(1.04)}
-        .hd__logo-img{width:clamp(118px,10vw,150px);height:auto}
+        .hd__logo-img{width:clamp(124px,9.5vw,148px);height:auto;display:block}
         .hd__nav{margin-inline:auto}
         .hd__list{display:flex;list-style:none;margin:0;padding:0;gap:2px}
         .hd__li{position:relative;display:flex;align-items:center}

@@ -18,7 +18,7 @@ export const metadata: Metadata = pageMeta({
 export default function BlogPage() {
   return (
     <>
-      <PageHero eyebrow="Blog" title="Wissen rund um Web, Design & Marketing." crumbs={[{ name: "Wer wir sind", path: "/uber-uns" }, { name: "Blog", path: "/blog" }]} compact />
+      <PageHero scene="blog" eyebrow="Blog" title="Wissen rund um Web, Design & Marketing." crumbs={[{ name: "Wer wir sind", path: "/uber-uns" }, { name: "Blog", path: "/blog" }]} compact />
       <section className="section light" aria-label="Beiträge">
         <div className="container blog">
           {blogPosts.map((p, i) => (
