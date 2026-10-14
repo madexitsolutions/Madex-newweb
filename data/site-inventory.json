@@ -1,0 +1,2422 @@
+{
+  "generatedAt": "2026-10-14",
+  "sourceSitemaps": [
+    "https://madex-it.ch/post-sitemap.xml",
+    "https://madex-it.ch/page-sitemap.xml",
+    "https://madex-it.ch/category-sitemap.xml",
+    "https://madex-it.ch/post_tag-sitemap.xml"
+  ],
+  "counts": {
+    "urls": 109,
+    "pages": 24,
+    "posts": 78,
+    "categories": 2,
+    "tags": 5,
+    "archivedSuccessfully": 109,
+    "archiveFailures": 0,
+    "sitemapImageReferences": 668,
+    "sitemapUniqueImageUrls": 577,
+    "discoveredUniqueMediaUrls": 3146
+  },
+  "records": [
+    {
+      "type": "category",
+      "url": "https://madex-it.ch/category/blog/",
+      "lastModified": "1970-01-01T00:00:00+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/category-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/category/001-category__blog.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 201504,
+        "title": "Blog - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "category",
+      "url": "https://madex-it.ch/category/website-portfolio/",
+      "lastModified": "1970-01-01T00:00:00+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/category-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/category/002-category__website-portfolio.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 205770,
+        "title": "Website Portfolio - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/",
+      "lastModified": "2026-10-06T08:43:51+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/04/box-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/10/box-1.1.png",
+        "https://madex-it.ch/wp-content/uploads/2024/04/box-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-6-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-1-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-11.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-8-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-2-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-2-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-7-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-9-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-10-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-3-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-4-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-5-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-25.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-14.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-29.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-31.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-20.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-1-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-7-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-2-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-3-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-4-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-30.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-8-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-10-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-12.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-13.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-16.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-17.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-18.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-21.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-1-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-3-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-4-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-19.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-6-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-7-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-13-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-14-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-15.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-16-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-18-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-19-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-25-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-26.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-27.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-28.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-29-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-30-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-31-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-33.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-34.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-36.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-37.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-39.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-40.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-41.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-42.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-43.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-46.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-47.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-57.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-58.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-63.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-64.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-65.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-66.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/matter1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/naegelis-logo-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-32.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/edited-9403.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/edited-94742.jpg",
+        "https://madex-it.ch/wp-content/uploads/2026/10/edited-9489.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/edited-9518.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Lightbulb2.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/madexman.png",
+        "https://madex-it.ch/wp-content/uploads/2024/05/web-mad2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/3.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/003-home.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 375133,
+        "title": "Website-Wartung für 250 CHF/Monat – inkl. Domain und Hosting",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/agb/",
+      "lastModified": "2025-01-31T08:25:16+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/004-agb.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 228111,
+        "title": "AGB - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/blog/",
+      "lastModified": "2025-02-11T09:10:49+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/005-blog.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 229696,
+        "title": "Warum Webdesign wichtig ist – Ihr Unternehmen braucht eine Website",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/das-team/",
+      "lastModified": "2026-09-14T08:13:31+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/05/web-mad2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/graphicdesign-madex.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/marco.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/adem_2-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/gazmend.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/Bram-Marco-0486.jpg",
+        "https://madex-it.ch/wp-content/uploads/2026/09/10_12_55-AM.png",
+        "https://madex-it.ch/wp-content/uploads/2024/07/cs-ariane2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/05/laura.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/madex-0010.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/madex-0013.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/madex-0014.jpg",
+        "https://madex-it.ch/wp-content/uploads/2026/01/designer.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/05/staff-eegt_1133.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/dev2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/dev3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2026/01/web-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/soc-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/staff-smm-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2026/01/video-s.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/1d.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/3d.jpg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/star.svg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/006-das-team.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 279286,
+        "title": "das Team - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/datenschutz/",
+      "lastModified": "2024-08-31T23:28:27+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/007-datenschutz.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 219324,
+        "title": "Datenschutz - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/graphic-design-portfolio/",
+      "lastModified": "2026-05-18T13:17:33+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/graphicdesign.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/198315532_317458720010629_1542566039049710479_n.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/266211285_437788897977610_6768999310720917317_n.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/233075205_356107759479058_3623920279474590552_n.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/264993849_437788861310947_1855986970264358745_n.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/2e.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/kita.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/bewa.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/hk.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/2-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/1-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/3-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/4-1.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/008-graphic-design-portfolio.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 527584,
+        "title": "Grafikdesigns für Unternehmen in Thurgau, Zürich und Schaffhausen",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/karriere/",
+      "lastModified": "2026-06-03T07:13:51+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/2151004351.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/1d.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/009-karriere.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 236873,
+        "title": "Karriere - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/kontakt/",
+      "lastModified": "2025-08-06T12:53:52+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/71201.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/010-kontakt.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 234509,
+        "title": "Kontakt - Sie können uns über Ihre bevorzugte Kontaktmethode erreichen",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/kostenlose-prufung/",
+      "lastModified": "2024-09-25T09:28:16+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2023/06/g3-1.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/011-kostenlose-prufung.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 229683,
+        "title": "Kostenlose Prüfung - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/",
+      "lastModified": "2026-10-02T07:25:10+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/07/2d.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/012-marketing-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239944,
+        "title": "Marketinglösungen in Schaffhausen - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/analyse-und-planung/",
+      "lastModified": "2025-02-11T09:00:58+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/analyse.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/013-marketing-solutions__analyse-und-planung.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 248709,
+        "title": "Umfassende Marktanalyse und strategische Planung für Ihr Marketing",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/digital-marketing/",
+      "lastModified": "2026-10-02T09:31:01+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/08/Digital-Marketing.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/014-marketing-solutions__digital-marketing.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 253822,
+        "title": "Online Marketing Schaffhausen – Experten für digitale Präsenz",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/google-marketing/",
+      "lastModified": "2025-02-11T08:16:12+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/Google.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Types-of-Google-Ads-3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/keywords-google-my-business.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/322.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/015-marketing-solutions__google-marketing.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 250883,
+        "title": "Google Marketing – Google Ads und Werbung in Schaffhausen!",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/graphic-design/",
+      "lastModified": "2025-02-11T08:42:45+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/graphicdesign.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/madex_staf-7-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/f32.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/2149119231.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/132214.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/016-marketing-solutions__graphic-design.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 264193,
+        "title": "Graphic Design, Logo-Design und Branding in Schaffhausen, Zürich",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/photo-werbevideos/",
+      "lastModified": "2026-10-02T08:33:39+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/fotovideo.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/32.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/49854.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/41072.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/934.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/017-marketing-solutions__photo-werbevideos.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 259559,
+        "title": "Photo & Werbevideos – Professionelle Fotografie und Imagefilme",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/seo-optimierung/",
+      "lastModified": "2025-02-10T14:56:20+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/08/SEO.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1060723_OLS73W0.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/8488.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/90387.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/121464.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/2150040193.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/71201.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/348.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/018-marketing-solutions__seo-optimierung.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 266678,
+        "title": "SEO Optimierung – Schaffhausen, Zürich, Thurgau, Ostschweiz",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/social-media-marketing/",
+      "lastModified": "2025-02-13T08:07:17+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/socialmedia.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/019-marketing-solutions__social-media-marketing.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 251795,
+        "title": "Social Media Marketing – Werbung in Schaffhausen, Zürich, Thurgau",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/marketing-solutions/website-development/",
+      "lastModified": "2026-10-02T09:35:53+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/08/Website-Development.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/sc-detheme2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/sc-detheme1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/sc-detheme3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/7.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/b21.png",
+        "https://madex-it.ch/wp-content/uploads/2024/08/133664.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/138060.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/ch.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/020-marketing-solutions__website-development.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 266647,
+        "title": "Webdesign Schaffhausen – professionelle Websites für Start-ups!",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/mi-dashboard/",
+      "lastModified": "2025-08-22T12:58:51",
+      "imageUrls": [],
+      "sourceSitemap": null,
+      "archive": {
+        "localPath": "archive/pages/page/021-mi-dashboard.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 214088,
+        "title": "Protected: MI Dashboard - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/partners/",
+      "lastModified": "2026-10-06T12:57:39+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/71201.jpg",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-6-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-3-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-8-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-9-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-1-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-4-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-10-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-5-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-2-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-7-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-25.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-20.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-11.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-2-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-1-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-14.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-29.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-16.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-30.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-18.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-17.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-3-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-7-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-13.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-4-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-31.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-8-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-10-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-19.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-12.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-1-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-2-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-3-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-4-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-6-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-7-3.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-13-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-14-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-15.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-16-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-18-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-19-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-25-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-26.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-27.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-28.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-29-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-30-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-31-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-33.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-34.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-36.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-37.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-39.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-40.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-41.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-42.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-43.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-46.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-47.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-57.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-58.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-63.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-64.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-65.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/Artboard-66.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/matter1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/10/naegelis-logo-1.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/roth.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/sanad.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/simago.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/sixtransfer.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/smkuchen.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/swiss.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/tiptop.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/titan.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/lacaria.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/loulou.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/msb.png",
+        "https://madex-it.ch/wp-content/uploads/2023/05/Line-arrow-2.svg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/happy-carefree-dark-skinned-rebellious-young-woman-enjoys-awesome-music-makes-rock-n-roll-gesture-has-fun-on-music-festival-or-cool-event-wears-casual-jumper-poses-against-pink-wall.jpg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/pexels-andrea-piacquadio-3799837.jpg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/pexels-mikhail-nilov-9301512.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/022-partners.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 328415,
+        "title": "Unsere geschätzten Partner – Experten für Digital Marketing",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/portfolio/",
+      "lastModified": "2026-10-02T12:39:18+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/07/2d.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/023-portfolio.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 224194,
+        "title": "Portfolio - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/uber-uns/",
+      "lastModified": "2025-08-06T12:45:08+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/07/madex_staf-7-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/Bram-Marco-0458-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/marco.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/adem_2-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/07/gazmend.jpg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/google-cloud.svg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/google-partner.svg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/meta-partner.svg",
+        "https://madex-it.ch/wp-content/uploads/2024/04/wordpress.png",
+        "https://madex-it.ch/wp-content/uploads/2024/04/elementor.png",
+        "https://madex-it.ch/wp-content/uploads/2023/05/Line-arrow-2.svg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/happy-carefree-dark-skinned-rebellious-young-woman-enjoys-awesome-music-makes-rock-n-roll-gesture-has-fun-on-music-festival-or-cool-event-wears-casual-jumper-poses-against-pink-wall.jpg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/pexels-andrea-piacquadio-3799837.jpg",
+        "https://madex-it.ch/wp-content/uploads/2023/05/pexels-mikhail-nilov-9301512.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/024-uber-uns.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 270509,
+        "title": "Über Uns - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/website-portfolio/",
+      "lastModified": "2025-02-11T09:52:22+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/08/Website-Development.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/025-website-portfolio.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 249867,
+        "title": "Die neuen Webseiten, die unsere Kunden als Geschenk bekamen",
+        "error": null
+      }
+    },
+    {
+      "type": "page",
+      "url": "https://madex-it.ch/werbevideos-portfolio/",
+      "lastModified": "2025-05-23T10:23:30+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/fotovideo.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/page-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/page/026-werbevideos-portfolio.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 233789,
+        "title": "Werbevideos Schaffhausen - Kreative Videos für Unternehmen",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/auto-pozzo-moderne-webpraesenz-fur-fahrzeugverkauf-und-service/",
+      "lastModified": "2026-04-27T09:24:44+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2026/04/autopozzo.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/7-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/9-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/99.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/027-auto-pozzo-moderne-webpraesenz-fur-fahrzeugverkauf-und-service.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 237178,
+        "title": "Auto Pozzo – Moderne Webpraesenz für Fahrzeugverkauf und Service - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/baur-ag-traditionelle-schweizer-bettwaren-online-prasentiert-von-madex-it-solutions/",
+      "lastModified": "2026-04-27T07:44:54+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2026/04/baurag.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/3-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/5.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/9.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/028-baur-ag-traditionelle-schweizer-bettwaren-online-prasentiert-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 236662,
+        "title": "Baur AG – Traditionelle Schweizer Bettwaren online präsentiert von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/carrosserie-stocker-ag-digitale-praesenz-fur-professionelle-fahrzeugreparaturencarrosserie-stocker-ag/",
+      "lastModified": "2026-04-27T07:45:19+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2026/04/csh.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/1-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/2-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/3-2.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/029-carrosserie-stocker-ag-digitale-praesenz-fur-professionelle-fahrzeugreparaturencarrosserie-stocker-ag.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238653,
+        "title": "Carrosserie Stocker AG – Digitale Praesenz für professionelle FahrzeugreparaturenCarrosserie Stocker AG - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/carrosserie-stocker-ag-unsere-neu-gestaltete-website-fur-erstklassige-fahrzeugreparaturen/",
+      "lastModified": "2025-01-30T09:41:07+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/Psd-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-18.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-8.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-9.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-9.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-9.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/030-carrosserie-stocker-ag-unsere-neu-gestaltete-website-fur-erstklassige-fahrzeugreparaturen.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243452,
+        "title": "Carrosserie Stocker AG – Unsere neu gestaltete Website für erstklassige Fahrzeugreparaturen - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/daily-homes-unsere-neu-gestaltete-website-fur-ihre-immobilienlosungen/",
+      "lastModified": "2025-01-29T12:56:30+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/03.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-14.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-5.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/031-daily-homes-unsere-neu-gestaltete-website-fur-ihre-immobilienlosungen.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240868,
+        "title": "Daily Homes – Unsere neu gestaltete Website für Ihre Immobilienlösungen - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-online-plattform-fur-braun-services-gmbh-professionell-umgesetzt-von-madex-it-solutions/",
+      "lastModified": "2025-04-11T13:28:50+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/04/madex021.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/g1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/g2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/g3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/g4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/032-die-neue-online-plattform-fur-braun-services-gmbh-professionell-umgesetzt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242534,
+        "title": "Die neue Online-Plattform für BRAUN Services GmbH – professionell umgesetzt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-abc-haustech-ag-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-28T10:32:38+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/abc.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-11.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-3.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/033-die-neue-website-fur-abc-haustech-ag-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239101,
+        "title": "Die neue Website für ABC HausTech AG – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-advanvinum-wein-entwickelt-fur-echte-weingeniesser/",
+      "lastModified": "2024-11-18T13:07:04+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/11/advan-madex.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/11/Screenshot_1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/11/Screenshot_2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/11/Screenshot_3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/11/Screenshot_4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/034-die-neue-website-fur-advanvinum-wein-entwickelt-fur-echte-weingeniesser.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 241332,
+        "title": "Die neue Website für Advanvinum Wein – entwickelt für echte Weingeniesser - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-alewico-gmbh-modern-und-innovativ-gestaltet/",
+      "lastModified": "2024-09-26T10:06:44+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/alew2.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/ale1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/ale2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/ale3.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/035-die-neue-website-fur-alewico-gmbh-modern-und-innovativ-gestaltet.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239447,
+        "title": "Die neue Website für Alewico GmbH – modern und innovativ gestaltet - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-alpha-bautechnik-gmbh-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-02-03T09:22:12+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/Desktop-Mockup.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/4-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/5-1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/6-1.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/036-die-neue-website-fur-alpha-bautechnik-gmbh-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243008,
+        "title": "Die neue Website für Alpha Bautechnik GmbH – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-alpha-bautechnik-gmbh-professionell-gestaltet-von-uns/",
+      "lastModified": "2024-09-20T08:53:10+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/alpha-1.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_1-4.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/alp1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/alp2.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/037-die-neue-website-fur-alpha-bautechnik-gmbh-professionell-gestaltet-von-uns.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239502,
+        "title": "Die neue Website für Alpha Bautechnik GmbH – professionell gestaltet von uns - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-barizzi-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-03-04T11:13:37+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screen-Desktop-Mockup.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-25-092609.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-25-092741.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-25-092802.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-25-092842.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-25-092916.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-25-092955.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/038-die-neue-website-fur-barizzi-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243953,
+        "title": "Die neue Website für Barizzi – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-casa-ombra-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-31T10:23:10+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/iPadMockup.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-25.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-15.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-13.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-15.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-15.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-9.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/039-die-neue-website-fur-casa-ombra-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242360,
+        "title": "Die neue Website für Casa OmBra – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-casielo-gmbh-gestaltet-von-madex-it-solutions/",
+      "lastModified": "2024-12-06T10:18:37+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/12/c-preview.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/c1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/c2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/c3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/c4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/040-die-neue-website-fur-casielo-gmbh-gestaltet-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239178,
+        "title": "Die neue Website für Casielo GmbH – gestaltet von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-challenge-swiss-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2024-12-04T15:04:39+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/12/chswiss.png",
+        "https://madex-it.ch/wp-content/uploads/2024/12/1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/3.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/041-die-neue-website-fur-challenge-swiss-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238527,
+        "title": "Die neue Website für Challenge Swiss – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-ciofalo-kaminfegermeister-professionell-informativ-und-benutzerfreundlich/",
+      "lastModified": "2025-01-31T13:31:52+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/iPad-Mockup-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-29.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-18.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-15.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-18.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-11.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/042-die-neue-website-fur-ciofalo-kaminfegermeister-professionell-informativ-und-benutzerfreundlich.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242002,
+        "title": "Die neue Website für Ciofalo Kaminfegermeister – professionell, informativ und benutzerfreundlich - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-crescon-ag-ihr-experte-fur-immobilienlosungen/",
+      "lastModified": "2025-02-03T08:50:58+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/iPad-Mockup.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/4-1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/6.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/043-die-neue-website-fur-crescon-ag-ihr-experte-fur-immobilienlosungen.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242484,
+        "title": "Die neue Website für Crescon AG – Ihr Experte für Immobilienlösungen - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-den-karibik-shop-ihr-tor-zur-karibischen-genusswelt/",
+      "lastModified": "2025-01-31T14:31:39+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-17.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-31.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-20.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-17.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-20.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-19.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-12.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/044-die-neue-website-fur-den-karibik-shop-ihr-tor-zur-karibischen-genusswelt.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242423,
+        "title": "Die neue Website für den Karibik-Shop – Ihr Tor zur karibischen Genusswelt - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-den-verein-bewa-zum-lachenanker-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-02-03T13:20:39+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/0844.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/6-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/4-4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/5-2.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/045-die-neue-website-fur-den-verein-bewa-zum-lachenanker-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243231,
+        "title": "Die neue Website für den Verein BeWA zum Lächenanker – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-duna-solar-gmbh-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-02-05T08:26:09+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/Desktop-Mockup-Front.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-8.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-8.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/4-7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/5-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/7-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/6-6.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/046-die-neue-website-fur-duna-solar-gmbh-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 244742,
+        "title": "Die neue Website für Duna Solar GmbH – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-hauswartex-ag-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-30T10:14:22+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/Psd-2-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-19.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-9.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-10.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-10.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-10.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/047-die-neue-website-fur-hauswartex-ag-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242769,
+        "title": "Die neue Website für Hauswartex AG – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-historfen-ag-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-29T13:28:18+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/Psd-3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-15.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-6.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/048-die-neue-website-fur-historfen-ag-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240501,
+        "title": "Die neue Website für Historfen AG – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-jk-hauswartung-gestaltet-von-madex-it-solutions/",
+      "lastModified": "2024-10-15T11:31:50+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/10/jk.png",
+        "https://madex-it.ch/wp-content/uploads/2024/10/jk2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/10/jk3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/10/jk4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/049-die-neue-website-fur-jk-hauswartung-gestaltet-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238388,
+        "title": "Die neue Website für JK Hauswartung – gestaltet von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-leikwood-gmbh-designed-von-madex-it-solutions/",
+      "lastModified": "2024-10-15T12:33:19+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/10/l2.png",
+        "https://madex-it.ch/wp-content/uploads/2024/10/l3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/10/l4.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/10/l5.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/050-die-neue-website-fur-leikwood-gmbh-designed-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239123,
+        "title": "Die neue Website für Leikwood GmbH – designed von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-lienhard-herter-ag/",
+      "lastModified": "2024-12-04T09:42:50+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/12/lie.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/Screenshot_1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/Screenshot_2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/Screenshot_3.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/051-die-neue-website-fur-lienhard-herter-ag.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238545,
+        "title": "Die neue Website für LIENHARD + HERTER AG - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-limoline-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-30T09:42:44+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/iPad-Mockup.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-17.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-8.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-8.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/7-2.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/052-die-neue-website-fur-limoline-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242467,
+        "title": "Die neue Website für Limoline – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-matter-edelsteine-einzigartige-schmuckstucke-und-heilsteine-entdecken/",
+      "lastModified": "2025-02-03T14:40:01+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/iPad-Pro-Mockup-white-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/6-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/4-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/5-4.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/053-die-neue-website-fur-matter-edelsteine-einzigartige-schmuckstucke-und-heilsteine-entdecken.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 244382,
+        "title": "Die neue Website für Matter Edelsteine – Einzigartige Schmuckstücke und Heilsteine entdecken - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-messerli-ag-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-29T10:49:08+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/iPad.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-13.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-4.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/054-die-neue-website-fur-messerli-ag-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240553,
+        "title": "Die neue Website für Messerli AG – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-metic-gmbh-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-02-03T14:26:30+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/Desktop-Mockup-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/5-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/7-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/6-4.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/055-die-neue-website-fur-metic-gmbh-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242292,
+        "title": "Die neue Website für Metic GmbH – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-mister-gadget-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-31T13:46:51+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/iPhone-12-Mockup.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-30.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-19.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-16.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-19.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-18.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/056-die-neue-website-fur-mister-gadget-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240744,
+        "title": "Die neue Website für Mister Gadget – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-monarosa-exklusive-braut-und-abendmode-entdecken/",
+      "lastModified": "2025-02-03T09:44:18+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/Desktop-Mockup-03.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-03-102510.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/4-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/7-1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-03-102809.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/057-die-neue-website-fur-monarosa-exklusive-braut-und-abendmode-entdecken.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242815,
+        "title": "Die neue Website für Monarosa – Exklusive Braut- und Abendmode entdecken - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-onc-travels-transfers-gestaltet-fur-erstklassige-mobilitat/",
+      "lastModified": "2024-12-05T13:24:30+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/12/1-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/2-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/3-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/4.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/5.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/058-die-neue-website-fur-onc-travels-transfers-gestaltet-fur-erstklassige-mobilitat.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239636,
+        "title": "Die neue Website für ONC Travels & Transfers – gestaltet für erstklassige Mobilität - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-oromano-ag-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-02-03T08:33:57+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/Phone-Mockup.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-03-091528.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/059-die-neue-website-fur-oromano-ag-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242632,
+        "title": "Die neue Website für OROMANO AG – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-phakrada-fusspflege-massage-entspannung-und-pflege-auf-hochstem-niveau/",
+      "lastModified": "2025-02-05T14:34:53+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/iPad-Pro-Mockup.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-8.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-9.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-9.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/5-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/6-7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/Screenshot-2025-02-05-152124.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/060-die-neue-website-fur-phakrada-fusspflege-massage-entspannung-und-pflege-auf-hochstem-niveau.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 245828,
+        "title": "Die neue Website für Phakrada Fusspflege & Massage – Entspannung und Pflege auf höchstem Niveau - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-power-games/",
+      "lastModified": "2024-10-15T12:06:53+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/10/p2.png",
+        "https://madex-it.ch/wp-content/uploads/2024/10/p1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/10/p3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/10/p4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/061-die-neue-website-fur-power-games.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 237751,
+        "title": "Die neue Website für Power Games - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-psychiatrie-spitex-ombra-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-31T13:50:58+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/Folded-Poster-and-iPad-Pro-Mockup-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-26.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-16.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-14.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-16.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-16.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/7-3.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/062-die-neue-website-fur-psychiatrie-spitex-ombra-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243391,
+        "title": "Die neue Website für Psychiatrie Spitex OmBra – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-rhemo-ag-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-30T10:38:33+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/set-16.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-20.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-10.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-12.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-11.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/063-die-neue-website-fur-rhemo-ag-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240491,
+        "title": "Die neue Website für RHEMO AG – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-rohner-bischel-gmbh-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-16T09:18:42+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/roh-bis.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/064-die-neue-website-fur-rohner-bischel-gmbh-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239549,
+        "title": "Die neue Website für Rohner & Bischel GmbH – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-roth-baueninholz-ag-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-31T12:47:19+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/Laptop-Mockups-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1a.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2a-1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3a.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5a.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6a.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/065-die-neue-website-fur-roth-baueninholz-ag-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240800,
+        "title": "Die neue Website für Roth baueninholz AG – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-sanad-automobile-entwickelt-von-uns-praktisch-und-benutzerfreundlich/",
+      "lastModified": "2024-12-06T08:43:22+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/12/1-3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/g1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/g2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/g3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/g4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/066-die-neue-website-fur-sanad-automobile-entwickelt-von-uns-praktisch-und-benutzerfreundlich.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240253,
+        "title": "Die neue Website für Sanad Automobile – entwickelt von uns, praktisch und benutzerfreundlich - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-schild-business-treuhand-gmbh/",
+      "lastModified": "2024-09-26T08:59:37+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/businesstre.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/b1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/tra1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/tra2.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/067-die-neue-website-fur-schild-business-treuhand-gmbh.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239031,
+        "title": "Die neue Website für Schild Business Treuhand GmbH - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-stahlfabrik-gmbh-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-06-02T13:32:15+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/06/12.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/06/1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/06/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/06/3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/06/5.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/06/7.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/06/6.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/068-die-neue-website-fur-stahlfabrik-gmbh-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 244994,
+        "title": "Die neue Website für StahlFabrik GmbH – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-the-food-station-genussvolle-vielfalt-einfach-online-bestellen/",
+      "lastModified": "2025-02-03T13:41:56+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/02/01.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/1-4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/2-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/3-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/4-5.png",
+        "https://madex-it.ch/wp-content/uploads/2025/02/6-3.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/069-die-neue-website-fur-the-food-station-genussvolle-vielfalt-einfach-online-bestellen.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243002,
+        "title": "Die neue Website für The Food Station – Genussvolle Vielfalt einfach online bestellen - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-fur-zum-uhrmacher-gmbh-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-01-31T08:55:20+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/PSD_01.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-22.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-13.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-13.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-11.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-13.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/070-die-neue-website-fur-zum-uhrmacher-gmbh-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 242699,
+        "title": "Die neue Website für ZUM UHRMACHER GmbH – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-unseres-kunden-kraeuterbeer-com-ist-veroffentlicht/",
+      "lastModified": "2024-09-04T08:24:41+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/kraeuterbeercom.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_6.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_7.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_8.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/071-die-neue-website-unseres-kunden-kraeuterbeer-com-ist-veroffentlicht.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239412,
+        "title": "Die neue Website unseres Kunden kraeuterbeer.com ist veröffentlicht - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-von-mpu-bfk-de-entwickelt-von-uns/",
+      "lastModified": "2024-09-05T09:32:32+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/mpubfk.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_1-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_2-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_3-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_4-2.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/072-die-neue-website-von-mpu-bfk-de-entwickelt-von-uns.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239500,
+        "title": "Die neue Website von mpu-bfk.de – entwickelt von uns - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/die-neue-website-von-ursis-brautmode-gestaltet-von-uns/",
+      "lastModified": "2024-09-04T13:45:57+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/ursisb.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_8-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_9.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_10.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_11.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/073-die-neue-website-von-ursis-brautmode-gestaltet-von-uns.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239561,
+        "title": "Die neue Website von Ursi’s Brautmode – gestaltet von uns - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/grafikdesign-und-die-wirkung-von-social-media-posts/",
+      "lastModified": "2024-09-04T07:45:34+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/2149119231.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/4.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/5.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/6.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/7.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/09.08-1.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/17.05.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/074-grafikdesign-und-die-wirkung-von-social-media-posts.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 232580,
+        "title": "Grafikdesign und die Wirkung von Social Media Posts - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/madex-it-solutions-hat-die-neue-website-fur-abacon-videoturm-gestaltet-innovativ-und-funktional/",
+      "lastModified": "2024-12-05T14:00:12+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/12/0-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/1-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/2-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/3-2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/4-1.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/075-madex-it-solutions-hat-die-neue-website-fur-abacon-videoturm-gestaltet-innovativ-und-funktional.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239955,
+        "title": "Madex IT Solutions hat die neue Website für abacon VideoTurm gestaltet – Innovativ und funktional - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/marlenka-swiss-traditioneller-genuss-auf-einer-modernen-plattform/",
+      "lastModified": "2024-11-18T15:00:06+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/11/marlenka-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/11/Screenshot_1-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/11/Screenshot_2-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/11/Screenshot_3-1.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/076-marlenka-swiss-traditioneller-genuss-auf-einer-modernen-plattform.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240111,
+        "title": "Marlenka Swiss – Traditioneller Genuss auf einer modernen Plattform - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/masi-color-gmbh-unsere-neu-gestaltete-website-fur-kreative-malerarbeiten/",
+      "lastModified": "2024-10-17T08:01:02+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/10/masicolor-1.png",
+        "https://madex-it.ch/wp-content/uploads/2024/10/Screenshot_1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/10/Screenshot_2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/10/Screenshot_3.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/077-masi-color-gmbh-unsere-neu-gestaltete-website-fur-kreative-malerarbeiten.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239672,
+        "title": "Masi Color GmbH – Unsere neu gestaltete Website für kreative Malerarbeiten - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/mehoma-professionelle-dienstleistungen-und-kundenorientierter-online‑auftritt-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2026-04-27T07:55:49+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2026/04/mehoma.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/6.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/7.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/078-mehoma-professionelle-dienstleistungen-und-kundenorientierter-online‑auftritt-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238581,
+        "title": "MEHOMA – Professionelle Dienstleistungen und Kundenorientierter Online‑Auftritt – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/mehoma-professionelle-dienstleistungen-und-kundenorientierter-online%e2%80%91auftritt-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2026-04-27T08:55:49",
+      "imageUrls": [],
+      "sourceSitemap": null,
+      "archive": {
+        "localPath": "archive/pages/post/079-mehoma-professionelle-dienstleistungen-und-kundenorientierter-online‑auftritt-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238581,
+        "title": "MEHOMA – Professionelle Dienstleistungen und Kundenorientierter Online‑Auftritt – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/mila-dopiz-stilvoller-online‑auftritt-fur-hochwertige-mode-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2026-04-27T07:52:02+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2026/04/miladopiz.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/Screenshot-2026-04-24-095615.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/4.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/080-mila-dopiz-stilvoller-online‑auftritt-fur-hochwertige-mode-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239236,
+        "title": "Mila d’opiz – Stilvoller Online‑Auftritt für hochwertige Mode – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/mila-dopiz-stilvoller-online%e2%80%91auftritt-fur-hochwertige-mode-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2026-04-27T08:52:02",
+      "imageUrls": [],
+      "sourceSitemap": null,
+      "archive": {
+        "localPath": "archive/pages/post/081-mila-dopiz-stilvoller-online‑auftritt-fur-hochwertige-mode-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239236,
+        "title": "Mila d’opiz – Stilvoller Online‑Auftritt für hochwertige Mode – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/naegelis-premium-unsere-neu-gestaltete-website-fur-exklusive-genussmomente/",
+      "lastModified": "2025-01-29T10:24:08+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/1nag.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-3.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-12.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-4.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-3.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/082-naegelis-premium-unsere-neu-gestaltete-website-fur-exklusive-genussmomente.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239937,
+        "title": "Naegelis Premium – Unsere neu gestaltete Website für exklusive Genussmomente - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/naturliche-schonheit-online-erleben-die-neue-website-fur-jussara-gloor-kosmetik/",
+      "lastModified": "2025-05-23T09:59:13+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/05/jussara.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/05/1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/05/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/05/3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/05/4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/083-naturliche-schonheit-online-erleben-die-neue-website-fur-jussara-gloor-kosmetik.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243659,
+        "title": "Natürliche Schönheit online erleben – die neue Website für Jussara Gloor Kosmetik - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/neue-website-fur-polyprojekt-gmbh/",
+      "lastModified": "2025-07-31T10:04:21+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/07/polyprojekt.gif",
+        "https://madex-it.ch/wp-content/uploads/2025/07/Screenshot_1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/07/Screenshot_2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/07/Screenshot_3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/07/Screenshot_4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/084-neue-website-fur-polyprojekt-gmbh.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239454,
+        "title": "Neue Website für Poly‑Projekt GmbH - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/neues-branding-und-moderne-website-fur-klimas-innenausbau-copy-copy/",
+      "lastModified": "2026-04-09T08:06:03+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2026/04/garage-mockup.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/Screenshot_1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2026/04/Screenshot_2.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/085-neues-branding-und-moderne-website-fur-klimas-innenausbau-copy-copy.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 235695,
+        "title": "Ein neuer digitaler Auftritt für Garage T. Schneider - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/neues-branding-und-moderne-website-fur-klimas-innenausbau-copy/",
+      "lastModified": "2025-10-17T12:22:58+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/10/natura-balance-web-mockup.png",
+        "https://madex-it.ch/wp-content/uploads/2025/10/1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/10/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/10/3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/10/4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/086-neues-branding-und-moderne-website-fur-klimas-innenausbau-copy.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 237008,
+        "title": "Natura Balance Schweiz – Moderne Webpräsenz für natürliche Kosmetik, entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/neues-branding-und-moderne-website-fur-klimas-innenausbau/",
+      "lastModified": "2025-08-06T12:29:28+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/08/g1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/08/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/08/18903877.png",
+        "https://madex-it.ch/wp-content/uploads/2025/08/3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/08/4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/087-neues-branding-und-moderne-website-fur-klimas-innenausbau.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 234755,
+        "title": "Neues Branding und moderne Website für Klimas Innenausbau - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/serrano-reinigung-professionelle-reinigungsdienste-mit-moderner-webprasenz-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2026-04-27T07:54:30+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2026/04/serrano-2.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/2-1.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/088-serrano-reinigung-professionelle-reinigungsdienste-mit-moderner-webprasenz-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 237991,
+        "title": "SERRANO REINIGUNG – Professionelle Reinigungsdienste mit moderner Webpräsenz – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/starke-webplattform-fur-sun-foiltec-gmbh-entwickelt-von-madex-it-solutions/",
+      "lastModified": "2025-07-15T12:26:48+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/07/3e2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/07/1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/07/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/07/3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/07/4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/089-starke-webplattform-fur-sun-foiltec-gmbh-entwickelt-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 241296,
+        "title": "Starke Webplattform für Sun-Foiltec GmbH – entwickelt von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/tip-top-allround-gmbh-unsere-neu-gestaltete-website-fur-vielseitige-dienstleistungen/",
+      "lastModified": "2025-01-29T13:40:02+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/View-4.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-16.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-6.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-8.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-7.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-7.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/090-tip-top-allround-gmbh-unsere-neu-gestaltete-website-fur-vielseitige-dienstleistungen.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 241118,
+        "title": "TIP TOP allround GmbH – Unsere neu gestaltete Website für vielseitige Dienstleistungen - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/tkc-ag-starke-digitale-praesenz-fur-generatoren-und-industrie-services/",
+      "lastModified": "2026-04-27T09:01:10+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2026/04/tkc.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/5-1.png",
+        "https://madex-it.ch/wp-content/uploads/2026/04/6-1.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/091-tkc-ag-starke-digitale-praesenz-fur-generatoren-und-industrie-services.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 236771,
+        "title": "TKC AG – Starke digitale Praesenz für Generatoren und Industrie-Services - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/warum-webdesign-so-wichtig-ist-und-warum-ihr-unternehmen-eine-website-braucht/",
+      "lastModified": "2024-09-04T08:22:01+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/08/138060.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/sc-detheme2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/sc-detheme1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/sc-detheme3.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/092-warum-webdesign-so-wichtig-ist-und-warum-ihr-unternehmen-eine-website-braucht.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 233002,
+        "title": "Warum Webdesign so wichtig ist und warum Ihr Unternehmen eine Website braucht - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-abacon-sicherheit-ag-entwickelt-modern-und-professionell/",
+      "lastModified": "2025-01-28T09:20:33+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/abapreview.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/aba1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/aba2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/aba3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/aba4.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/aba5.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/093-wir-haben-die-neue-website-fur-abacon-sicherheit-ag-entwickelt-modern-und-professionell.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 241906,
+        "title": "Wir haben die neue Website für abacon SICHERHEIT AG entwickelt – modern und professionell - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-afh-ag-ch-realisiert/",
+      "lastModified": "2024-09-05T09:51:24+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/afh.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_1-3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_2-3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_3-3.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/094-wir-haben-die-neue-website-fur-afh-ag-ch-realisiert.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238525,
+        "title": "Wir haben die neue Website für afh-ag.ch realisiert - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-allenspach-kran-gmbh-gestaltet-modern-und-informativ/",
+      "lastModified": "2025-01-31T08:37:38+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/Desktop-Mockup-Front.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-21.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-11.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-12.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-12.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/Screenshot-2025-01-31-092154.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-7.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/095-wir-haben-die-neue-website-fur-allenspach-kran-gmbh-gestaltet-modern-und-informativ.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243548,
+        "title": "Wir haben die neue Website für Allenspach Kran GmbH gestaltet – modern und informativ - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-bb-bautech-ch-gestaltet/",
+      "lastModified": "2024-09-18T08:24:30+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/bb-bautech-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_3-5.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/bv-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/bb-1.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/096-wir-haben-die-neue-website-fur-bb-bautech-ch-gestaltet.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238634,
+        "title": "Wir haben die neue Website für bb-bautech.ch gestaltet - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-eduard-meier-plattenbelage-ag-realisiert/",
+      "lastModified": "2024-09-20T09:08:08+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/meier-1.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/meier.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/mei-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/mei2.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/097-wir-haben-die-neue-website-fur-eduard-meier-plattenbelage-ag-realisiert.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239783,
+        "title": "Wir haben die neue Website für Eduard Meier Plattenbeläge AG realisiert - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-enea-warmetechnik-gestaltet-modern-und-benutzerfreundlich/",
+      "lastModified": "2025-01-31T09:28:56+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/333.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/1-23.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-14.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-12.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/6-8.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-14.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-14.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/098-wir-haben-die-neue-website-fur-enea-warmetechnik-gestaltet-modern-und-benutzerfreundlich.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243433,
+        "title": "Wir haben die neue Website für ENEA Wärmetechnik gestaltet – modern und benutzerfreundlich - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-gn-design-gestaltet-professionell-und-kreativ/",
+      "lastModified": "2025-01-30T10:19:26+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/01/01-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/01/2-1.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/4-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/5-2.png",
+        "https://madex-it.ch/wp-content/uploads/2025/01/3-2.png"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/099-wir-haben-die-neue-website-fur-gn-design-gestaltet-professionell-und-kreativ.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 240536,
+        "title": "Wir haben die neue Website für GN Design gestaltet – professionell und kreativ - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-kaminfeger-tanner-ch-gestaltet/",
+      "lastModified": "2024-09-04T12:15:20+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/kaminfeger.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_4-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_5.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_6-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_7-1.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/100-wir-haben-die-neue-website-fur-kaminfeger-tanner-ch-gestaltet.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238944,
+        "title": "Wir haben die neue Website für kaminfeger-tanner.ch gestaltet - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-kita-rb-ch-erstellt/",
+      "lastModified": "2024-09-04T11:58:41+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/09/kita.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_1-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_2-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_3-1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/08/7.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/101-wir-haben-die-neue-website-fur-kita-rb-ch-erstellt.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239239,
+        "title": "Wir haben die neue Website für kita-rb.ch erstellt - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-haben-die-neue-website-fur-neofas-ag-gestaltet-innovativ-und-benutzerfreundlich/",
+      "lastModified": "2024-12-06T08:57:10+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/12/n-preview.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/n1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/n2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/n3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/12/n5.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/102-wir-haben-die-neue-website-fur-neofas-ag-gestaltet-innovativ-und-benutzerfreundlich.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 239855,
+        "title": "Wir haben die neue Website für Neofas AG gestaltet – innovativ und benutzerfreundlich - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/wir-prasentieren-ihnen-die-neue-website-fur-unseren-kunden-autobuchs-ch/",
+      "lastModified": "2024-09-04T08:25:21+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2024/08/b21.png",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2024/09/Screenshot_4.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/103-wir-prasentieren-ihnen-die-neue-website-fur-unseren-kunden-autobuchs-ch.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 238874,
+        "title": "Wir präsentieren Ihnen die neue Website für unseren Kunden autobuchs.ch - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post",
+      "url": "https://madex-it.ch/ziel-umzug-jetzt-online-mit-frischer-webpraesenz-realisiert-von-madex-it-solutions/",
+      "lastModified": "2025-04-22T12:15:38+00:00",
+      "imageUrls": [
+        "https://madex-it.ch/wp-content/uploads/2025/04/1-A.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/1.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/2.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/3.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/4.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/5.jpg",
+        "https://madex-it.ch/wp-content/uploads/2025/04/6.jpg"
+      ],
+      "sourceSitemap": "https://madex-it.ch/post-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post/104-ziel-umzug-jetzt-online-mit-frischer-webpraesenz-realisiert-von-madex-it-solutions.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 243914,
+        "title": "Ziel Umzug jetzt online mit frischer Webpraesenz – realisiert von Madex IT Solutions - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post_tag",
+      "url": "https://madex-it.ch/tag/digital-marketing/",
+      "lastModified": "1970-01-01T00:00:00+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/post_tag-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post_tag/105-tag__digital-marketing.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 200678,
+        "title": "Digital Marketing - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post_tag",
+      "url": "https://madex-it.ch/tag/organic-social-media/",
+      "lastModified": "1970-01-01T00:00:00+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/post_tag-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post_tag/106-tag__organic-social-media.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 214408,
+        "title": "Organic Social Media - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post_tag",
+      "url": "https://madex-it.ch/tag/resources/",
+      "lastModified": "1970-01-01T00:00:00+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/post_tag-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post_tag/107-tag__resources.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 200490,
+        "title": "Resources - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post_tag",
+      "url": "https://madex-it.ch/tag/social-media-advertising/",
+      "lastModified": "1970-01-01T00:00:00+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/post_tag-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post_tag/108-tag__social-media-advertising.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 200850,
+        "title": "Social Media Advertising - Madex IT Solutions",
+        "error": null
+      }
+    },
+    {
+      "type": "post_tag",
+      "url": "https://madex-it.ch/tag/website/",
+      "lastModified": "1970-01-01T00:00:00+00:00",
+      "imageUrls": [],
+      "sourceSitemap": "https://madex-it.ch/post_tag-sitemap.xml",
+      "archive": {
+        "localPath": "archive/pages/post_tag/109-tag__website.html",
+        "status": "downloaded",
+        "httpStatus": 200,
+        "bytes": 205107,
+        "title": "Website - Madex IT Solutions",
+        "error": null
+      }
+    }
+  ]
+}

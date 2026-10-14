@@ -1,0 +1,340 @@
+{
+  "schemaVersion": "1.0",
+  "collectedAt": "2026-10-14",
+  "websiteLanguage": "de-CH",
+  "brand": {
+    "publicName": "Madex IT Solutions",
+    "legalName": "Madex IT Solutions GmbH",
+    "legalNameStatus": "confirmed_on_business_website_and_public_commercial_register_source",
+    "uid": "CHE-412.695.793",
+    "commercialRegisterNumber": "CH-290.4.020.641-7",
+    "category": "IT-Dienstleistungen mit Schwerpunkt Webdesign und Online-Marketing",
+    "publicDescription": "Madex IT Solutions positioniert sich als Schweizer Digitalagentur für Webdesign, Online-Marketing, SEO, Google Ads, Social Media, Grafikdesign sowie Foto- und Videoinhalte.",
+    "taglines": [
+      "Ein Begleiter, kein Verkäufer",
+      "Building brands with creative digital thinking.",
+      "Webdesign, Google Ads, SEO & Social Media für Schweizer KMU."
+    ],
+    "officialLogo": "assets/business-logo.png",
+    "favicon": "assets/business-favicon.png",
+    "verifiedLogoColors": [
+      {
+        "hex": "#025159",
+        "role": "dark teal"
+      },
+      {
+        "hex": "#028D86",
+        "role": "teal"
+      }
+    ],
+    "siteDesignTokens": {
+      "source": "current Elementor global stylesheet",
+      "colors": [
+        "#028D86",
+        "#025159",
+        "#F7F7FA",
+        "#000000B3",
+        "#FFFFFF",
+        "#000000",
+        "#E2E2E2",
+        "#FFBE11"
+      ],
+      "headingFont": "Syne",
+      "bodyFont": "Kanit"
+    }
+  },
+  "contact": {
+    "phonePrimary": "+41 52 589 67 59",
+    "phoneSecondary": "+41 76 507 33 32",
+    "email": "info@madex-it.ch",
+    "address": {
+      "street": "Buchenstrasse 36",
+      "postalCode": "8212",
+      "locality": "Neuhausen am Rheinfall",
+      "canton": "Schaffhausen",
+      "country": "Switzerland"
+    },
+    "openingHours": null,
+    "appointmentCta": "Kostenloses Erstgespräch buchen"
+  },
+  "locationAndMarket": {
+    "headquarters": "Neuhausen am Rheinfall, Schaffhausen, Schweiz",
+    "selfDescribedServiceAreas": [
+      "Schaffhausen",
+      "Zürich",
+      "Thurgau",
+      "Winterthur",
+      "Ostschweiz",
+      "Schweiz"
+    ],
+    "primaryAudience": "Schweizer KMU, Start-ups und Unternehmen mit Bedarf an Website- und Online-Marketing-Leistungen"
+  },
+  "links": {
+    "website": "https://madex-it.ch/",
+    "facebook": "https://www.facebook.com/madexitsolutions",
+    "instagram": "https://www.instagram.com/madex.it/",
+    "linkedin": "https://www.linkedin.com/company/madex-it-solutions/",
+    "youtube": "https://www.youtube.com/channel/UCn77TYdj9CsOi7OZw288PMw"
+  },
+  "services": [
+    {
+      "name": "Webdesign & Website-Erstellung",
+      "slug": "webdesign-website-erstellung",
+      "sourcePage": "https://madex-it.ch/marketing-solutions/website-development/",
+      "asset": "assets/service-website-development.jpg",
+      "verifiedComponents": [
+        "Individuelles Webdesign",
+        "Responsive Umsetzung für Smartphone, Tablet und Desktop",
+        "SEO-Grundoptimierung",
+        "Performance und schnelle Ladezeiten",
+        "WordPress und einfache Inhaltsverwaltung",
+        "Support und Wartung"
+      ]
+    },
+    {
+      "name": "Digital Marketing",
+      "slug": "digital-marketing",
+      "sourcePage": "https://madex-it.ch/marketing-solutions/digital-marketing/",
+      "asset": "assets/service-digital-marketing.jpg",
+      "verifiedComponents": [
+        "Google Ads",
+        "Suchmaschinenoptimierung",
+        "Social Media Marketing",
+        "Content Marketing",
+        "Analyse und Reporting",
+        "Strategie und Beratung"
+      ]
+    },
+    {
+      "name": "SEO-Optimierung",
+      "slug": "seo-optimierung",
+      "sourcePage": "https://madex-it.ch/marketing-solutions/seo-optimierung/",
+      "asset": "assets/service-seo-optimization.jpg",
+      "verifiedComponents": [
+        "On-Page-Optimierung",
+        "Keyword-Analyse und -Integration",
+        "Content-Optimierung",
+        "Technische SEO",
+        "Linkbuilding und Off-Page-Optimierung",
+        "Regelmässige Berichterstattung und Analyse"
+      ]
+    },
+    {
+      "name": "Foto & Werbevideos",
+      "slug": "foto-werbevideos",
+      "sourcePage": "https://madex-it.ch/marketing-solutions/photo-werbevideos/",
+      "asset": "assets/service-photo-advertising-video.jpg",
+      "verifiedComponents": [
+        "Professionelle Fotografie",
+        "Kreative Werbevideos",
+        "Imagefilme und Unternehmenspräsentationen",
+        "Social-Media-Videos",
+        "Postproduktion und Videobearbeitung"
+      ]
+    },
+    {
+      "name": "Social Media Marketing",
+      "slug": "social-media-marketing",
+      "sourcePage": "https://madex-it.ch/marketing-solutions/social-media-marketing/",
+      "asset": "assets/service-social-media-marketing.jpg",
+      "verifiedComponents": [
+        "Strategische Planung und Beratung",
+        "Content-Erstellung und -Management",
+        "Community Management",
+        "Social Media Advertising",
+        "Analyse und Reporting"
+      ]
+    },
+    {
+      "name": "Google Marketing",
+      "slug": "google-marketing",
+      "sourcePage": "https://madex-it.ch/marketing-solutions/google-marketing/",
+      "asset": "assets/service-google-marketing.jpg",
+      "verifiedComponents": [
+        "Google Ads Kampagnen",
+        "Optimierung des Google-Unternehmensprofils",
+        "Google Analytics und Conversion Tracking"
+      ]
+    },
+    {
+      "name": "Graphic Design",
+      "slug": "graphic-design",
+      "sourcePage": "https://madex-it.ch/marketing-solutions/graphic-design/",
+      "asset": "assets/service-graphic-design.jpg",
+      "verifiedComponents": [
+        "Markenidentität und Logo-Design",
+        "Print-Design",
+        "Digitale Medien und Webdesign",
+        "Werbekampagnen und Branding",
+        "Illustrationen und Infografiken"
+      ]
+    },
+    {
+      "name": "Analyse und Planung",
+      "slug": "analyse-und-planung",
+      "sourcePage": "https://madex-it.ch/marketing-solutions/analyse-und-planung/",
+      "asset": "assets/service-analysis-planning.jpg",
+      "verifiedComponents": [
+        "Marktanalyse",
+        "Strategische Planung und Beratung",
+        "Projektmanagement und Prozessoptimierung",
+        "Datengetriebene Entscheidungsfindung"
+      ]
+    }
+  ],
+  "currentPublicOfferSnapshot": {
+    "collectedAt": "2026-10-14",
+    "status": "time_sensitive_owner_confirmation_required",
+    "headline": "Website-Wartung für 250 CHF/Monat – inkl. Domain und Hosting",
+    "claims": [
+      "Eine Website mit beworbenem Wert von CHF 8’000 ist beim Abschluss eines Online-Marketing-Pakets inklusive.",
+      "Die beworbene Mindestlaufzeit beträgt 12 Monate.",
+      "Laut FAQ beträgt die Kündigungsfrist drei Monate zum Monatsende.",
+      "Laut Website bleibt die Website auch nach Vertragsende beim Kunden.",
+      "Laut Website sind Domain, Hosting und Website-Änderungen enthalten.",
+      "Das Leistungspaket nennt bis zu 15 Seiten, Kontaktformular, zwei Stunden Updates pro Monat, SEO Premium, zwei E-Mail-Konten, Backup, Sicherheits-Plugins, SSL, Google Analytics und Ads sowie Mehrsprachigkeit DE/EN/IT/FR."
+    ],
+    "freeAnalysisIncludes": [
+      "SEO-Kurzcheck",
+      "Website-Check",
+      "Google-Sichtbarkeit",
+      "Konkurrenz-Check",
+      "Drei konkrete Verbesserungsvorschläge",
+      "Einschätzung, wo aktuell Leads verloren gehen"
+    ]
+  },
+  "publicPositioning": {
+    "customerNeeds": [
+      "Professioneller und moderner Online-Auftritt",
+      "Bessere Sichtbarkeit in Google und sozialen Medien",
+      "Gezielte Kundengewinnung",
+      "Konsistente Markenkommunikation",
+      "Messbare Marketingdaten und laufende Optimierung",
+      "Persönliche Unterstützung bei Website-Änderungen und Wartung"
+    ],
+    "selfAssertedDifferentiators": [
+      "Schweizer Agentur",
+      "Persönliche Betreuung",
+      "Ein Ansprechpartner von Planung bis Support",
+      "Website, Marketing, SEO, Design und Content aus einer Hand",
+      "Website-Änderungen sowie Domain und Hosting laut aktuellem Angebot inklusive",
+      "Einjährige Mindestlaufzeit laut aktuellem Angebot"
+    ],
+    "unverifiedMarketingClaims": [
+      "100+ Kunden",
+      "Antwort innerhalb 24h",
+      "72.000 maximale Sichtbarkeit an einem Tag",
+      "Ergebnis-, Umsatz- oder Rankingversprechen auf einzelnen Seiten"
+    ]
+  },
+  "teamSnapshot": {
+    "collectedAt": "2026-10-14",
+    "members": [
+      {
+        "name": "Marco Bräm",
+        "role": "CEO",
+        "asset": "assets/team-marco-bram.jpg"
+      },
+      {
+        "name": "Adem Mehmeti",
+        "role": "Digital Marketing Consultant",
+        "asset": "assets/team-adem-mehmeti.jpg"
+      },
+      {
+        "name": "Gazmend Gjerqeku",
+        "role": "Team Leader / Visual Communicator",
+        "asset": "assets/team-gazmend-gjerqeku.jpg"
+      },
+      {
+        "name": "Sebastian Stein",
+        "role": "Kundenberater",
+        "asset": "assets/team-sebastian-stein.png"
+      },
+      {
+        "name": "Ariane Schmitz",
+        "role": "Kundenberater",
+        "asset": "assets/team-ariane-schmitz.jpg"
+      },
+      {
+        "name": "Laura Stein",
+        "role": "Kundenberater",
+        "asset": "assets/team-laura-stein.jpg"
+      }
+    ],
+    "note": "Names and roles are a time-sensitive snapshot of the public team page; confirm before publication."
+  },
+  "socialSnapshot": {
+    "collectedAt": "2026-10-14",
+    "linkedinFollowers": 115,
+    "facebookFollowers": null,
+    "instagramFollowers": null,
+    "youtubeSubscribers": null,
+    "note": "Only the LinkedIn follower count was visible in the indexed public result; all counts must be rechecked before publication."
+  },
+  "reviewSnapshot": {
+    "collectedAt": "2026-10-14",
+    "rating": null,
+    "source": "Madex website footer/review widgets",
+    "conflict": "Different pages display 4.3 and 4.4 out of 5 without a visible review count or sufficiently clear third-party attribution.",
+    "publicationRule": "Do not publish a rating until the owner confirms the live review platform, current score, and review count."
+  },
+  "assets": {
+    "fullMediaArchive": "assets/all/",
+    "mediaManifest": "data/media-inventory.json",
+    "pageArchiveManifest": "data/page-archive.json",
+    "siteContentArchive": "data/site-content.json",
+    "logo": "assets/business-logo.png",
+    "favicon": "assets/business-favicon.png",
+    "cover": "assets/business-cover.jpg",
+    "teamBanner": "assets/brand-team-banner.jpg",
+    "brandGraphics": [
+      "assets/brand-mascot.png",
+      "assets/brand-lightbulb.png"
+    ],
+    "projectImages": [
+      "assets/project-01-auto-pozzo.png",
+      "assets/project-02-tkc-ag.png",
+      "assets/project-03-mehoma.png",
+      "assets/project-04-serrano-reinigung.png",
+      "assets/project-05-mila-dopiz.png",
+      "assets/project-06-carrosserie-stocker.png",
+      "assets/project-07-baur-ag.png",
+      "assets/project-08-garage-schneider.png",
+      "assets/project-09-natura-balance.png",
+      "assets/project-10-klimas-innenausbau.png",
+      "assets/project-11-polyprojekt.gif",
+      "assets/project-12-sun-foiltec.png"
+    ]
+  },
+  "unverifiedOrUnavailable": [
+    "Public opening hours",
+    "A single verified current public review score and review count",
+    "Current package price validity beyond the collection date",
+    "Formal guarantees, warranties or service-level agreements",
+    "Independent proof of customer totals, response time, visibility, revenue or ranking claims",
+    "Owner-approved biographies for each team member",
+    "Appointment availability rules and supported booking times",
+    "Final data controller wording and privacy/form retention details for the replacement site",
+    "Whether all public social profiles and team listings should remain on the new site"
+  ],
+  "sourceReferences": [
+    "S1-home",
+    "S2-services",
+    "S3-webdesign",
+    "S4-digital-marketing",
+    "S5-seo",
+    "S6-photo-video",
+    "S7-social-media",
+    "S8-google-marketing",
+    "S9-graphic-design",
+    "S10-analysis-planning",
+    "S11-team",
+    "S12-about",
+    "S13-contact",
+    "S14-portfolio",
+    "S15-agb",
+    "S16-sitemap",
+    "S17-commercial-register-source",
+    "S18-linkedin"
+  ]
+}
