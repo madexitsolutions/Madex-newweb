@@ -1,0 +1,66 @@
+import type { NextConfig } from "next";
+
+/** Old WordPress URLs that changed or were removed – permanent redirects keep links and rankings. */
+const legacyRedirects: { source: string; destination: string }[] = [
+  // posts whose slugs contained a non-breaking hyphen (U+2011) – raw and percent-encoded forms
+  {
+    source: "/mehoma-professionelle-dienstleistungen-und-kundenorientierter-online%E2%80%91auftritt-entwickelt-von-madex-it-solutions",
+    destination: "/mehoma-professionelle-dienstleistungen-und-kundenorientierter-online-auftritt-entwickelt-von-madex-it-solutions",
+  },
+  {
+    source: "/mila-dopiz-stilvoller-online%E2%80%91auftritt-fur-hochwertige-mode-entwickelt-von-madex-it-solutions",
+    destination: "/mila-dopiz-stilvoller-online-auftritt-fur-hochwertige-mode-entwickelt-von-madex-it-solutions",
+  },
+  // copy/paste slugs from the old site, now named after the real projects
+  { source: "/neues-branding-und-moderne-website-fur-klimas-innenausbau-copy-copy", destination: "/garage-t-schneider-neuer-digitaler-auftritt" },
+  { source: "/neues-branding-und-moderne-website-fur-klimas-innenausbau-copy", destination: "/natura-balance-schweiz-moderne-webpraesenz-fur-naturliche-kosmetik" },
+  // archives
+  { source: "/category/blog", destination: "/blog" },
+  { source: "/category/website-portfolio", destination: "/website-portfolio" },
+  { source: "/tag/website", destination: "/website-portfolio" },
+  { source: "/tag/:tag", destination: "/blog" },
+  // internal WordPress page, not part of the public site
+  { source: "/mi-dashboard", destination: "/" },
+  // German-friendly aliases
+  { source: "/leistungen", destination: "/marketing-solutions" },
+  { source: "/ueber-uns", destination: "/uber-uns" },
+  { source: "/team", destination: "/das-team" },
+  { source: "/partner", destination: "/partners" },
+  { source: "/projekte", destination: "/website-portfolio" },
+  { source: "/kostenlose-pruefung", destination: "/kostenlose-prufung" },
+];
+
+const nextConfig: NextConfig = {
+  reactStrictMode: true,
+  trailingSlash: false,
+  poweredByHeader: false,
+  images: {
+    formats: ["image/avif", "image/webp"],
+    deviceSizes: [480, 640, 828, 1080, 1280, 1600, 1920],
+  },
+  async redirects() {
+    return legacyRedirects.flatMap((r) => [
+      { ...r, permanent: true },
+      { source: `${r.source}/`, destination: r.destination, permanent: true },
+    ]);
+  },
+  async headers() {
+    return [
+      {
+        source: "/media/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+    ];
+  },
+};
+
+export default nextConfig;

@@ -1,4 +1,69 @@
-# Madex IT Solutions – Website Research & Asset Kit
+# Madex IT Solutions – neue Website
+
+Interaktiver Neuaufbau von [madex-it.ch](https://madex-it.ch/) mit Next.js 15, TypeScript, React Three Fiber (Three.js), Framer Motion und Lenis. Alle Inhalte, Seiten und das Menü der bisherigen Website wurden übernommen – komplett auf Deutsch (Schweiz).
+
+## Schnellstart
+
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm run lint
+npm run typecheck
+npm run test
+npm run build && npm run start
+```
+
+Node.js ≥ 20.9. Für Coolify reichen `npm install`, `npm run build` und `npm run start` (Port über `PORT`, Standard 3000). Kein Dockerfile nötig.
+
+## Umgebungsvariablen
+
+Siehe `.env.example`. Das Kontakt-/Terminformular (`/api/kontakt`) versendet per SMTP:
+
+| Variable | Zweck |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | Basis-URL für Canonicals, Sitemap, Open Graph |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | Mailserver |
+| `CONTACT_TO_EMAIL` | Empfänger der Anfragen (z. B. info@madex-it.ch) |
+| `CONTACT_FROM_EMAIL` | Absenderadresse |
+
+Ohne SMTP-Konfiguration zeigt das Formular eine freundliche Fehlermeldung mit Telefon und E-Mail; eingegebene Daten bleiben erhalten. Validierung (Zod) läuft im Browser und auf dem Server, dazu Honeypot und Rate Limiting.
+
+## Seitenstruktur (wie madex-it.ch)
+
+- **Marketing Lösungen** – `/marketing-solutions` + 8 Leistungsseiten (`/marketing-solutions/website-development`, `digital-marketing`, `seo-optimierung`, `photo-werbevideos`, `social-media-marketing`, `google-marketing`, `graphic-design`, `analyse-und-planung`)
+- **Wer wir sind** – `/uber-uns`, `/das-team`, `/blog`, `/karriere`
+- **Portfolio** – `/portfolio`, `/website-portfolio` (74 Projekte, 3D-Projektring, Suche & Jahresfilter), `/graphic-design-portfolio` (Brandings, Print, Social Media mit Lightbox), `/werbevideos-portfolio`
+- **Partner** – `/partners`
+- **Kontakt** – `/kontakt`, `/kostenlose-prufung`
+- Projekt- und Blogbeiträge unter ihren bisherigen URLs (`/<slug>`), dazu `/agb`, `/datenschutz`, `sitemap.xml`, `robots.txt`, 404-Seite
+
+Die bisherigen URLs bleiben gültig; geänderte oder entfernte URLs werden per 308 weitergeleitet. Vollständige Zuordnung aller 109 archivierten URLs: [`docs/migration.md`](docs/migration.md).
+
+## 3D & Interaktion
+
+- Hero: extrudierte, glänzende Doppel-M-Bildmarke (abstrahiert aus dem Logo), reagiert auf Maus und Scrollen, Partikel, Lichtringe
+- Unterseiten: Shader-Hintergrund (Petrol/Türkis-Strömung, Perspektivraster, Maus-Licht) mit schwebender Marke
+- „Was wir tun“: 3D-Konstellation der acht Leistungen, synchron mit der HTML-Liste
+- Website-Portfolio: drehbarer 3D-Ring mit Projekt-Mockups (ziehen/klicken)
+- Seitenübergänge mit Vorhang, Preloader beim ersten Besuch, Smooth Scrolling, Magnet-Buttons, 3D-Tilt-Karten, Text-Reveals, horizontales Projekt-Scrolling, eigener Cursor, Orion-Assistent
+- Three.js wird nur bei Bedarf nachgeladen, pausiert ausserhalb des Sichtbereichs; bei `prefers-reduced-motion`, fehlendem WebGL oder schwachen Geräten gibt es statische Fallbacks
+
+## Inhalte & Medien aktualisieren
+
+- Geschäftsdaten, Menü, Pakete, FAQ, Team: `src/content/site.ts`
+- Leistungen: `src/content/services.ts`
+- Projekte/Blog, Portfolios, Partner, AGB: generiert aus dem Archiv nach `src/content/generated/` mit `python3 -I scripts/extract_content.py`
+- Optimierte Bilder/Videos (WebP/MP4) in `public/media/` – erzeugt mit `python3 -I scripts/prepare_media.py` (Pillow + ffmpeg). Die Originale in `assets/` bleiben unverändert.
+
+## Vor dem Go-live prüfen
+
+- Angebotsangaben (CHF 250/Monat, Website im Wert von CHF 8’000, Laufzeiten) sowie „100+ Kunden“, „Antwort innerhalb 24h“ und „35+ Kundenrezensionen“ wurden wie auf der bisherigen Website übernommen – bitte auf Aktualität prüfen.
+- Teamliste und offene Stelle aktualisieren (`src/content/site.ts`, `src/app/karriere/page.tsx`).
+- Die Datenschutzerklärung beschreibt das Verhalten der neuen Website (keine Tracking-Cookies, YouTube erst nach Klick); bei Einführung von Analytics ergänzen.
+
+---
+
+# Research & Asset Kit
 
 Erstellt am 14. Oktober 2026. Dieses Paket bereitet den bestehenden öffentlichen Webauftritt von Madex IT Solutions für einen professionellen Neuaufbau mit Next.js, TypeScript und einer gezielten Three.js-Ebene vor. Es baut die Website noch nicht.
 
