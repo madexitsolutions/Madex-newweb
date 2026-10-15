@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { mainNav, site } from "@/content/site";
 import { services } from "@/content/services";
 import { Icon } from "@/components/ui/Icon";
+import { Logo } from "@/components/ui/Logo";
 import { Link } from "./Transition";
 import { useLenis } from "./SmoothScroll";
 
@@ -72,7 +73,7 @@ export function Header() {
       <header className={`hd${scrolled ? " hd--scrolled" : ""}${hidden && !open && !mobile ? " hd--hidden" : ""}`}>
         <div className="hd__bar">
           <Link href="/" className="hd__logo" aria-label="Madex IT Solutions – Startseite">
-            <Image src="/brand/logo-light.png" alt="Madex IT Solutions" width={936} height={201} priority unoptimized className="hd__logo-img" />
+            <Logo tone="light" className="hd__logo-img" title="Madex IT Solutions" />
           </Link>
 
           <nav className="hd__nav" aria-label="Hauptnavigation">

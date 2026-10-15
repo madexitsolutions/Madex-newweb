@@ -52,15 +52,13 @@ export function Accordion({ items, dark = false }: { items: { q: string; a: stri
         .acc__item{border-bottom:1px solid rgba(2,81,89,.15);transition:background .4s}
         .acc--dark .acc__item{border-color:rgba(255,255,255,.12)}
         .acc__h{margin:0;font:inherit}
-        .acc__btn{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;text-align:left;padding:28px 6px}
-        .acc__num{font:600 13px/1 var(--font-body);color:var(--teal-ink);letter-spacing:.1em}
-        .acc--dark .acc__num{color:var(--teal-glow)}
+        .acc__btn{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:24px;align-items:center;text-align:left;padding:26px 6px}
         .acc__q{font:600 clamp(18px,1.6vw,23px)/1.3 var(--font-display);letter-spacing:-.01em}
-        .acc__icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid currentColor;opacity:.6;transition:transform .5s var(--ease-out),background .4s,opacity .4s}
+        .acc__icon{justify-self:end;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid currentColor;opacity:.6;transition:transform .5s var(--ease-out),background .4s,opacity .4s}
         .acc__item.is-open .acc__icon{transform:rotate(135deg);background:var(--teal);border-color:var(--teal);color:#fff;opacity:1}
         .acc__btn:hover .acc__icon{opacity:1}
-        .acc__a{margin:0;padding:0 70px 30px 52px;max-width:80ch;opacity:.8}
-        @media(max-width:640px){.acc__a{padding:0 6px 26px}.acc__btn{gap:14px}}
+        .acc__a{margin:0;padding:0 74px 28px 6px;max-width:72ch;line-height:1.65;opacity:.85}
+        @media(max-width:640px){.acc__a{padding:0 6px 24px}.acc__btn{gap:14px;padding:22px 4px}}
       `}</style>
     </div>
   );

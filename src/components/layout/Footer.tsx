@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { legalNav, mainNav, site } from "@/content/site";
 import { services } from "@/content/services";
 import { Icon } from "@/components/ui/Icon";
+import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { Link } from "./Transition";
 import { FooterReveal } from "./FooterReveal";
@@ -30,7 +30,7 @@ export function Footer() {
           <div className="ft__grid">
             <div className="ft__brand">
               <div className="ft__logo">
-                <Image src="/brand/logo-light.png" alt="Madex IT Solutions" width={936} height={201} unoptimized />
+                <Logo tone="light" />
               </div>
               <address className="ft__addr">
                 {site.legalName}
@@ -129,7 +129,7 @@ export function Footer() {
           .ft__cta-row{display:flex;flex-wrap:wrap;gap:14px}
           .ft__grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-block:clamp(50px,6vw,90px)}
           .ft__logo{display:block;margin-bottom:24px}
-          .ft__logo img{width:170px;height:auto}
+          .ft__logo svg{width:180px;height:auto;display:block}
           .ft__addr{font-style:normal;color:var(--on-dark-soft);margin-bottom:18px;line-height:1.7}
           .ft__contact,.ft__col ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
           .ft__contact a,.ft__col a{display:inline-flex;align-items:center;min-height:44px}

@@ -4,113 +4,174 @@ import { Float, Line, RoundedBox } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { C, Glossy, Glow, SceneRig, useExtrude } from "./kit";
+import { C, Glossy, SceneRig } from "./kit";
 
+/*
+ * Layout (local units, before SceneRig scale):
+ *   path + pen sweep the lower band (y -1.3 … 1.0), pen body always up-right of the tip
+ *   layers  — upper left, set back   (x -2.3 … -1.0, y 1.1 … 2.0, z -1.1)
+ *   wheel   — lower left, below the path start (x -2.0 … -1.0, y -2.1 … -1.1)
+ *   swatches— lower right, in front  (x 1.4 … 2.3,  y -2.1 … -0.9, z 0.6)
+ */
 const CURVE = new THREE.CubicBezierCurve3(
-  new THREE.Vector3(-2.0, -0.7, 0.2),
-  new THREE.Vector3(-1.1, 1.75, 0.3),
-  new THREE.Vector3(0.7, -1.85, 0.1),
-  new THREE.Vector3(1.85, 0.75, 0.2),
+  new THREE.Vector3(-2.05, -0.55, 0.25),
+  new THREE.Vector3(-1.35, 0.75, 0.25),
+  new THREE.Vector3(-0.35, -1.95, 0.25),
+  new THREE.Vector3(0.55, -0.45, 0.25),
 );
-const SEGMENTS = 160;
-const CYCLE = 6.5;
+const SEGMENTS = 180;
+const RADIAL = 10;
+const CYCLE = 7.5;
 
-/** Pen-tool nib as in design software: pointed nib with slit and hole on a collar. */
+/** Extrude a shape keeping its own origin (only z is centred) so the nib tip stays at (0,0). */
+function extrudeKeep(shape: THREE.Shape, depth: number, bevel: number) {
+  const g = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 4, curveSegments: 32 });
+  g.translate(0, 0, -depth / 2);
+  return g;
+}
+
+/** Keyhole = breathing hole + slit running down towards the tip. */
+function keyhole(p: THREE.Path, cy: number, r: number, wTop: number, wBot: number, yBot: number) {
+  const a0 = Math.asin(wTop / r);
+  p.moveTo(wBot, yBot);
+  p.lineTo(wTop, cy - r * Math.cos(a0));
+  p.absarc(0, cy, r, -Math.PI / 2 + a0, (3 * Math.PI) / 2 - a0, false);
+  p.lineTo(-wBot, yBot);
+  p.lineTo(wBot, yBot);
+}
+
+const HOLE = { cy: 0.8, r: 0.095, wTop: 0.028, wBot: 0.011, yBot: 0.16 };
+
+/**
+ * Photoshop-style pen tool: a fountain-pen nib (pointed tip, slit, breathing hole,
+ * curved shoulders) under a rectangular collar. Built with the tip at the origin,
+ * body pointing up +y.
+ */
 function PenTool() {
-  const nib = useExtrude((s) => {
-    s.moveTo(0, -1.0);
-    s.bezierCurveTo(0.16, -0.62, 0.5, -0.25, 0.5, 0.18);
-    s.lineTo(0.5, 0.42);
-    s.lineTo(-0.5, 0.42);
-    s.lineTo(-0.5, 0.18);
-    s.bezierCurveTo(-0.5, -0.25, -0.16, -0.62, 0, -1.0);
+  const { nib, inlay, collar } = useMemo(() => {
+    const s = new THREE.Shape();
+    s.moveTo(0, 0);
+    s.bezierCurveTo(0.08, 0.26, 0.45, 0.56, 0.45, 0.98);
+    s.quadraticCurveTo(0.45, 1.2, 0.31, 1.3);
+    s.lineTo(0.31, 1.36);
+    s.lineTo(-0.31, 1.36);
+    s.lineTo(-0.31, 1.3);
+    s.quadraticCurveTo(-0.45, 1.2, -0.45, 0.98);
+    s.bezierCurveTo(-0.45, 0.56, -0.08, 0.26, 0, 0);
     const hole = new THREE.Path();
-    hole.absarc(0, -0.12, 0.1, 0, Math.PI * 2, true);
+    keyhole(hole, HOLE.cy, HOLE.r, HOLE.wTop, HOLE.wBot, HOLE.yBot);
     s.holes.push(hole);
-  }, 0.16, 0.035);
-  const collar = useExtrude((s) => {
-    s.moveTo(-0.56, 0);
-    s.lineTo(0.56, 0);
-    s.lineTo(0.5, 0.42);
-    s.quadraticCurveTo(0.5, 0.5, 0.42, 0.5);
-    s.lineTo(-0.42, 0.5);
-    s.quadraticCurveTo(-0.5, 0.5, -0.5, 0.42);
-    s.lineTo(-0.56, 0);
-  }, 0.24, 0.04);
+
+    const fill = new THREE.Shape();
+    keyhole(fill, HOLE.cy, HOLE.r + 0.01, HOLE.wTop + 0.008, HOLE.wBot + 0.006, HOLE.yBot - 0.01);
+
+    const c = new THREE.Shape();
+    const r = 0.06;
+    c.moveTo(-0.36, 0);
+    c.lineTo(0.36, 0);
+    c.lineTo(0.4 - 0.004, 0.42 - r);
+    c.quadraticCurveTo(0.4, 0.42, 0.4 - r, 0.42);
+    c.lineTo(-0.4 + r, 0.42);
+    c.quadraticCurveTo(-0.4, 0.42, -0.4 + 0.004, 0.42 - r);
+    c.lineTo(-0.36, 0);
+    return { nib: extrudeKeep(s, 0.09, 0.024), inlay: new THREE.ShapeGeometry(fill, 32), collar: extrudeKeep(c, 0.2, 0.04) };
+  }, []);
+
   return (
     <group>
-      <mesh geometry={nib} position={[0, -0.29, 0]}>
-        <Glossy color="#eef6f5" metal={0.25} rough={0.14} />
+      {/* nib */}
+      <mesh geometry={nib}>
+        <meshPhysicalMaterial color="#f6fafa" metalness={0.25} roughness={0.14} clearcoat={1} clearcoatRoughness={0.05} envMapIntensity={1.4} />
       </mesh>
-      {/* slit from hole to tip */}
-      <mesh position={[0, -0.95, 0.1]}>
-        <boxGeometry args={[0.025, 0.55, 0.02]} />
-        <meshStandardMaterial color="#0b2b2e" />
+      {/* dark recess visible through slit + hole */}
+      <mesh geometry={inlay} position={[0, 0, 0.038]}>
+        <meshStandardMaterial color="#061a1c" roughness={0.7} side={THREE.DoubleSide} />
       </mesh>
-      <mesh geometry={collar} position={[0, 0.38, 0]}>
-        <Glossy color={C.petrol} metal={0.35} />
+      {/* neck between nib and collar */}
+      <mesh position={[0, 1.39, 0]}>
+        <boxGeometry args={[0.5, 0.1, 0.12]} />
+        <meshStandardMaterial color="#0a2b2f" roughness={0.4} metalness={0.4} />
       </mesh>
-      <mesh position={[0, 0.66, 0]}>
-        <boxGeometry args={[1.02, 0.05, 0.27]} />
-        <Glossy color={C.teal} emissive={C.teal} emissiveIntensity={0.3} />
-      </mesh>
+      {/* collar */}
+      <group position={[0, 1.44, 0]}>
+        <mesh geometry={collar}>
+          <Glossy color={C.petrol} metal={0.35} rough={0.2} />
+        </mesh>
+        <mesh position={[0, 0.1, 0.143]}>
+          <boxGeometry args={[0.66, 0.035, 0.01]} />
+          <meshBasicMaterial color={C.glow} toneMapped={false} />
+        </mesh>
+      </group>
     </group>
   );
 }
 
-/** The curve being drawn, anchor points, handles and the pen following the tip. */
+const ease = (x: number) => 1 - Math.pow(1 - x, 3);
+const smooth = (x: number) => x * x * (3 - 2 * x);
+
+/** The curve being drawn, anchor points, handles and the pen whose tip rides the path end. */
 function DrawingPath() {
-  const tube = useMemo(() => new THREE.TubeGeometry(CURVE, SEGMENTS, 0.035, 10, false), []);
+  const tube = useMemo(() => new THREE.TubeGeometry(CURVE, SEGMENTS, 0.035, RADIAL, false), []);
+  const mat = useRef<THREE.MeshStandardMaterial>(null);
   const pen = useRef<THREE.Group>(null);
+  const tilt = useRef<THREE.Group>(null);
   const handles: [THREE.Vector3, THREE.Vector3][] = [
     [CURVE.v0, CURVE.v1],
     [CURVE.v3, CURVE.v2],
   ];
+  const guide = useMemo(() => CURVE.getPoints(90), []);
   useFrame((s) => {
     const t = (s.clock.elapsedTime % CYCLE) / CYCLE;
-    const p = Math.min(1, t / 0.75);
-    const eased = 1 - Math.pow(1 - p, 2);
-    const visible = t > 0.92 ? 0 : eased;
-    const per = 10 * 6; // radial segments * 6 indices
-    tube.setDrawRange(0, Math.floor(visible * SEGMENTS) * per);
+    // 0–0.62 draw · 0.62–0.8 hold · 0.8–0.88 fade · 0.84–1 pen glides back
+    const draw = ease(Math.min(1, t / 0.62));
+    const fade = t < 0.8 ? 1 : Math.max(0, 1 - (t - 0.8) / 0.08);
+    tube.setDrawRange(0, Math.floor((fade > 0 ? draw : 0) * SEGMENTS) * RADIAL * 6);
+    if (mat.current) mat.current.opacity = fade;
     if (pen.current) {
-      const tip = CURVE.getPoint(Math.max(0.001, eased));
-      pen.current.position.copy(tip);
-      pen.current.rotation.z = -0.5 + Math.sin(s.clock.elapsedTime * 2) * 0.04;
+      if (t < 0.84) {
+        pen.current.position.copy(CURVE.getPoint(Math.max(0.0005, draw)));
+      } else {
+        const k = smooth((t - 0.84) / 0.16);
+        pen.current.position.lerpVectors(CURVE.v3, CURVE.v0, k);
+        pen.current.position.z += Math.sin(k * Math.PI) * 0.35;
+      }
     }
+    if (tilt.current) tilt.current.rotation.x = Math.sin(s.clock.elapsedTime * 1.6) * 0.05;
   });
   return (
     <group>
       <mesh geometry={tube}>
-        <meshStandardMaterial color={C.glow} emissive={C.glow} emissiveIntensity={0.9} toneMapped={false} />
+        <meshStandardMaterial ref={mat} color={C.glow} emissive={C.glow} emissiveIntensity={0.9} toneMapped={false} transparent />
       </mesh>
-      {/* guide line (the full path, faint) */}
-      <Line points={CURVE.getPoints(80)} color={C.mint} lineWidth={1} transparent opacity={0.18} />
+      {/* the full path, faint, as a guide */}
+      <Line points={guide} color={C.mint} lineWidth={1} transparent opacity={0.16} />
       {handles.map(([a, b], i) => (
         <group key={i}>
-          <Line points={[a, b]} color={C.mint} lineWidth={1.2} transparent opacity={0.65} />
+          <Line points={[a, b]} color={C.mint} lineWidth={1.2} transparent opacity={0.6} />
           <mesh position={b}>
-            <sphereGeometry args={[0.075, 24, 24]} />
+            <sphereGeometry args={[0.07, 24, 24]} />
             <Glossy color="#ffffff" />
           </mesh>
         </group>
       ))}
       {[CURVE.v0, CURVE.v3].map((a, i) => (
         <group key={i} position={a}>
-          <mesh>
-            <boxGeometry args={[0.2, 0.2, 0.06]} />
+          <RoundedBox args={[0.2, 0.2, 0.06]} radius={0.015}>
             <meshStandardMaterial color="#ffffff" />
-          </mesh>
+          </RoundedBox>
           <mesh position={[0, 0, 0.032]}>
             <planeGeometry args={[0.12, 0.12]} />
             <meshBasicMaterial color={C.teal} />
           </mesh>
         </group>
       ))}
+      {/* tip at the group origin, body pointing up-right at 45° like the Photoshop icon */}
       <group ref={pen}>
-        <group position={[0, 0, 0.15]} rotation={[0.15, -0.35, 0]} scale={0.95}>
-          <group position={[0, 1.0, 0]}>
-            <PenTool />
+        <group rotation={[0, -0.32, 0]}>
+          <group ref={tilt}>
+            <group rotation={[0, 0, -Math.PI / 4]} scale={1.05}>
+              <PenTool />
+            </group>
           </group>
         </group>
       </group>
@@ -122,27 +183,31 @@ function DrawingPath() {
 function Layers() {
   const colors = [C.petrol, C.teal, "#f4fbfa"];
   return (
-    <group position={[-1.75, 1.2, -0.9]} rotation={[-0.5, 0.45, 0.1]}>
+    <group position={[-1.75, 1.45, -1.1]} rotation={[-0.35, 0.45, 0.06]}>
       {colors.map((c, i) => (
-        <Float key={c} speed={1.4 + i * 0.3} floatIntensity={0.25} rotationIntensity={0}>
-          <RoundedBox args={[1.1, 0.75, 0.04]} radius={0.06} position={[i * 0.12, i * 0.16, i * 0.22]}>
-            <Glossy color={c} rough={0.25} opacity={i === 2 ? 0.92 : undefined} />
+        <Float key={c} speed={1.4 + i * 0.3} floatIntensity={0.2} rotationIntensity={0}>
+          <RoundedBox args={[1.1, 0.75, 0.04]} radius={0.06} position={[i * 0.1, i * 0.12, i * 0.2]}>
+            <Glossy color={c} rough={0.25} />
           </RoundedBox>
+          {i === 2 && (
+            <group position={[0.2, 0.24, 0.43]}>
+              <mesh position={[-0.2, 0.06, 0]}>
+                <circleGeometry args={[0.12, 32]} />
+                <meshBasicMaterial color={C.sun} />
+              </mesh>
+              <mesh position={[0.12, -0.02, 0]} rotation={[0, 0, Math.PI / 4]}>
+                <planeGeometry args={[0.17, 0.17]} />
+                <meshBasicMaterial color={C.teal} />
+              </mesh>
+            </group>
+          )}
         </Float>
       ))}
-      <mesh position={[0.05, 0.25, 0.47]}>
-        <circleGeometry args={[0.12, 32]} />
-        <meshBasicMaterial color={C.sun} />
-      </mesh>
-      <mesh position={[0.35, 0.18, 0.47]} rotation={[0, 0, Math.PI / 4]}>
-        <planeGeometry args={[0.18, 0.18]} />
-        <meshBasicMaterial color={C.teal} />
-      </mesh>
     </group>
   );
 }
 
-/** Colour fan that keeps opening and closing. */
+/** Colour fan that slowly opens and closes. */
 function Swatches() {
   const ref = useRef<THREE.Group>(null);
   const colors = [C.petrol, C.teal, C.glow, "#9ff3ea", C.sun, "#ffffff"];
@@ -150,11 +215,11 @@ function Swatches() {
     if (!ref.current) return;
     const open = 0.5 + Math.sin(s.clock.elapsedTime * 0.7) * 0.5;
     ref.current.children.forEach((c, i) => {
-      if (i < colors.length) c.rotation.z = (i - (colors.length - 1) / 2) * 0.2 * (0.25 + open * 0.75);
+      if (i < colors.length) c.rotation.z = (i - (colors.length - 1) / 2) * 0.17 * (0.3 + open * 0.7);
     });
   });
   return (
-    <group ref={ref} position={[1.75, -1.55, 0.5]} rotation={[0.1, -0.3, 0]}>
+    <group ref={ref} position={[1.85, -2.0, 0.6]} rotation={[0.1, -0.3, 0]} scale={0.85}>
       {colors.map((c, i) => (
         <group key={c}>
           <RoundedBox args={[0.3, 1.15, 0.025]} radius={0.012} position={[0, 0.58, i * 0.03]}>
@@ -195,7 +260,7 @@ function ColorWheel() {
     if (ref.current) ref.current.rotation.z += d * 0.3;
   });
   return (
-    <group position={[0.15, 1.6, -0.7]} rotation={[0.2, -0.3, 0]}>
+    <group position={[-1.5, -1.6, 0.2]} rotation={[0.15, 0.35, 0]}>
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <cylinderGeometry args={[0.5, 0.5, 0.08, 64]} />
         <Glossy color="#eef6f5" />
@@ -206,7 +271,7 @@ function ColorWheel() {
       </mesh>
       <mesh position={[0.18, 0.12, 0.06]}>
         <torusGeometry args={[0.06, 0.018, 12, 32]} />
-        <Glow color="#ffffff" />
+        <meshBasicMaterial color="#ffffff" toneMapped={false} />
       </mesh>
     </group>
   );
@@ -214,11 +279,11 @@ function ColorWheel() {
 
 export default function DesignScene() {
   return (
-    <SceneRig scale={0.86}>
+    <SceneRig scale={0.98} y={0.05}>
       <Layers />
       <DrawingPath />
       <Swatches />
-      <Float speed={2} floatIntensity={0.6} rotationIntensity={0.3}>
+      <Float speed={1.6} floatIntensity={0.4} rotationIntensity={0.2}>
         <ColorWheel />
       </Float>
     </SceneRig>

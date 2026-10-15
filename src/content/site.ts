@@ -52,7 +52,7 @@ export const mainNav: NavItem[] = [
       { label: "Google Marketing", href: "/marketing-solutions/google-marketing" },
       { label: "Graphic Design", href: "/marketing-solutions/graphic-design" },
       { label: "Analyse und Planung", href: "/marketing-solutions/analyse-und-planung" },
-      { label: "KI-Assistent für Ihre Website", href: "/marketing-solutions/ki-integration" },
+      { label: "KI-Lösungen nach Mass", href: "/marketing-solutions/ki-integration" },
     ],
   },
   {
@@ -61,7 +61,6 @@ export const mainNav: NavItem[] = [
     children: [
       { label: "Über uns", href: "/uber-uns", description: "Ethos, Werte und Arbeitsweise" },
       { label: "Das Team", href: "/das-team", description: "Die Menschen hinter Madex" },
-      { label: "Blog", href: "/blog", description: "Wissen rund um Web & Marketing" },
       { label: "Karriere", href: "/karriere", description: "Offene Stellen bei Madex" },
     ],
   },

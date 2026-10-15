@@ -4,43 +4,41 @@ import { Environment, Float, Lightformer } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { MARK_SHAPES, MARK_SIZE } from "@/lib/mark";
+import { SVGLoader } from "three/examples/jsm/loaders/SVGLoader.js";
+import { MARK_PATHS, MARK_SIZE, markSvgDocument } from "@/lib/mark";
 
 const PETROL = new THREE.Color("#025159");
 const TEAL = new THREE.Color("#028D86");
 
-function useMarkGeometries(depth = 46) {
+function useMarkGeometries(depth = 70) {
   return useMemo(() => {
     const s = 3.6 / MARK_SIZE.w;
-    return MARK_SHAPES.map(({ points, color }) => {
-      const shape = new THREE.Shape();
-      points.forEach(([x, y], i) => {
-        const px = (x - MARK_SIZE.w / 2) * s;
-        const py = -(y - MARK_SIZE.h / 2) * s;
-        if (i === 0) shape.moveTo(px, py);
-        else shape.lineTo(px, py);
-      });
-      shape.closePath();
-      const geo = new THREE.ExtrudeGeometry(shape, {
-        depth: depth * s,
+    const svg = new SVGLoader().parse(markSvgDocument());
+    return svg.paths.map((path, i) => {
+      const shapes = SVGLoader.createShapes(path);
+      const geo = new THREE.ExtrudeGeometry(shapes, {
+        depth,
         bevelEnabled: true,
-        bevelThickness: 0.06,
-        bevelSize: 0.05,
+        bevelThickness: 9,
+        bevelSize: 6,
         bevelSegments: 6,
-        curveSegments: 4,
+        curveSegments: 18,
       });
-      // center each piece on its own origin (so it can rotate in place) and
-      // remember where it sits inside the mark
-      geo.center();
-      const shapeBox = new THREE.Box2().setFromPoints(points.map(([x, y]) => new THREE.Vector2((x - MARK_SIZE.w / 2) * s, -(y - MARK_SIZE.h / 2) * s)));
-      const c = new THREE.Vector2();
-      shapeBox.getCenter(c);
-      return { geo, color, offset: new THREE.Vector3(c.x, c.y, 0) };
+      // SVG space is y-down: flip, scale to scene units, then centre each piece
+      // on its own origin so it can rotate in place
+      geo.scale(s, -s, s);
+      geo.computeBoundingBox();
+      const c = new THREE.Vector3();
+      geo.boundingBox!.getCenter(c);
+      geo.translate(-c.x, -c.y, -c.z);
+      geo.computeVertexNormals();
+      const offset = new THREE.Vector3(c.x - (MARK_SIZE.w / 2) * s, c.y + (MARK_SIZE.h / 2) * s, 0);
+      return { geo, color: MARK_PATHS[i]?.color ?? "petrol", offset };
     });
   }, [depth]);
 }
 
-/** The abstracted double-M, extruded, glossy, reacting to pointer and scroll. */
+/** The Madex mark (exact logo paths), extruded, glossy, reacting to pointer and scroll. */
 export function MarkModel({ scrollRef, explode = 1 }: { scrollRef?: React.RefObject<number>; explode?: number }) {
   const pieces = useMarkGeometries();
   const group = useRef<THREE.Group>(null);

@@ -10,18 +10,20 @@ import { homeFaq } from "@/content/site";
 import { projects } from "@/content/posts";
 import partners from "@/content/generated/partners.json";
 import { staticSeo, withSeo } from "@/lib/seo";
+import { getGoogleReviews } from "@/lib/server/google-reviews";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/", ...staticSeo["/"] });
 
-export default function HomePage() {
+export default async function HomePage() {
+  const google = await getGoogleReviews();
   return (
     <>
-      <Hero />
+      <Hero rating={google?.rating || undefined} />
       <PartnerMarquee logos={partners.logos} />
       <Offer />
       <Steps />
       <AiSection />
-      <ServicesConstellation intro="Ein Ansprechpartner für alles: Wir verbinden Website, Marketing, SEO, Design und Content zu einem Auftritt, der Ihr Unternehmen sichtbar macht." />
+      <ServicesConstellation />
       <Pricing />
       <LatestProjects posts={projects.slice(0, 8)} />
       <Testimonials />

@@ -16,7 +16,7 @@ export type Action = (typeof ACTIONS)[number];
 export const PAGE_SECTIONS = [
   { key: "pakete", label: "Pakete ansehen", url: "/#pakete" },
   { key: "angebot", label: "Website inklusive", url: "/#angebot" },
-  { key: "ki", label: "KI-Assistent für Ihre Website", url: "/marketing-solutions/ki-integration" },
+  { key: "ki", label: "KI-Lösungen nach Mass", url: "/marketing-solutions/ki-integration" },
   { key: "analyse", label: "Kostenlose Analyse", url: "/kostenlose-prufung" },
   { key: "kontakt", label: "Kontaktseite", url: "/kontakt" },
   { key: "portfolio", label: "Referenzen ansehen", url: "/website-portfolio" },

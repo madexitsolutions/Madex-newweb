@@ -1,3 +1,4 @@
+import { Logo } from "@/components/ui/Logo";
 import { redirect } from "next/navigation";
 import QRCode from "qrcode";
 import { adminConfigured, currentAdmin, pendingState } from "@/lib/server/auth";
@@ -19,8 +20,7 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
   return (
     <div className="a-login">
       <div className="a-login__card">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/logo.png" alt="Madex IT Solutions" className="a-login__logo" />
+        <Logo className="a-login__logo" />
         {!adminConfigured() ? (
           <>
             <h1>Admin nicht eingerichtet</h1>

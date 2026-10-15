@@ -9,6 +9,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Marquee, Parallax, Reveal, ScrollZoom, SplitText, StaggerGroup, StaggerItem } from "@/components/ui/motion";
 import { leadership, site } from "@/content/site";
 import { staticSeo, withSeo } from "@/lib/seo";
+import "@/app/prose.css";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/uber-uns", ...staticSeo["/uber-uns"] });
 
@@ -34,9 +35,9 @@ export default function AboutPage() {
         <Button href="/das-team">Das Team kennenlernen</Button>
       </PageHero>
 
-      <section className="section light" aria-labelledby="ab-mission">
+      <section className="section light" aria-label="Unsere Mission">
         <div className="container grid-2">
-          <div>
+          <div className="txt">
             <p className="eyebrow">Unsere Mission</p>
             <SplitText as="h2" text="Eine bessere digitale Welt – und glückliche Kunden." className="h2" />
             <Reveal>
@@ -59,7 +60,7 @@ export default function AboutPage() {
           </div>
         </div>
         <style>{`
-          .ab__tag{font:700 clamp(22px,2.2vw,32px)/1.2 var(--font-display);margin-top:24px}
+          .ab__tag{font:700 clamp(22px,2.2vw,32px)/1.2 var(--font-display);letter-spacing:-.02em;margin:32px 0 0}
           .ab__tag .text-gradient{color:var(--petrol)}
           .ab__photos{position:relative;min-height:520px}
           .ab__p1{position:absolute;left:0;top:0;width:78%;border-radius:var(--radius-l);overflow:hidden;box-shadow:0 40px 80px -40px rgba(1,41,45,.6)}
@@ -68,7 +69,7 @@ export default function AboutPage() {
         `}</style>
       </section>
 
-      <section className="section dark-ink" aria-labelledby="ab-ethos">
+      <section className="section dark-ink" aria-label="Unser Ethos">
         <div className="container">
           <p className="eyebrow">Werte</p>
           <SplitText as="h2" text="Unser Ethos" className="h2" />
@@ -91,19 +92,19 @@ export default function AboutPage() {
           .ab__e:hover{transform:translateY(-10px);background:rgba(2,141,134,.18)}
           .ab__e-n{position:absolute;right:22px;top:20px;font:800 40px/1 var(--font-display);color:transparent;-webkit-text-stroke:1px rgba(79,224,210,.4)}
           .ab__e-icon{display:grid;place-items:center;width:58px;height:58px;border-radius:18px;background:var(--teal);margin-bottom:22px}
-          .ab__e h3{font-size:22px}
-          .ab__e p{margin:0;color:var(--on-dark-soft);font-size:15.5px}
+          .ab__e h3{font-size:22px;line-height:1.2;margin:0 0 10px}
+          .ab__e p{margin:0;color:var(--on-dark-soft);font-size:15.5px;line-height:1.65}
           @media(max-width:1000px){.ab__ethos{grid-template-columns:1fr 1fr}}
           @media(max-width:600px){.ab__ethos{grid-template-columns:minmax(0,1fr)}}
         `}</style>
       </section>
 
-      <section className="section white" aria-labelledby="ab-smile">
+      <section className="section white" aria-label="Lächeln">
         <div className="container grid-2">
           <ScrollZoom className="ab__wide">
             <Image src="/media/brand/brand-team-banner.webp" alt="Studio von Madex IT Solutions" width={2000} height={631} sizes="(max-width: 900px) 100vw, 50vw" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </ScrollZoom>
-          <div>
+          <div className="txt">
             <p className="eyebrow">Anbieter von Marketinglösungen</p>
             <SplitText as="h2" text="Lächeln." className="display" />
             <Reveal>
@@ -115,7 +116,7 @@ export default function AboutPage() {
         <style>{`.ab__wide{aspect-ratio:4/3;border-radius:var(--radius-l)}`}</style>
       </section>
 
-      <section className="section light" aria-labelledby="ab-team">
+      <section className="section light" aria-label="Team">
         <div className="container">
           <div className="ab__team-head">
             <div>
@@ -134,14 +135,14 @@ export default function AboutPage() {
             ))}
           </StaggerGroup>
           <div className="ab__claims">
-            <Reveal className="ab__claim">
+            <Reveal className="ab__claim txt">
               <h3 className="h3">Wir treiben positive Veränderungen voran</h3>
               <p className="muted">
                 Mit mehr als 3 Jahren Erfahrung bieten wir Weblösungen, die unseren Kunden ein erstklassiges Erlebnis ermöglichen. Wir lassen uns von der Idee leiten, dass die beste Arbeit aus Fleiss, Hingabe und Spass
                 entsteht.
               </p>
             </Reveal>
-            <Reveal className="ab__claim" delay={0.1}>
+            <Reveal className="ab__claim txt" delay={0.1}>
               <h3 className="h3">Wir sind gemeinsam rational</h3>
               <p className="muted">
                 Es gibt kein Madex ohne das Team. Unser Team besteht aus leidenschaftlichen digitalen Profis, die mit Freude erstklassige Arbeit produzieren – und darauf sind wir stolz.
@@ -153,7 +154,8 @@ export default function AboutPage() {
           .ab__team-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:40px}
           .ab__team{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
           .ab__claims{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:60px}
-          .ab__claim{padding:36px;border-radius:var(--radius-m);background:#fff}
+          .ab__claim{padding:clamp(26px,3vw,40px);border-radius:var(--radius-m);background:#fff}
+          .ab__claim .h3{margin-bottom:12px}
           @media(max-width:900px){.ab__team{grid-template-columns:1fr 1fr}.ab__claims{grid-template-columns:minmax(0,1fr)}}
           @media(max-width:520px){.ab__team{grid-template-columns:minmax(0,1fr)}}
         `}</style>

@@ -46,7 +46,7 @@ function markup(title: string) {
     <div class="madex-chat-alert" data-madex-alert role="status" aria-live="polite" hidden></div>
     <div class="madex-chat-content" data-madex-content>
       <section class="madex-welcome" data-madex-view="welcome" aria-labelledby="${id}-welcome-title">
-        <img class="madex-welcome-logo" src="/chatbot/images/logo-madex.png" alt="Madex IT Solutions" width="176" height="38">
+        <img class="madex-welcome-logo" src="/brand/logo.svg" alt="Madex IT Solutions" width="176" height="38">
         <div class="madex-welcome-copy">
           <p class="madex-eyebrow">KI-Assistent von Madex IT Solutions</p>
           <h2 id="${id}-welcome-title" tabindex="-1">Hallo, ich bin ${t} <span aria-hidden="true">👋</span></h2>
@@ -162,7 +162,7 @@ export function Orion() {
           sections: [
             { key: "pakete", label: "Pakete ansehen", url: `${origin}/#pakete`, heading: "Pakete und Preise" },
             { key: "angebot", label: "Website inklusive", url: `${origin}/#angebot`, heading: "Ihre neue Website ist inklusive." },
-            { key: "ki", label: "KI-Assistent für Ihre Website", url: `${origin}/marketing-solutions/ki-integration`, heading: "" },
+            { key: "ki", label: "KI-Lösungen nach Mass", url: `${origin}/marketing-solutions/ki-integration`, heading: "" },
             { key: "analyse", label: "Kostenlose Analyse", url: `${origin}/kostenlose-prufung`, heading: "" },
             { key: "kontakt", label: "Kontaktseite", url: `${origin}/kontakt`, heading: "" },
             { key: "portfolio", label: "Referenzen ansehen", url: `${origin}/website-portfolio`, heading: "" },

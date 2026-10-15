@@ -4,12 +4,10 @@ import dynamic from "next/dynamic";
 import { Suspense, useEffect, useRef } from "react";
 import { CanvasShell } from "./CanvasShell";
 import { MarkSvg } from "@/components/ui/MarkSvg";
-import type { RingItem } from "./ProjectRing";
 import { heroScenes, type HeroSceneKey } from "./heroes/registry";
 
 const ShaderBackdrop = dynamic(() => import("./ShaderBackdrop"), { ssr: false });
 const ServicesOrbit = dynamic(() => import("./ServicesOrbit"), { ssr: false });
-const ProjectRing = dynamic(() => import("./ProjectRing"), { ssr: false });
 const FloatingMark = dynamic(() => import("./FloatingMark"), { ssr: false });
 const SceneLights = dynamic(() => import("./SceneLights"), { ssr: false });
 
@@ -54,14 +52,6 @@ export function OrbitCanvas({ className, count, focus, highlight, onSelect, onHo
   return (
     <CanvasShell className={className} camera={{ position: [0, 1.4, 7.4], fov: 40 }} fallback={<div className="orbit-fallback"><MarkSvg /></div>}>
       <ServicesOrbit count={count} focus={focus} highlight={highlight} onSelect={onSelect} onHover={onHover} />
-    </CanvasShell>
-  );
-}
-
-export function RingCanvas({ className, items, onOpen, onHover }: { className?: string; items: RingItem[]; onOpen: (href: string) => void; onHover?: (t: string | null) => void }) {
-  return (
-    <CanvasShell className={className} camera={{ position: [0, 1, 10], fov: 40 }} fallback={null}>
-      <ProjectRing items={items} onOpen={onOpen} onHover={onHover} />
     </CanvasShell>
   );
 }

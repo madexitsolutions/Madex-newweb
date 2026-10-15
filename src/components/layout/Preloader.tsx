@@ -1,65 +1,65 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MARK_SHAPES, MARK_SIZE, markPath } from "@/lib/mark";
+import { MARK_PETROL, MARK_TEAL, TAG, WORD } from "@/components/ui/Logo";
 
-const BRAND = "Madex IT Solutions";
-const MIN_MS = 900;
-const MAX_MS = 4000;
+// measured from navigation start: the CSS sequence starts at first paint
+const MIN_MS = 2000;
+const MAX_MS = 3800;
+
+// decided once per document so a remounted effect (Strict Mode) does not
+// mistake its own session flag for a returning visit
+let firstVisit: boolean | null = null;
 
 /**
- * Loading screen on a full page load. Progress follows real readiness
- * (fonts + window load) with a minimum duration so the sequence can play:
- * the mark is drawn as outline, filled, the brand types in, then three
- * panels open the page. Shown once per visit; skipped for reduced motion.
+ * Logo intro on the first full page load of a visit. The three parts of the
+ * mark slide together, the wordmark wipes out from behind it, then the white
+ * sheet lifts off the page. It waits for fonts + window load (capped), and is
+ * skipped for returning visits and reduced motion.
  */
 export function Preloader() {
   const [phase, setPhase] = useState<"run" | "exit" | "done">("run");
-  const [progress, setProgress] = useState(0);
-  const target = useRef(0.12);
+  const bar = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem("madex-intro") === "1";
-      sessionStorage.setItem("madex-intro", "1");
-    } catch {}
-    // once per visit: later full loads and reduced motion go straight to the page
-    if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (firstVisit === null) {
+      firstVisit = true;
+      try {
+        firstVisit = sessionStorage.getItem("madex-intro") !== "1";
+        sessionStorage.setItem("madex-intro", "1");
+      } catch {}
+    }
+    if (!firstVisit || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setPhase("done");
       return;
     }
-    document.documentElement.classList.add("is-loading");
-    const start = performance.now();
+    const root = document.documentElement;
+    root.classList.add("is-loading");
     let ready = false;
-    const markReady = () => (ready = true);
     const fonts = document.fonts?.ready ?? Promise.resolve();
     const loaded = document.readyState === "complete" ? Promise.resolve() : new Promise<void>((r) => window.addEventListener("load", () => r(), { once: true }));
-    fonts.then(() => (target.current = Math.max(target.current, 0.55)));
-    Promise.all([fonts, loaded]).then(markReady);
+    Promise.all([fonts, loaded]).then(() => (ready = true));
 
     let raf = 0;
     let shown = 0;
-    let last = start;
-    let finished = false;
+    let last = performance.now();
+    const timers: ReturnType<typeof setTimeout>[] = [];
     const tick = (t: number) => {
-      const elapsed = t - start;
       const dt = Math.min(0.1, (t - last) / 1000);
       last = t;
-      // creep forward while waiting, jump to 100 once ready and min time passed
-      if ((ready && elapsed > MIN_MS) || elapsed > MAX_MS) target.current = 1;
-      else target.current = Math.min(0.92, Math.max(target.current, elapsed / MAX_MS));
-      // frame-rate independent easing; the final stretch runs at a fixed speed
-      shown += (target.current - shown) * Math.min(1, dt * 5);
-      if (target.current === 1) shown = Math.min(1, shown + dt * 0.9);
-      setProgress(shown);
-      if (shown >= 1 && !finished) {
-        finished = true;
-        setTimeout(() => setPhase("exit"), 250);
-        setTimeout(() => {
-          setPhase("done");
-          document.documentElement.classList.remove("is-loading");
-        }, 1650);
+      const done = (ready && t > MIN_MS) || t > MAX_MS;
+      const target = done ? 1 : Math.min(0.9, t / MAX_MS + (ready ? 0.35 : 0));
+      shown += (target - shown) * Math.min(1, dt * 4);
+      if (done) shown = Math.min(1, shown + dt * 2.2);
+      if (bar.current) bar.current.style.transform = `scaleX(${shown.toFixed(4)})`;
+      if (done && shown >= 1) {
+        timers.push(setTimeout(() => setPhase("exit"), 120));
+        timers.push(
+          setTimeout(() => {
+            setPhase("done");
+            root.classList.remove("is-loading");
+          }, 1250),
+        );
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -67,92 +67,61 @@ export function Preloader() {
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf);
-      document.documentElement.classList.remove("is-loading");
+      timers.forEach(clearTimeout);
+      root.classList.remove("is-loading");
     };
   }, []);
 
   if (phase === "done") return null;
-  const pct = Math.round(progress * 100);
 
   return (
-    <div className={`ld ld--${phase}`} role="progressbar" aria-label="Seite wird geladen" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
-      <div className="ld__panels" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
-
-
+    <div className={`ld ld--${phase}`} role="status" aria-label="Seite wird geladen">
+      <div className="ld__sheet" aria-hidden="true" />
       <div className="ld__stage" aria-hidden="true">
-        <svg className="ld__mark" viewBox={`-10 -10 ${MARK_SIZE.w + 20} ${MARK_SIZE.h + 20}`}>
-          <defs>
-            <linearGradient id="ldPetrol" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#0b6c74" />
-              <stop offset="1" stopColor="#025159" />
-            </linearGradient>
-            <linearGradient id="ldTeal" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#19b3a9" />
-              <stop offset="1" stopColor="#028D86" />
-            </linearGradient>
-          </defs>
-          {MARK_SHAPES.map((s, i) => (
-            <path
-              key={i}
-              d={markPath(s.points)}
-              pathLength={1}
-              className={`ld__piece ld__piece--${i}`}
-              fill={s.color === "teal" ? "url(#ldTeal)" : "url(#ldPetrol)"}
-              stroke={s.color === "teal" ? "#028D86" : "#025159"}
-              strokeWidth={6}
-              strokeLinejoin="round"
-            />
-          ))}
+        <svg className="ld__logo" viewBox="0 0 1643.31 350.73">
+          <g className="ld__word">
+            {WORD.map((d, i) => (
+              <path key={i} d={d} />
+            ))}
+          </g>
+          <g className="ld__tag">
+            {TAG.map((d, i) => (
+              <path key={i} d={d} />
+            ))}
+          </g>
+          <path className="ld__p ld__p--0" d={MARK_PETROL[0]} />
+          <path className="ld__p ld__p--1" d={MARK_PETROL[1]} />
+          <path className="ld__p ld__p--2" d={MARK_TEAL} />
         </svg>
-        <div className="ld__brand">
-          {BRAND.split("").map((c, i) => (
-            <span key={i} style={{ animationDelay: `${0.9 + i * 0.035}s` }}>
-              {c === " " ? " " : c}
-            </span>
-          ))}
-        </div>
-        <div className="ld__tag">Ein Begleiter, kein Verkäufer</div>
-      </div>
-
-
-      <div className="ld__foot" aria-hidden="true">
         <div className="ld__bar">
-          <span style={{ transform: `scaleX(${progress})` }} />
+          <span ref={bar} />
         </div>
       </div>
 
       <style>{`
         html.is-loading{overflow:hidden}
+        html.is-loading madex-chatbot{visibility:hidden !important}
         html.intro-seen .ld{display:none}
-        .ld{position:fixed;inset:0;z-index:9500;color:var(--deep);pointer-events:all}
+        .ld{position:fixed;inset:0;z-index:9500;pointer-events:all}
         .ld--exit{pointer-events:none}
-        .ld__panels{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr)}
-        .ld__panels span{background:#fff;transition:transform 1.05s var(--ease-in-out)}
-        .ld__panels span:nth-child(2){transition-delay:.08s}
-        .ld__panels span:nth-child(3){transition-delay:.16s}
-        .ld--exit .ld__panels span{transform:translateY(-101%)}
-                .ld--exit .ld__foot{opacity:0}
-        .ld__stage{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:30px;transition:transform 1s var(--ease-in-out),opacity .6s .15s}
-        .ld--exit .ld__stage{transform:translateY(-60px) scale(.94);opacity:0}
-        .ld__mark{width:min(150px,36vw);height:auto;overflow:visible}
-                .ld__piece{stroke-dasharray:1;stroke-dashoffset:1;fill-opacity:0;animation:ldDraw .9s var(--ease-in-out) forwards,ldFill .6s var(--ease-out) forwards}
-        .ld__piece--0{animation-delay:.05s,.75s}
-        .ld__piece--1{animation-delay:.18s,.88s}
-        .ld__piece--2{animation-delay:.31s,1.01s}
-        @keyframes ldDraw{to{stroke-dashoffset:0}}
-        @keyframes ldFill{to{fill-opacity:1;stroke-opacity:0}}
-        .ld__brand{display:flex;font:600 clamp(15px,1.3vw,18px)/1 var(--font-body);letter-spacing:.01em}
-        .ld__brand span{display:inline-block;opacity:0;transform:translateY(12px);animation:ldChar .7s var(--ease-out) forwards}
-        @keyframes ldChar{to{opacity:1;transform:none}}
-        .ld__tag{font:400 14px/1 var(--font-body);color:var(--ink-soft);opacity:0;animation:ldChar .8s 1.6s var(--ease-out) forwards;margin-top:-14px}
-        .ld__foot{position:absolute;left:50%;bottom:calc(50% - 120px);width:160px;translate:-50% 0;transition:opacity .3s}
-        .ld__bar{height:2px;border-radius:2px;background:var(--line-soft);overflow:hidden}
-        .ld__bar span{display:block;height:100%;transform-origin:left;background:var(--teal)}
-        
+        .ld__sheet{position:absolute;inset:0;background:#fff;transition:clip-path 1s cubic-bezier(.76,0,.24,1);clip-path:inset(0 0 0 0 round 0)}
+        .ld--exit .ld__sheet{clip-path:inset(0 0 100% 0 round 0 0 48px 48px)}
+        .ld__stage{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:34px;transition:transform .8s cubic-bezier(.76,0,.24,1),opacity .45s}
+        .ld--exit .ld__stage{transform:translateY(-14vh);opacity:0}
+        .ld__logo{width:min(380px,74vw);height:auto;overflow:visible}
+        .ld__word,.ld__tag,.ld__p--0,.ld__p--1{fill:#025159}
+        .ld__p--2{fill:#028D86}
+        .ld__p{transform-box:fill-box;transform-origin:50% 50%;opacity:0;animation:ldPiece .9s cubic-bezier(.16,1,.3,1) forwards}
+        .ld__p--0{--from:translate(0,55%);animation-delay:.1s}
+        .ld__p--1{--from:translate(0,-45%);animation-delay:.22s}
+        .ld__p--2{--from:translate(38%,-38%) rotate(8deg);animation-delay:.36s}
+        @keyframes ldPiece{from{opacity:0;transform:var(--from)}35%{opacity:1}to{opacity:1;transform:none}}
+        .ld__word{clip-path:inset(0 100% 0 0);transform:translateX(-90px);animation:ldWipe 1s .78s cubic-bezier(.16,1,.3,1) forwards}
+        @keyframes ldWipe{to{clip-path:inset(0 0 0 0);transform:none}}
+        .ld__tag{opacity:0;animation:ldTag .7s 1.2s cubic-bezier(.16,1,.3,1) forwards}
+        @keyframes ldTag{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+        .ld__bar{width:120px;height:2px;border-radius:2px;background:#e6ebeb;overflow:hidden;opacity:0;animation:ldTag .5s .5s forwards}
+        .ld__bar span{display:block;height:100%;transform:scaleX(0);transform-origin:left;background:#028D86}
       `}</style>
     </div>
   );

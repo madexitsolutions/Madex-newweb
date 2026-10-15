@@ -1,7 +1,8 @@
-import { adminInfo, currentAdmin } from "@/lib/server/auth";
+import { adminInfo, requireAdmin } from "@/lib/server/auth";
 import { resetTwoFactor, revokeSessions } from "../../actions";
 import { ConfirmForm } from "../../ui";
 import { dateTime } from "../../format";
+import { Empty, Icon, PageHeader, Panel } from "../../kit";
 
 export const metadata = { title: "Konto" };
 
@@ -19,62 +20,81 @@ const EVENTS: Record<string, string> = {
   sessions_revoked: "Alle Sitzungen beendet",
 };
 
+const BAD = new Set(["login_failed", "login_locked", "2fa_failed", "enroll_failed"]);
+
+const device = (ua: string) => ua.split(") ")[0].replace(/^Mozilla\/5\.0 \(/, "") || "Unbekanntes Gerät";
+
 export default async function Account() {
-  const [me, info] = await Promise.all([currentAdmin(), adminInfo()]);
+  const me = await requireAdmin();
+  const info = await adminInfo();
   return (
     <>
-      <header className="a-head">
-        <h1>Konto</h1>
-        <p className="a-muted">
-          Angemeldet als {me?.username}. Benutzername und Passwort werden in den Umgebungsvariablen (<code>ADMIN_USERNAME</code>, <code>ADMIN_PASSWORD</code>) verwaltet.
-        </p>
-      </header>
+      <PageHeader
+        title="Konto"
+        description={
+          <>
+            Angemeldet als <strong>{me.username}</strong>. Benutzername und Passwort werden in den Umgebungsvariablen (<code>ADMIN_USERNAME</code>, <code>ADMIN_PASSWORD</code>) verwaltet.
+          </>
+        }
+      />
       <div className="a-grid2">
-        <section className="a-panel">
-          <h2>Zwei-Faktor-Anmeldung</h2>
-          <p>{info.has2fa ? `Aktiv. Noch ${info.recoveryLeft} Wiederherstellungscodes übrig.` : "Nicht eingerichtet."}</p>
-          <p className="a-muted a-small">Bei einem neuen Smartphone: zurücksetzen und bei der nächsten Anmeldung neu einrichten.</p>
-          <ConfirmForm action={resetTwoFactor} label="Zurücksetzen und abmelden" question="Zwei-Faktor-Anmeldung zurücksetzen? Sie werden abgemeldet und richten sie bei der nächsten Anmeldung neu ein." />
-        </section>
-        <section className="a-panel">
-          <h2>Aktive Sitzungen</h2>
-          <ul className="a-list">
+        <Panel title="Zwei-Faktor-Anmeldung" description="Schützt das Konto mit einem Code aus der Authenticator-App.">
+          <p className={`a-state a-state--${info.has2fa ? "ok" : "bad"}`}>{info.has2fa ? `Aktiv · noch ${info.recoveryLeft} Wiederherstellungscodes übrig` : "Nicht eingerichtet"}</p>
+          <p className="a-muted a-small">Neues Smartphone? Zurücksetzen und bei der nächsten Anmeldung neu einrichten.</p>
+          <div className="a-panel__foot">
+            <ConfirmForm action={resetTwoFactor} label="Zurücksetzen und abmelden" question="Zwei-Faktor-Anmeldung zurücksetzen? Sie werden abgemeldet und richten sie bei der nächsten Anmeldung neu ein." />
+          </div>
+        </Panel>
+        <Panel title="Aktive Sitzungen" description={`${info.sessions.length} ${info.sessions.length === 1 ? "Gerät ist" : "Geräte sind"} angemeldet.`}>
+          <ul className="a-devices">
             {info.sessions.map((s, i) => (
               <li key={i}>
-                {s.ua.split(") ")[0].replace(/^Mozilla\/5\.0 \(/, "") || "Unbekanntes Gerät"}
-                <small>
-                  seit {dateTime(s.createdAt)}, Netzwerk {s.ipHint}
-                </small>
+                <span className="a-devices__icon">
+                  <Icon name="user" size={16} />
+                </span>
+                <div>
+                  {device(s.ua)}
+                  <small>
+                    seit {dateTime(s.createdAt)} · Netzwerk {s.ipHint}
+                  </small>
+                </div>
               </li>
             ))}
           </ul>
-          <ConfirmForm action={revokeSessions} variant="ghost" label="Alle Sitzungen beenden" question="Alle Geräte abmelden, auch dieses?" />
-        </section>
+          <div className="a-panel__foot">
+            <ConfirmForm action={revokeSessions} variant="ghost" label="Alle Sitzungen beenden" question="Alle Geräte abmelden, auch dieses?" />
+          </div>
+        </Panel>
       </div>
-      <section className="a-panel a-panel--flush">
-        <h2 className="a-pad">Protokoll</h2>
-        <table className="a-table">
-          <thead>
-            <tr>
-              <th>Zeit</th>
-              <th>Ereignis</th>
-              <th>Netzwerk</th>
-            </tr>
-          </thead>
-          <tbody>
-            {info.audit.map((a, i) => (
-              <tr key={i}>
-                <td>{dateTime(a.at)}</td>
-                <td>
-                  {EVENTS[a.event] ?? a.event}
-                  {a.detail && <small>{a.detail}</small>}
-                </td>
-                <td>{a.ipHint}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
+      <Panel flush title="Protokoll" description="Die letzten 100 Anmeldeereignisse.">
+        {info.audit.length === 0 ? (
+          <Empty icon="clock" title="Noch keine Ereignisse" />
+        ) : (
+          <div className="a-tablewrap">
+            <table className="a-table a-table--stack">
+              <thead>
+                <tr>
+                  <th>Ereignis</th>
+                  <th>Netzwerk</th>
+                  <th>Zeit</th>
+                </tr>
+              </thead>
+              <tbody>
+                {info.audit.map((a, i) => (
+                  <tr key={i}>
+                    <td>
+                      <span className={`a-state a-state--${BAD.has(a.event) ? "bad" : "plain"}`}>{EVENTS[a.event] ?? a.event}</span>
+                      {a.detail && <small>{a.detail}</small>}
+                    </td>
+                    <td className="a-mono-cell">{a.ipHint}</td>
+                    <td className="a-nowrap">{dateTime(a.at)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
     </>
   );
 }

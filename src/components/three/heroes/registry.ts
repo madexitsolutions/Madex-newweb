@@ -15,7 +15,6 @@ export const heroScenes = {
   ai: dynamic(() => import("./ai"), { ssr: false }),
   about: dynamic(() => import("./about"), { ssr: false }),
   team: dynamic(() => import("./team"), { ssr: false }),
-  blog: dynamic(() => import("./blog"), { ssr: false }),
   career: dynamic(() => import("./career"), { ssr: false }),
   portfolio: dynamic(() => import("./portfolio"), { ssr: false }),
   partners: dynamic(() => import("./partners"), { ssr: false }),

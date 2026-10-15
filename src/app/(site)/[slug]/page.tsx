@@ -8,10 +8,12 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal, ScrollZoom, StaggerGroup, StaggerItem, Tilt } from "@/components/ui/motion";
 import { Link } from "@/components/layout/Transition";
-import { formatDate, getPost, posts, projects, type Block } from "@/content/posts";
+import { getPost, posts, projects, type Block } from "@/content/posts";
 import { media } from "@/lib/media";
 import { withSeo } from "@/lib/seo";
 import { site } from "@/content/site";
+import { DeviceStage } from "./DeviceStage";
+import { screenImage } from "@/components/sections/screenImage";
 
 export const dynamicParams = false;
 
@@ -90,13 +92,12 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) notFound();
-  const isProject = post.category === "website-portfolio";
-  const pool = isProject ? projects : posts;
+  const pool = projects;
   const idx = pool.indexOf(post);
   const more = [1, 2, 3].map((k) => pool[(idx + k) % pool.length]).filter((p) => p.slug !== post.slug);
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": isProject ? "CreativeWork" : "BlogPosting",
+    "@type": "CreativeWork",
     headline: post.title,
     datePublished: post.date,
     image: `${site.url}${media(post.cover)}`,
@@ -107,21 +108,14 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <PageHero scene="laptop" sceneProps={{ image: media(post.cover) }}
-        eyebrow={isProject ? `Website Portfolio · ${formatDate(post.date)}` : `Blog · ${formatDate(post.date)}`}
-        title={isProject ? post.client : post.title}
-        lead={isProject ? post.title : undefined}
-        crumbs={
-          isProject
-            ? [
-                { name: "Website Portfolio", path: "/website-portfolio" },
-                { name: post.client, path: `/${post.slug}` },
-              ]
-            : [
-                { name: "Blog", path: "/blog" },
-                { name: post.title, path: `/${post.slug}` },
-              ]
-        }
+      <div className="pp-hero">
+      <PageHero mark={false}
+        title={post.client}
+        lead={post.title}
+        crumbs={[
+          { name: "Website Portfolio", path: "/website-portfolio" },
+          { name: post.client, path: `/${post.slug}` },
+        ]}
         compact
       >
         {post.external && (
@@ -130,6 +124,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </Button>
         )}
       </PageHero>
+        <div className="pp-hero__devices">
+          <DeviceStage image={screenImage(post)} alt={`${post.client} – Website auf Laptop, Tablet und Smartphone`} />
+        </div>
+      </div>
 
       <section className="pp__cover-wrap light">
         <div className="container">
@@ -165,9 +163,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         <div className="container">
           <div className="pp__more-head">
             <h2 id="pp-more" className="h2">
-              Was als Nächstes zu lesen ist
+              Weitere Projekte
             </h2>
-            <Link href={isProject ? "/website-portfolio" : "/blog"} className="link-arrow">
+            <Link href="/website-portfolio" className="link-arrow">
               Alle ansehen <Icon name="arrow" size={18} />
             </Link>
           </div>
@@ -185,6 +183,10 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <style>{`
+        .pp-hero{position:relative}
+        .pp-hero__devices{position:absolute;z-index:1;pointer-events:none;right:max(var(--gutter),calc((100vw - var(--maxw)) / 2));top:50%;width:min(42vw,640px);transform:translateY(-38%)}
+        @media(max-width:1180px){.pp-hero__devices{width:38vw}}
+        @media(max-width:900px){.pp-hero__devices{left:50%;right:auto;top:auto;bottom:calc(min(118vw,480px) / 2 - min(38vw,230px));width:min(84vw,560px);transform:translateX(-45%)}}
         .pp__cover-wrap{padding-top:0;position:relative}
         .pp__cover-wrap::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:var(--night)}
         .pp__cover{position:relative;border-radius:var(--radius-l);overflow:hidden;box-shadow:0 60px 120px -50px rgba(1,27,30,.8);background:#fff}

@@ -2,23 +2,19 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
-import { RingCanvas } from "@/components/three/Scenes";
-import { useTransition } from "@/components/layout/Transition";
-import { media } from "@/lib/media";
 import type { Post } from "@/content/posts";
 import { ProjectCard } from "./ProjectCard";
+import { ProjectShowcase } from "./ProjectShowcase";
 
 const PAGE = 12;
 
-/** 3D project ring + searchable, paginated HTML grid of all website projects. */
-export function ProjectExplorer({ posts }: { posts: Post[] }) {
-  const { navigate } = useTransition();
-  const [hover, setHover] = useState<string | null>(null);
+/** Perspective showcase strip + searchable, paginated HTML grid of all website projects. */
+export function ProjectExplorer({ posts, screens = {} }: { posts: Post[]; screens?: Record<string, string> }) {
   const [q, setQ] = useState("");
   const [year, setYear] = useState("Alle");
   const [shown, setShown] = useState(PAGE);
   const years = useMemo(() => ["Alle", ...Array.from(new Set(posts.map((p) => p.date.slice(0, 4)))).sort().reverse()], [posts]);
-  const ring = useMemo(() => posts.slice(0, 12).map((p) => ({ image: media(p.cover), title: p.client, href: `/${p.slug}` })), [posts]);
+  const featured = useMemo(() => posts.slice(0, 16), [posts]);
 
   const filtered = posts.filter((p) => {
     const okYear = year === "Alle" || p.date.startsWith(year);
@@ -29,16 +25,7 @@ export function ProjectExplorer({ posts }: { posts: Post[] }) {
 
   return (
     <>
-      <section className="pe-ring dark" aria-label="Ausgewählte Projekte in 3D">
-        <RingCanvas className="pe-ring__canvas" items={ring} onOpen={navigate} onHover={setHover} />
-        <div className="pe-ring__label" aria-hidden="true">
-          <AnimatePresence mode="wait">
-            <motion.span key={hover ?? "drag"} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-              {hover ?? "Ziehen zum Drehen · Klicken zum Öffnen"}
-            </motion.span>
-          </AnimatePresence>
-        </div>
-      </section>
+      <ProjectShowcase posts={featured} screens={screens} />
 
       <section className="section light" aria-labelledby="pe-title">
         <div className="container">
@@ -81,10 +68,6 @@ export function ProjectExplorer({ posts }: { posts: Post[] }) {
         </div>
       </section>
       <style>{`
-        .pe-ring{position:relative;height:min(78vh,760px);background:radial-gradient(70% 60% at 50% 60%,rgba(2,141,134,.3),transparent 70%),var(--night)}
-        .pe-ring__canvas{position:absolute!important;inset:0;cursor:grab}
-        .pe-ring__canvas:active{cursor:grabbing}
-        .pe-ring__label{position:absolute;left:0;right:0;bottom:36px;text-align:center;font:600 clamp(18px,2vw,28px)/1 var(--font-display);color:#fff;pointer-events:none}
         .pe__bar{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:40px}
         .pe__bar .h2{margin:0}
         .pe__bar sup{font-size:.4em;color:var(--teal-ink);vertical-align:super}

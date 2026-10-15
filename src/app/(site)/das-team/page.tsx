@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { Parallax, Reveal, ScrollZoom, SplitText, StaggerGroup, StaggerItem } from "@/components/ui/motion";
 import { clientSupport, leadership, teamGroups } from "@/content/site";
 import { staticSeo, withSeo } from "@/lib/seo";
+import "@/app/prose.css";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/das-team", ...staticSeo["/das-team"] });
 
@@ -25,12 +26,12 @@ export default function TeamPage() {
         ]}
       />
 
-      <section className="section light" aria-labelledby="tm-believe">
+      <section className="section light" aria-label="Woran wir glauben">
         <div className="container grid-2">
           <ScrollZoom className="tm__img">
             <Image src="/media/2024/07/graphicdesign-madex.webp" alt="Grafikdesign-Team von Madex IT Solutions bei der Arbeit" width={1600} height={1000} sizes="(max-width: 900px) 100vw, 50vw" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </ScrollZoom>
-          <div>
+          <div className="txt">
             <p className="eyebrow">Woran wir glauben</p>
             <SplitText as="h2" text="Wir glauben daran, Ihr Unternehmen durch Marketing an die Spitze zu bringen." className="h2" />
             <Reveal>
@@ -50,7 +51,7 @@ export default function TeamPage() {
         </div>
       </section>
 
-      <section className="section white" aria-labelledby="tm-lead">
+      <section className="section white" aria-label="Geschäftsleitung">
         <div className="container">
           <p className="eyebrow">Geschäftsleitung & Lead</p>
           <SplitText as="h2" text="Das Team" className="h2" />
@@ -64,7 +65,7 @@ export default function TeamPage() {
         </div>
       </section>
 
-      <section className="section dark" aria-labelledby="tm-ceo">
+      <section className="section dark" aria-label="Ein Wort vom Geschäftsführer">
         <div className="container grid-2">
           <div>
             <p className="eyebrow">Ein Wort vom Geschäftsführer</p>
@@ -85,7 +86,7 @@ export default function TeamPage() {
         </div>
       </section>
 
-      <section className="section light" aria-labelledby="tm-support">
+      <section className="section light" aria-label="Ihre persönlichen Ansprechpartner">
         <div className="container">
           <p className="eyebrow">Client Support</p>
           <SplitText as="h2" text="Ihre persönlichen Ansprechpartner" className="h2" />
@@ -112,7 +113,7 @@ export default function TeamPage() {
         </div>
       </section>
 
-      <section className="section white" aria-labelledby="tm-mission">
+      <section className="section white" aria-label="Unser Auftrag">
         <div className="container grid-2">
           <div className="tm__duo">
             <Parallax speed={0.1} className="tm__duo-a">
@@ -122,7 +123,7 @@ export default function TeamPage() {
               <Image src="/media/2024/07/3d.webp" alt="Arbeitsplatz bei Madex IT Solutions" width={1400} height={968} sizes="(max-width: 900px) 60vw, 25vw" />
             </Parallax>
           </div>
-          <div>
+          <div className="txt">
             <p className="eyebrow">Unser Auftrag</p>
             <SplitText as="h2" text="Ihr Erfolg ist unser Ziel." className="h2" />
             <Reveal>
@@ -150,7 +151,7 @@ export default function TeamPage() {
 
       <style>{`
         .tm__img{aspect-ratio:16/10;border-radius:var(--radius-l)}
-        .tm__beliefs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
+        .tm__beliefs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:32px}
         .tm__belief{position:relative;padding:18px 20px 18px 44px;border-radius:16px;background:#fff;font:700 18px/1 var(--font-display)}
         .tm__belief::before{content:"";position:absolute;left:20px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:3px;background:var(--teal)}
         .tm__grid{display:grid;gap:18px;margin-top:36px}
@@ -158,7 +159,7 @@ export default function TeamPage() {
         .tm__grid--4{grid-template-columns:repeat(4,1fr)}
         .tm__group{margin-top:clamp(60px,7vw,100px)}
         .tm__group-h{padding-bottom:16px;border-bottom:1px solid var(--line)}
-        .tm__quote{margin:0 0 28px;font:500 clamp(20px,2vw,28px)/1.45 var(--font-display);letter-spacing:-.01em}
+        .tm__quote{margin:0 0 28px;max-width:34em;font:500 clamp(20px,1.9vw,27px)/1.5 var(--font-display);letter-spacing:-.01em;text-wrap:pretty}
         .tm__quote::before{content:"“";display:block;font-size:120px;line-height:.6;color:var(--teal);height:50px}
         .tm__sig{display:grid}
         .tm__sig span{color:var(--teal-glow)}
@@ -168,7 +169,8 @@ export default function TeamPage() {
         .tm__duo-a{position:absolute;left:0;top:0;width:80%;border-radius:var(--radius-l);overflow:hidden}
         .tm__duo-b{position:absolute;right:0;bottom:0;width:58%;border-radius:var(--radius-m);overflow:hidden;border:8px solid #fff}
         .tm__duo img{width:100%;height:auto}
-        .tm__career{margin-top:40px;padding:30px;border-radius:var(--radius-m);background:var(--mist)}
+        .tm__career{margin-top:clamp(40px,5vw,64px);padding:clamp(24px,3vw,36px);border-radius:var(--radius-m);background:var(--mist)}
+        .tm__career .h3{margin-bottom:12px}
         @media(max-width:1000px){.tm__grid--4{grid-template-columns:repeat(2,1fr)}.tm__grid--3{grid-template-columns:repeat(2,1fr)}}
         @media(max-width:520px){.tm__grid--3,.tm__grid--4{grid-template-columns:minmax(0,1fr)}.tm__duo{min-height:360px}}
       `}</style>

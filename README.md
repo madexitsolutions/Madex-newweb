@@ -17,7 +17,7 @@ Node.js ≥ 20.9. Für Coolify reichen `npm install`, `npm run build` und `npm r
 
 ## Umgebungsvariablen
 
-Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablage, SMTP, OpenAI, Google Analytics/Tag Manager, GA4-Berichte). Mindestens nötig für den Betrieb:
+Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablage, SMTP, OpenAI, Google Analytics/Tag Manager, GA4-Berichte, Google-Bewertungen). Mindestens nötig für den Betrieb:
 
 | Variable | Zweck |
 |---|---|
@@ -28,6 +28,7 @@ Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablag
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | KI-Chatbot «Orion» |
 | `NEXT_PUBLIC_GA4_ID` / `NEXT_PUBLIC_GTM_ID` | Tracking (alternativ im Admin eintragen) |
 | `GA4_PROPERTY_ID`, `GOOGLE_SERVICE_ACCOUNT_*` | Analytics-Berichte im Admin |
+| `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID` | Live-Google-Bewertungen (nur 4–5 Sterne), sonst hinterlegte Kundenstimmen |
 
 ### Coolify
 
@@ -56,11 +57,11 @@ Das Chat-Fenster ist 1:1 das des bisherigen WordPress-Plugins (`madex-chatbot-ma
 ## Seitenstruktur (wie madex-it.ch)
 
 - **Marketing Lösungen** – `/marketing-solutions` + 9 Leistungsseiten (`/marketing-solutions/website-development`, `digital-marketing`, `seo-optimierung`, `photo-werbevideos`, `social-media-marketing`, `google-marketing`, `graphic-design`, `analyse-und-planung`, neu `ki-integration`)
-- **Wer wir sind** – `/uber-uns`, `/das-team`, `/blog`, `/karriere`
+- **Wer wir sind** – `/uber-uns`, `/das-team`, `/karriere` (der Blog wurde entfernt, alte Blog-URLs leiten auf passende Leistungsseiten weiter)
 - **Portfolio** – `/portfolio`, `/website-portfolio` (74 Projekte, 3D-Projektring, Suche & Jahresfilter), `/graphic-design-portfolio` (Brandings, Print, Social Media mit Lightbox), `/werbevideos-portfolio`
 - **Partner** – `/partners`
 - **Kontakt** – `/kontakt`, `/kostenlose-prufung`
-- Projekt- und Blogbeiträge unter ihren bisherigen URLs (`/<slug>`), dazu `/agb`, `/datenschutz`, `sitemap.xml`, `robots.txt`, 404-Seite
+- Projektbeiträge unter ihren bisherigen URLs (`/<slug>`), dazu `/agb`, `/datenschutz`, `sitemap.xml`, `robots.txt`, 404-Seite
 
 Die bisherigen URLs bleiben gültig; geänderte oder entfernte URLs werden per 308 weitergeleitet. Vollständige Zuordnung aller 109 archivierten URLs: [`docs/migration.md`](docs/migration.md).
 
@@ -75,7 +76,7 @@ Die bisherigen URLs bleiben gültig; geänderte oder entfernte URLs werden per 3
 
 - Geschäftsdaten, Menü, Pakete, FAQ, Team: `src/content/site.ts`
 - Leistungen: `src/content/services.ts`
-- Projekte/Blog, Portfolios, Partner, AGB: generiert aus dem Archiv nach `src/content/generated/` mit `python3 -I scripts/extract_content.py`
+- Projekte, Portfolios, Partner, AGB: generiert aus dem Archiv nach `src/content/generated/` mit `python3 -I scripts/extract_content.py`
 - Optimierte Bilder/Videos (WebP/MP4) in `public/media/` – erzeugt mit `python3 -I scripts/prepare_media.py` (Pillow + ffmpeg). Die Originale in `assets/` bleiben unverändert.
 
 ## Vor dem Go-live prüfen

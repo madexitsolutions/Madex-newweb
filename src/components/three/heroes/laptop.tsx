@@ -6,7 +6,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { C, Glossy, SceneRig } from "./kit";
 
-/** Laptop opening to reveal the project – used on project and blog detail pages. */
+/** Laptop opening to reveal a project screenshot (project pages now use the CSS DeviceStage instead). */
 export default function LaptopScene({ image = "/media/2026/04/autopozzo.webp" }: { image?: string }) {
   const tex = useTexture(image);
   useEffect(() => {

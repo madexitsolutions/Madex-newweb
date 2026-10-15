@@ -16,10 +16,6 @@ export const staticSeo: Record<string, { title: string; description: string }> =
     title: "Das Team",
     description: "Lernen Sie das Team von Madex IT Solutions kennen: Geschäftsleitung, Kundenberatung, Grafikdesign, Webentwicklung sowie Social Media, Ads und Video.",
   },
-  "/blog": {
-    title: "Blog",
-    description: "Fachartikel von Madex IT Solutions zu Webdesign, Grafikdesign und Social Media.",
-  },
   "/karriere": {
     title: "Karriere",
     description: "Offene Stellen bei Madex IT Solutions in Neuhausen am Rheinfall. Werden Sie Teil eines dynamischen und zukunftsorientierten Teams.",

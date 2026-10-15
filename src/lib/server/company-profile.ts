@@ -26,6 +26,7 @@ Marco Bräm (CEO, Geschäftsführer), Adem Mehmeti (Digital Marketing Consultant
 - Grafikdesign: Logo, Corporate Design, Drucksachen. https://madex-it.ch/marketing-solutions/graphic-design/
 - Digital Marketing sowie Analyse & Planung: Strategie, Zielgruppen, Marketingplan. https://madex-it.ch/marketing-solutions/analyse-und-planung/
 - Website-Wartung: Hosting, Updates, Backups und Sicherheit.
+- KI-Lösungen nach Mass: Abläufe automatisieren (z. B. Anfragen sortieren, Offerten vorbereiten), Dokumente und Daten auswerten, KI-Assistenten mit dem Wissen des Kunden, KI-gestützte Inhalte und Übersetzungen, Anbindung an bestehende Software (CRM, ERP, Shop, Kalender). Ablauf: Erstgespräch, Prototyp mit echten Beispielen, Einführung und Betreuung. Preis nach Umfang, unverbindliche Offerte. https://madex-it.ch/marketing-solutions/ki-integration/
 Referenzen: https://madex-it.ch/portfolio/
 
 # Kostenlose Analyse und Erstgespräch

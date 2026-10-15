@@ -9,29 +9,36 @@ import { ProjectCard } from "./ProjectCard";
 
 /* ------------------------------------------------------------- Clients */
 export function PartnerMarquee({ logos }: { logos: string[] }) {
+  // every logo appears in exactly one of the two rows
+  const half = Math.ceil(logos.length / 2);
+  const rows = [logos.slice(0, half), logos.slice(half)];
   return (
     <section className="pm" aria-labelledby="pm-title">
       <div className="container pm__head">
         <h2 id="pm-title">Über 100 Schweizer Unternehmen arbeiten mit Madex</h2>
         <Link href="/partners">Partner und Kunden ansehen</Link>
       </div>
-      <div aria-hidden="true">
-        <Marquee speed={60}>
-          {logos.map((l, i) => (
-            <span className="pm__logo" key={l + i}>
-              <Image src={media(l)} alt="" width={150} height={150} loading="lazy" />
-            </span>
-          ))}
-        </Marquee>
+      <div className="pm__rows" aria-hidden="true">
+        {rows.map((row, r) => (
+          <Marquee key={r} speed={150} reverse={r === 1}>
+            {row.map((l) => (
+              <span className="pm__logo" key={l}>
+                <Image src={media(l)} alt="" width={150} height={150} loading="lazy" />
+              </span>
+            ))}
+          </Marquee>
+        ))}
       </div>
       <style>{`
         .pm{overflow:hidden;background:#fff;border-top:1px solid var(--line-soft);padding:34px 0 30px}
         .pm__head{display:flex;justify-content:space-between;align-items:baseline;gap:8px 20px;margin-bottom:18px;flex-wrap:wrap}
         .pm__head h2{font-size:15px;font-weight:600;color:var(--ink-soft);margin:0;letter-spacing:0}
         .pm__head a{display:inline-flex;align-items:center;min-height:44px;font-size:14.5px;font-weight:600;color:var(--petrol);text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(2,81,89,.3)}
-        .pm__logo{display:grid;place-items:center;width:130px;height:72px;margin:0 18px;filter:grayscale(1);opacity:.6;transition:filter .3s,opacity .3s}
+        .pm__rows{display:grid;gap:10px}
+        .pm__logo{display:grid;place-items:center;width:180px;height:96px;margin:0 16px;filter:grayscale(1);opacity:.62;transition:filter .3s,opacity .3s}
         .pm__logo:hover{filter:none;opacity:1}
-        .pm__logo img{width:110px;height:56px;object-fit:contain}
+        .pm__logo img{width:156px;height:78px;object-fit:contain}
+        @media (max-width:700px){.pm__logo{width:132px;height:76px;margin:0 10px}.pm__logo img{width:116px;height:60px}}
       `}</style>
     </section>
   );

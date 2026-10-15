@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui/Icon";
 import { Reveal, ScrollZoom, SplitText } from "@/components/ui/motion";
 import { site } from "@/content/site";
 import { staticSeo, withSeo } from "@/lib/seo";
+import "@/app/prose.css";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/karriere", ...staticSeo["/karriere"] });
 
@@ -27,9 +28,9 @@ export default function CareerPage() {
         <Button href="#offene-stellen">Offene Stellen anzeigen</Button>
       </PageHero>
 
-      <section id="offene-stellen" className="section light" aria-labelledby="jobs-title">
+      <section id="offene-stellen" className="section light" aria-label="Offene Stellen">
         <div className="container">
-          <p className="eyebrow">Offene Stellen</p>
+          <div className="txt">
           <SplitText as="h2" text="Offene Stellen" className="h2" />
           <Reveal>
             <p className="lead muted">
@@ -37,6 +38,7 @@ export default function CareerPage() {
               lassen Sie uns darüber sprechen, wie Ihre Talente mit unseren spannenden Möglichkeiten in Einklang gebracht werden können.
             </p>
           </Reveal>
+          </div>
           <ul className="jobs">
             {jobs.map((j, i) => (
               <Reveal as="li" key={j.title} delay={i * 0.1}>
@@ -68,12 +70,12 @@ export default function CareerPage() {
         `}</style>
       </section>
 
-      <section className="section white" aria-labelledby="life-title">
+      <section className="section white" aria-label="Das Leben bei Madex">
         <div className="container grid-2">
           <ScrollZoom className="life__img">
             <Image src="/media/2024/07/1d.webp" alt="Teamarbeit bei Madex IT Solutions" width={1400} height={968} sizes="(max-width: 900px) 100vw, 50vw" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </ScrollZoom>
-          <div>
+          <div className="txt">
             <p className="eyebrow">Kultur</p>
             <SplitText as="h2" text="Das Leben bei Madex" className="h2" />
             <Reveal>

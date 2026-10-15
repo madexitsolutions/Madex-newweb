@@ -21,7 +21,7 @@ export const SERVICE_OPTIONS: Record<string, string> = {
   "social-media": "Social Media Marketing",
   "foto-video": "Fotos & Werbevideos",
   grafik: "Grafikdesign & Logo",
-  ki: "KI-Assistent für die eigene Website",
+  ki: "KI-Lösungen nach Mass",
   analyse: "Kostenlose Website-Analyse",
   other: "Anderes Anliegen",
 };

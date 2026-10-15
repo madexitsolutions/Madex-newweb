@@ -8,6 +8,7 @@ import { Reveal, ScrollZoom, SplitText } from "@/components/ui/motion";
 import partners from "@/content/generated/partners.json";
 import { media } from "@/lib/media";
 import { staticSeo, withSeo } from "@/lib/seo";
+import "@/app/prose.css";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/partners", ...staticSeo["/partners"] });
 
@@ -36,9 +37,9 @@ export default function PartnersPage() {
     <>
       <PageHero scene="partners" eyebrow="Starke Partner. Starke Lösungen." title="Gemeinsam stärker für unsere Kunden." crumbs={[{ name: "Partner", path: "/partners" }]} />
 
-      <section className="section white" aria-labelledby="pt-intro">
+      <section className="section white" aria-label="Netzwerk">
         <div className="container grid-2">
-          <div>
+          <div className="txt">
             <p className="eyebrow">Netzwerk</p>
             <SplitText as="h2" text="Die richtigen Partner für erfolgreiche Projekte." className="h2" />
             <Reveal>
@@ -54,7 +55,7 @@ export default function PartnersPage() {
         </div>
       </section>
 
-      <section className="section light" aria-labelledby="pt-logos">
+      <section className="section light" aria-label="Unternehmen, die uns vertrauen">
         <div className="container">
           <p className="eyebrow">Kunden & Partner</p>
           <SplitText as="h2" text="Unternehmen, die uns vertrauen" className="h2" />

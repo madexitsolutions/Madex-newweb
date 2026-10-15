@@ -13,7 +13,6 @@ export default function VideoPortfolioPage() {
   return (
     <>
       <PageHero scene="video"
-        eyebrow="Werbevideos Portfolio"
         title="Geschichten, die Marken in Bewegung setzen."
         lead="Jedes Video ist einzigartig und wurde individuell auf die Bedürfnisse und Ziele unserer Kunden abgestimmt."
         crumbs={[
@@ -26,7 +25,6 @@ export default function VideoPortfolioPage() {
       <section className="section white" aria-labelledby="vp-reel">
         <div className="container grid-2">
           <div>
-            <p className="eyebrow">Showreel</p>
             <SplitText as="h2" text="Werbevideos Portfolio" className="h2" />
             <Reveal>
               <p className="lead muted">

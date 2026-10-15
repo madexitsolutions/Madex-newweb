@@ -1,11 +1,12 @@
 import { redirect } from "next/navigation";
-import { freshRecoveryCodes } from "@/lib/server/auth";
+import { freshRecoveryCodes, requireAdmin } from "@/lib/server/auth";
 import { confirmRecoveryCodes } from "../../actions";
 import { Submit } from "../../ui";
 
 export const metadata = { title: "Wiederherstellungscodes" };
 
 export default async function RecoveryCodes() {
+  await requireAdmin();
   const codes = await freshRecoveryCodes();
   if (!codes) redirect("/admin");
   return (

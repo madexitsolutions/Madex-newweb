@@ -1,27 +1,19 @@
-import { MARK_SHAPES, MARK_SIZE, markPath } from "@/lib/mark";
+import { MARK_HEX, MARK_PATHS, MARK_SIZE } from "@/lib/mark";
 
 type Props = { className?: string; title?: string; animated?: boolean };
 
-/** Inline-SVG of the abstracted double-M mark (decorative unless a title is given). */
+/** Inline SVG of the Madex mark (decorative unless a title is given). */
 export function MarkSvg({ className, title, animated }: Props) {
   return (
     <svg
       className={className}
-      viewBox={`-4 -4 ${MARK_SIZE.w + 8} ${MARK_SIZE.h + 8}`}
+      viewBox={`0 0 ${MARK_SIZE.w} ${MARK_SIZE.h}`}
       role={title ? "img" : undefined}
       aria-hidden={title ? undefined : true}
       aria-label={title}
     >
-      {MARK_SHAPES.map((s, i) => (
-        <path
-          key={i}
-          d={markPath(s.points)}
-          fill={s.color === "teal" ? "#028D86" : "#025159"}
-          stroke={s.color === "teal" ? "#028D86" : "#025159"}
-          strokeWidth={8}
-          strokeLinejoin="round"
-          className={animated ? `mark-piece mark-piece--${i}` : undefined}
-        />
+      {MARK_PATHS.map((s, i) => (
+        <path key={i} d={s.d} fill={MARK_HEX[s.color]} className={animated ? `mark-piece mark-piece--${i}` : undefined} />
       ))}
     </svg>
   );

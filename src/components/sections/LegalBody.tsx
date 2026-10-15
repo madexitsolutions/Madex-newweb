@@ -1,9 +1,10 @@
 import type { Block } from "@/content/posts";
+import "@/app/prose.css";
 
 /** Renders legal text blocks; numbered section titles ("3. Zahlung…") become headings. */
 export function LegalBody({ blocks }: { blocks: Block[] }) {
   return (
-    <div className="legal">
+    <div className="legal prose legal-body">
       {blocks.map((b, i) => {
         if (b.type === "img") return null;
         if (b.type === "h") return <h2 key={i}>{b.text}</h2>;
@@ -20,9 +21,11 @@ export function LegalBody({ blocks }: { blocks: Block[] }) {
         );
       })}
       <style>{`
-        .legal{max-width:820px}
-        .legal h2{font-size:clamp(22px,2vw,28px);margin:48px 0 16px;padding-top:24px;border-top:1px solid var(--line)}
-        .legal p{color:var(--text-soft)}
+        .legal-body{--measure:68ch}
+        .legal-body>h2{padding-top:1.1em;border-top:1px solid var(--line)}
+        .legal-body>h2:first-child{padding-top:0;border-top:0}
+        .legal-body>* + h2{margin-top:2em}
+        .legal-body p{overflow-wrap:break-word;hyphens:auto}
       `}</style>
     </div>
   );

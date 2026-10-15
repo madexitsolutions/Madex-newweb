@@ -12,6 +12,7 @@ export async function GET(req: Request) {
     (r) =>
       (!sp.get("status") || r.status === sp.get("status")) &&
       (!sp.get("type") || r.type === sp.get("type")) &&
+      (!sp.get("email") || r.emailStatus === sp.get("email")) &&
       (!q || [r.name, r.company, r.email, r.reference, r.message].some((v) => v?.toLowerCase().includes(q))),
   );
   const date = new Date().toISOString().slice(0, 10);

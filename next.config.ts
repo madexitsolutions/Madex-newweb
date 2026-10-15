@@ -15,10 +15,14 @@ const legacyRedirects: { source: string; destination: string }[] = [
   { source: "/neues-branding-und-moderne-website-fur-klimas-innenausbau-copy-copy", destination: "/garage-t-schneider-neuer-digitaler-auftritt" },
   { source: "/neues-branding-und-moderne-website-fur-klimas-innenausbau-copy", destination: "/natura-balance-schweiz-moderne-webpraesenz-fur-naturliche-kosmetik" },
   // archives
-  { source: "/category/blog", destination: "/blog" },
+  // the blog was retired – its two articles map to the matching services
+  { source: "/blog", destination: "/" },
+  { source: "/category/blog", destination: "/" },
+  { source: "/warum-webdesign-so-wichtig-ist-und-warum-ihr-unternehmen-eine-website-braucht", destination: "/marketing-solutions/website-development" },
+  { source: "/grafikdesign-und-die-wirkung-von-social-media-posts", destination: "/marketing-solutions/graphic-design" },
   { source: "/category/website-portfolio", destination: "/website-portfolio" },
   { source: "/tag/website", destination: "/website-portfolio" },
-  { source: "/tag/:tag", destination: "/blog" },
+  { source: "/tag/:tag", destination: "/website-portfolio" },
   // internal WordPress page, not part of the public site
   { source: "/mi-dashboard", destination: "/" },
   // German-friendly aliases
@@ -37,6 +41,8 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [480, 640, 828, 1080, 1280, 1600, 1920],
+    // YouTube preview thumbnails (werbevideos-portfolio) – proxied by the optimiser, so visitors don't contact Google before clicking play
+    remotePatterns: [{ protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**", search: "" }],
   },
   async redirects() {
     return legacyRedirects.flatMap((r) => [

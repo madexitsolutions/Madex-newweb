@@ -198,22 +198,11 @@
 .ai { background: var(--deep); color: #e4f1f0; padding: clamp(72px, 8vw, 128px) 0; }
 .ai .sec-title { color: #fff; }
 .ai .sec-lead { color: rgba(228,241,240,.78); }
-.ai__grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(40px, 6vw, 100px); align-items: center; }
-.ai__new { display: inline-block; margin: 0 0 18px; font-size: 14px; font-weight: 600; color: var(--sun); }
+.ai__grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(40px, 6vw, 100px); align-items: center; }
 .ai__list { list-style: none; padding: 0; margin: 0 0 34px; display: grid; gap: 14px; }
 .ai__list li { padding-left: 20px; position: relative; color: rgba(228,241,240,.8); max-width: 56ch; }
 .ai__list li::before { content: ""; position: absolute; left: 0; top: .62em; width: 8px; height: 8px; border-radius: 2px; background: var(--teal); }
 .ai__list strong { color: #fff; font-weight: 600; }
-.ai__win { background: #fff; color: var(--ink); border-radius: 16px; overflow: hidden; box-shadow: 0 40px 80px -40px rgba(0,0,0,.6); }
-.ai__bar { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line-soft); }
-.ai__bar strong { display: block; font-size: 15px; }
-.ai__bar small { font-size: 12.5px; color: var(--ink-soft); }
-.ai__avatar { width: 34px; height: 34px; border-radius: 10px; background: #263f8f; color: #fff; display: grid; place-items: center; font-weight: 700; }
-.ai__chat { padding: 18px 16px; display: grid; gap: 10px; background: #fbfcfc; }
-.ai__msg { margin: 0; max-width: 86%; padding: 10px 13px; border-radius: 12px 12px 12px 4px; background: #fff; border: 1px solid var(--line-soft); font-size: 14.5px; line-height: 1.5; }
-.ai__msg--user { justify-self: end; background: #263f8f; border-color: #263f8f; color: #fff; border-radius: 12px 12px 4px 12px; }
-.ai__chip { display: flex; width: fit-content; margin-top: 8px; font-size: 12.5px; font-weight: 600; color: #15603a; background: #e3f5ea; border-radius: 6px; padding: 3px 8px; }
-.ai__note { font-size: 13px; color: rgba(228,241,240,.6); margin: 12px 0 0; }
 @media (max-width: 900px) { .ai__grid { grid-template-columns: minmax(0, 1fr); } }
 
 /* pricing */

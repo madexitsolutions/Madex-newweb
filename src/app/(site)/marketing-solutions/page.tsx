@@ -9,6 +9,7 @@ import { Reveal, ScrollZoom, SplitText, StaggerGroup, StaggerItem, Tilt } from "
 import { Link } from "@/components/layout/Transition";
 import { services } from "@/content/services";
 import { staticSeo, withSeo } from "@/lib/seo";
+import "@/app/prose.css";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/marketing-solutions", ...staticSeo["/marketing-solutions"] });
 
@@ -30,11 +31,10 @@ export default function MarketingSolutionsPage() {
             Alle Leistungen
           </h2>
           <StaggerGroup className="msg" gap={0.07}>
-            {services.map((s, i) => (
+            {services.map((s) => (
               <StaggerItem key={s.slug} as="article">
                 <Tilt max={7} className="msg__tilt">
                   <Link href={`/marketing-solutions/${s.slug}`} className="msg__card" data-cursor="Mehr">
-                    <span className="msg__n">{String(i + 1).padStart(2, "0")}</span>
                     <span className="msg__img">
                       <Image src={s.image} alt="" width={300} height={300} />
                     </span>
@@ -58,13 +58,13 @@ export default function MarketingSolutionsPage() {
           .msg__card{position:relative;display:flex;flex-direction:column;gap:10px;height:100%;padding:28px;border-radius:var(--radius-m);background:#fff;overflow:hidden;
             border:1px solid rgba(2,81,89,.08);transition:background .6s var(--ease-out),color .6s}
           .msg__card:hover{background:var(--petrol);color:#fff}
-          .msg__n{font:700 13px/1 var(--font-body);color:var(--teal-ink);letter-spacing:.12em}
-          .msg__img{position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;overflow:hidden;opacity:0;transform:scale(.6);transition:.7s var(--ease-out)}
+                    .msg__img{position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;overflow:hidden;opacity:0;transform:scale(.6);transition:.7s var(--ease-out)}
           .msg__img img{width:100%;height:100%;object-fit:cover}
           .msg__card:hover .msg__img{opacity:.9;transform:scale(1)}
-          .msg__icon{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--teal),var(--petrol));margin:26px 0 10px}
-          .msg__card h3{font-size:21px;margin:0}
-          .msg__card p{margin:0;font-size:15px;opacity:.75;flex:1}
+          .msg__icon{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--teal),var(--petrol));margin:0 0 14px}
+          .msg__card h3{font-size:21px;line-height:1.2;letter-spacing:-.015em;margin:0;text-wrap:balance}
+          .msg__card p{margin:0 0 6px;font-size:15.5px;line-height:1.6;color:var(--ink-soft);flex:1;transition:color .6s}
+          .msg__card:hover p{color:var(--on-dark-soft)}
           .msg__card:hover .link-arrow{color:var(--teal-glow)}
           @media(max-width:1100px){.msg{grid-template-columns:repeat(2,1fr)}}
           @media(max-width:600px){.msg{grid-template-columns:minmax(0,1fr)}}
@@ -73,12 +73,12 @@ export default function MarketingSolutionsPage() {
 
       <ServicesConstellation title="Alles aus einer Hand" eyebrow="Alles aus einer Hand" />
 
-      <section className="section white" aria-labelledby="ms-strategy">
+      <section className="section white" aria-label="Strategie">
         <div className="container grid-2">
           <ScrollZoom className="ms__img">
             <Image src="/media/2024/07/2d.webp" alt="Team von Madex IT Solutions bei der Strategiearbeit" width={1400} height={968} sizes="(max-width: 900px) 100vw, 50vw" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </ScrollZoom>
-          <div>
+          <div className="txt">
             <p className="eyebrow">Strategie</p>
             <SplitText as="h2" text="Wir engagieren uns für Ihre Strategie" className="h2" />
             <Reveal>

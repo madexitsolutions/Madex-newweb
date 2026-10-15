@@ -490,7 +490,7 @@ function QuickAnalysis() {
   );
 }
 
-export function Hero() {
+export function Hero({ rating = 4.4 }: { rating?: number }) {
   return (
     <section className="hx" aria-labelledby="hero-title">
       <Network />
@@ -522,8 +522,8 @@ export function Hero() {
           </div>
           <div className="hx__trust hx-in" style={{ ["--d" as string]: ".6s" }}>
             <span>
-              <Stars value={4.4} />
-              4.4 auf Google
+              <Stars value={rating} />
+              {rating.toLocaleString("de-CH", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} auf Google
             </span>
             <span>
               <Svg d={I.users} />

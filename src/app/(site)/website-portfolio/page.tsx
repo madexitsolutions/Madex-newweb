@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/sections/PageHero";
 import { ProjectExplorer } from "@/components/sections/ProjectExplorer";
+import { screenImage } from "@/components/sections/screenImage";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { Button } from "@/components/ui/Button";
 import { Reveal, SplitText } from "@/components/ui/motion";
@@ -13,7 +14,6 @@ export default function WebsitePortfolioPage() {
   return (
     <>
       <PageHero scene="portfolio"
-        eyebrow="Website Portfolio"
         title="Ihre Chance: kostenlose Website mit unserem Online-Marketing-Paket."
         lead="Bei uns erhalten Sie mehr als erstklassiges Online-Marketing und Website-Wartung – wir schenken Ihnen eine moderne, professionelle Website."
         crumbs={[
@@ -38,7 +38,7 @@ export default function WebsitePortfolioPage() {
           </Reveal>
         </div>
       </section>
-      <ProjectExplorer posts={projects} />
+      <ProjectExplorer posts={projects} screens={Object.fromEntries(projects.slice(0, 16).map((p) => [p.slug, screenImage(p)]))} />
       <CtaBand />
     </>
   );

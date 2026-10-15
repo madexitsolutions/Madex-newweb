@@ -12,7 +12,7 @@ export type Post = {
   title: string;
   client: string;
   date: string;
-  category: "blog" | "website-portfolio";
+  category: "website-portfolio";
   tags: string[];
   description: string;
   image: string;
@@ -21,9 +21,10 @@ export type Post = {
   blocks: Block[];
 };
 
-export const posts = raw as Post[];
-export const projects = posts.filter((p) => p.category === "website-portfolio");
-export const blogPosts = posts.filter((p) => p.category === "blog");
+// the old blog articles stay in the generated export but are no longer published
+// (their URLs redirect to the matching service pages, see next.config.ts)
+export const posts = (raw as (Omit<Post, "category"> & { category: string })[]).filter((p): p is Post => p.category === "website-portfolio");
+export const projects = posts;
 
 export function getPost(slug: string): Post | undefined {
   return posts.find((p) => p.slug === slug);

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { posts, projects, blogPosts } from "@/content/posts";
+import { posts, projects } from "@/content/posts";
 import { services } from "@/content/services";
 import { clientSupport, leadership, mainNav, photoShoots, site, teamGroups } from "@/content/site";
 import { media } from "@/lib/media";
@@ -17,9 +17,9 @@ describe("Inhalte", () => {
     for (const s of services) expect(s.faq.length).toBeGreaterThan(0);
   });
 
-  it("übernimmt alle Projekt- und Blogbeiträge der alten Website", () => {
-    expect(posts.length).toBe(76);
-    expect(blogPosts.length).toBe(2);
+  it("übernimmt alle Projekte der alten Website (Blog ist entfernt)", () => {
+    expect(posts.length).toBe(74);
+    expect(posts.every((p) => p.category === "website-portfolio")).toBe(true);
     expect(projects.length).toBe(74);
     expect(new Set(posts.map((p) => p.slug)).size).toBe(posts.length);
     for (const p of posts) expect(p.slug).toMatch(/^[a-z0-9-]+$/);

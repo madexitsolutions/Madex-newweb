@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Link } from "@/components/layout/Transition";
 import { openOrion } from "@/components/layout/Orion";
+import { AiUseCases } from "./AiSolutions";
 import { offerSteps, packages } from "@/content/site";
 
 const CHECKS = [
@@ -136,69 +137,41 @@ export function Steps() {
 }
 
 /* ------------------------------------------------------------------ AI */
-/** Example conversation on a client website (used on the home page and the KI service page). */
-export function AiDemo() {
-  return (
-  <div className="ai__demo" aria-label="Beispielgespräch mit einem KI-Assistenten auf einer Garagen-Website">
-    <div className="ai__win">
-      <div className="ai__bar">
-        <span className="ai__avatar" aria-hidden="true">
-          G
-        </span>
-        <div>
-          <strong>Assistent der Garage Muster</strong>
-          <small>Antwortet sofort</small>
-        </div>
-      </div>
-      <div className="ai__chat">
-        <p className="ai__msg ai__msg--user">Haben Sie am Samstag offen? Mein Auto braucht neue Winterreifen.</p>
-        <p className="ai__msg">Ja, samstags sind wir von 8 bis 12 Uhr für Sie da. Der Reifenwechsel dauert etwa 30 Minuten. Soll ich Ihnen einen Termin reservieren?</p>
-        <p className="ai__msg ai__msg--user">Gerne, am 8. November vormittags.</p>
-        <p className="ai__msg">
-          Notiert: Samstag, 8. November, Vormittag. Das Team bestätigt Ihnen den Termin per E-Mail.
-          <span className="ai__chip">Terminanfrage gesendet</span>
-        </p>
-      </div>
-    </div>
-    <p className="ai__note">Beispiel. Inhalte, Ton und Design passen wir an Ihr Unternehmen an.</p>
-  </div>
-  );
-}
-
+/** Kept for the KI service page, which shows the same use-case explorer. */
+export const AiDemo = AiUseCases;
 
 export function AiSection() {
   return (
     <section className="ai" aria-labelledby="ai-title">
       <div className="container ai__grid">
         <div className="ai__copy">
-          <p className="ai__new">Neu bei Madex</p>
           <h2 id="ai-title" className="sec-title">
-            Ein KI-Assistent für Ihre Website, der Ihr Unternehmen kennt.
+            KI-Lösungen, die in Ihrem Betrieb mitarbeiten.
           </h2>
           <p className="sec-lead">
-            Wir integrieren einen Chat-Assistenten in Ihre Website, der mit Ihren Leistungen, Preisen und Abläufen arbeitet. Er beantwortet Kundenfragen rund um die Uhr, nimmt Terminanfragen auf und leitet alles Weitere an Ihr Team.
+            Wir entwickeln KI nach Mass für Schweizer KMU: Sie übernimmt wiederkehrende Aufgaben, wertet Dokumente aus, beantwortet Fragen mit Ihrem Wissen und arbeitet in der Software, die Sie schon nutzen.
           </p>
           <ul className="ai__list">
             <li>
-              <strong>Auf Ihr Geschäft zugeschnitten.</strong> Er antwortet nur mit Informationen, die Sie freigeben – nichts wird erfunden.
+              <strong>Erst verstehen, dann bauen.</strong> Wir suchen mit Ihnen die Aufgaben, bei denen KI am meisten Zeit spart.
             </li>
             <li>
-              <strong>Anfragen statt Absprünge.</strong> Termin- und Offertanfragen landen direkt in Ihrem Postfach.
+              <strong>Die KI bereitet vor, Ihr Team entscheidet.</strong> Wichtige Ergebnisse werden geprüft und freigegeben.
             </li>
             <li>
-              <strong>Sie behalten die Kontrolle.</strong> Wissen, Verläufe und Anfragen verwalten Sie in Ihrem eigenen Dashboard.
+              <strong>Ihre Daten bleiben bei Ihnen.</strong> Wir legen gemeinsam fest, was die KI verwenden darf.
             </li>
           </ul>
           <div className="offer__cta">
-            <button type="button" className="b b--light" onClick={openOrion}>
-              Unseren Assistenten testen
-            </button>
-            <Link href="/marketing-solutions/ki-integration" className="b b--quiet-dark">
-              Mehr zur KI-Integration
+            <Link href="/marketing-solutions/ki-integration" className="b b--light">
+              KI-Lösungen entdecken
             </Link>
+            <button type="button" className="b b--quiet-dark" onClick={openOrion}>
+              Unseren KI-Assistenten testen
+            </button>
           </div>
         </div>
-        <AiDemo />
+        <AiUseCases />
       </div>
     </section>
   );

@@ -1,0 +1,138 @@
+/* ==========================================================================
+   Long-text typography for content pages (service, about, team, career,
+   partners, legal). Imported by those pages; builds on the globals.css tokens.
+
+   Roles
+   - .txt      a text column next to an image or inside a section
+               (heading, lead, paragraphs, actions)
+   - .prose    a reading column (legal text, longer articles)
+   Rhythm: more space above a heading than below it; 1em between paragraphs;
+   measure 60–68ch; body line-height 1.65.
+   ========================================================================== */
+
+.txt,
+.prose {
+  --measure: 64ch;
+  --body-size: clamp(16.5px, 1.1vw, 18px);
+}
+
+/* ---------- Text column ---------- */
+.txt > .h2,
+.txt > h2 {
+  margin: 0 0 0.55em;
+  text-wrap: balance;
+}
+.txt > .display {
+  margin: 0 0 0.35em;
+}
+/* body copy: plain, muted and lead paragraphs (eyebrows and custom roles keep their own type) */
+.txt p:not([class]),
+.txt p.muted,
+.txt p.lead {
+  max-width: var(--measure);
+  font-size: var(--body-size);
+  line-height: 1.65;
+  margin: 0;
+  text-wrap: pretty;
+}
+.txt p:is(:not([class]), .muted, .lead) + p:is(:not([class]), .muted, .lead) {
+  margin-top: 1em;
+}
+.txt p.lead {
+  max-width: 60ch;
+  font-size: clamp(17px, 1.25vw, 20px);
+  line-height: 1.6;
+}
+.txt p.lead + p.muted,
+.txt p.lead + p:not([class]) {
+  margin-top: 1.1em;
+}
+.txt p a:not(.btn):not(.b) {
+  color: var(--teal-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.dark .txt p a:not(.btn):not(.b),
+.dark-ink .txt p a:not(.btn):not(.b) {
+  color: var(--teal-glow);
+}
+/* actions after copy */
+.txt p:is(:not([class]), .muted, .lead) + :is(.btn, .b, div, span) {
+  margin-top: 32px;
+}
+.txt .txt__actions {
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* a small heading inside a text block (h3 after paragraphs) */
+.txt h3,
+.txt .h3 {
+  margin: 0 0 0.5em;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+/* ---------- Reading column ---------- */
+.prose {
+  max-width: var(--measure);
+  font-size: var(--body-size);
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+.prose > * {
+  margin: 0;
+}
+.prose > * + * {
+  margin-top: 1em;
+}
+.prose h2,
+.prose h3 {
+  color: var(--deep);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.prose h2 {
+  font-size: clamp(22px, 1.9vw, 28px);
+}
+.prose h3 {
+  font-size: clamp(19px, 1.4vw, 22px);
+}
+.prose > * + h2 {
+  margin-top: 2.4em;
+}
+.prose > * + h3 {
+  margin-top: 1.8em;
+}
+.prose > h2 + *,
+.prose > h3 + * {
+  margin-top: 0.6em;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.3em;
+}
+.prose li + li {
+  margin-top: 0.4em;
+}
+.prose li::marker {
+  color: var(--teal-ink);
+}
+.prose a {
+  color: var(--teal-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+.prose a:hover {
+  text-decoration-thickness: 2px;
+}
+.prose strong {
+  color: var(--deep);
+  font-weight: 600;
+}
