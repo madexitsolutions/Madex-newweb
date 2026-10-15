@@ -51,7 +51,7 @@ Anmeldung mit Benutzername/Passwort aus der `.env` und verpflichtender Zwei-Fakt
 
 ## KI-Chatbot «Orion»
 
-Portierung des bisherigen WordPress-Plugins (`madex-chatbot-main (14).zip`): Startansicht (Neu-/Bestandskunde), freie Fragen über OpenAI mit Firmenprofil und Wissensdatenbank (antwortet nur mit bestätigten Informationen, sonst Weiterleitung ans Team), Paket-Finder mit drei Fragen, Termin-/Analyse-/Support-Anfrage mit Prüfschritt und Referenznummer, frühere Gespräche im Browser, Kontakt-Buttons, Rate Limits und Spam-Schutz. API unter `/api/chat/*`.
+Das Chat-Fenster ist 1:1 das des bisherigen WordPress-Plugins (`madex-chatbot-main (14).zip`): Original-Skript, -Stylesheet, -Schrift und -Icons liegen unverändert in `public/chatbot/` und laufen in einem Shadow DOM. Neu ist nur der Server-Teil `/api/chat/ajax`, der das admin-ajax-Protokoll des Plugins spricht. Funktionen: Startansicht (Neu-/Bestandskunde), freie Fragen über OpenAI mit Firmenprofil und Wissensdatenbank (antwortet nur mit bestätigten Informationen, sonst Weiterleitung ans Team), Paket-Finder mit drei Fragen, Termin-/Analyse-/Support-Anfrage mit Prüfschritt und Referenznummer, frühere Gespräche im Browser, Kontakt-Buttons, Rate Limits und Spam-Schutz. 
 
 ## Seitenstruktur (wie madex-it.ch)
 
@@ -66,9 +66,9 @@ Die bisherigen URLs bleiben gültig; geänderte oder entfernte URLs werden per 3
 
 ## Design & Interaktion
 
-- Startseite: Angebot zuerst – Hero mit Gratis-Analyse-Formular und Arbeitsproben-Collage, «Offerte» (Website CHF 8’000 → CHF 0.–), Ablauf, KI-Assistent, Leistungen, Pakete & Preise, Referenzen, FAQ
-- Schrift: Schibsted Grotesk; Farben Petrol/Türkis aus dem Logo auf ruhigem Hellgrund
-- Unterseiten: ruhiger Petrol-Hintergrund mit einem thematischen 3D-Objekt pro Seite; «Was wir tun» als 3D-Konstellation der Leistungen
+- Startseite: animierter Hero (Partikelnetz, wechselndes Wort «Design / Websites / Marketing / Code & KI», Glas-Collage mit Website-Aufbau, KI-Analyse, Lead-Chart, tippendem Code, Brand-Design und Google-Ranking, Maus-Parallax), Gratis-Analyse-Formular, «Offerte» (CHF 8’000 → CHF 0.–), Ablauf, KI-Assistent, Leistungen in 3D, Pakete & Preise, Referenzen, Kundenstimmen, FAQ
+- Kopfzeile: transparente Glas-Navigation mit Mega-Menü
+- Unterseiten: ein eigenes 3D-Objekt pro Seite (z. B. Filmkamera mit Spulen, Zeichenstift mit Bézierkurve, Puzzle, Rakete) mit Studio-Licht und weichen Schatten
 - Three.js wird nur bei Bedarf nachgeladen; bei `prefers-reduced-motion`, fehlendem WebGL oder schwachen Geräten gibt es statische Fallbacks
 
 ## Inhalte & Medien aktualisieren

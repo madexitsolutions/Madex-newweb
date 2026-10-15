@@ -1,0 +1,1968 @@
+/**
+ * Madex AI Chatbot - public widget and embedded shortcode.
+ * Design system: Claude handoff, October 2026.
+ */
+
+@font-face {
+    font-family: "Madex Manrope";
+    src: url("../fonts/manrope-latin-variable.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 800;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: "Madex Manrope";
+    src: url("../fonts/manrope-latin-ext-variable.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400 800;
+    font-display: swap;
+    unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/*
+ * Theme isolation
+ *
+ * This stylesheet is loaded inside the widget's Shadow DOM (see chatbot.js), so
+ * page stylesheets cannot select anything below the <madex-chatbot> host. The
+ * host itself is reset here; important declarations from inside a shadow tree
+ * win over the page's, including a theme's "* { … !important }" rules.
+ */
+:host {
+    all: initial !important;
+    display: block !important;
+    contain: style;
+    color-scheme: light only;
+}
+
+:host([data-embedded="true"]) {
+    width: 100% !important;
+}
+
+[data-madex-chat-root] {
+    --madex-teal-500: #028d86;
+    --madex-teal-700: #028d86;
+    --madex-teal-800: #017a74;
+    --madex-teal-50: #eaf4f3;
+    --madex-teal-border: #d6e8e6;
+    --madex-ink: #36454f;
+    --madex-ink-soft: #4a5862;
+    --madex-ink-muted: #5e6b73;
+    --madex-canvas: #fcfcfc;
+    --madex-surface: #ffffff;
+    --madex-sunken: #f4f5f5;
+    --madex-border: #e8e9e9;
+    --madex-border-strong: #d3d6d6;
+    --madex-success: #2e7a4e;
+    --madex-success-bg: #e6f2ea;
+    --madex-warning: #8a5a00;
+    --madex-warning-bg: #fbf0d9;
+    --madex-error: #b3261e;
+    --madex-error-dark: #93201a;
+    --madex-error-bg: #fbe9e7;
+    --madex-info: #1f6fb2;
+    --madex-space-1: 4px;
+    --madex-space-2: 8px;
+    --madex-space-3: 12px;
+    --madex-space-4: 16px;
+    --madex-space-5: 20px;
+    --madex-space-6: 24px;
+    --madex-space-7: 32px;
+    --madex-radius-sm: 6px;
+    --madex-radius-md: 8px;
+    --madex-radius-lg: 12px;
+    --madex-radius-xl: 16px;
+    --madex-shadow-1: 0 1px 1px rgba(54, 69, 79, 0.04);
+    --madex-shadow-2: 0 6px 16px rgba(54, 69, 79, 0.06);
+    --madex-shadow-float: 0 16px 40px rgba(54, 69, 79, 0.12), 0 1px 3px rgba(54, 69, 79, 0.06);
+    color: var(--madex-ink);
+    font-family: "Madex Manrope", Manrope, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.55;
+    font-style: normal;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-align: left;
+    text-indent: 0;
+    text-transform: none;
+    text-shadow: none;
+    white-space: normal;
+    direction: ltr;
+    visibility: visible;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/*
+ * Reset of browser defaults inside the widget. :where() keeps the specificity at
+ * zero so every component rule below wins without !important.
+ */
+[data-madex-chat-root],
+[data-madex-chat-root] *,
+[data-madex-chat-root] *::before,
+[data-madex-chat-root] *::after {
+    box-sizing: border-box;
+}
+
+[data-madex-chat-root] [hidden] {
+    display: none !important;
+}
+
+:where([data-madex-chat-root]) :where(h1, h2, h3, h4, p, ul, ol, dl, dd, figure, blockquote, fieldset, legend) {
+    margin: 0;
+    padding: 0;
+}
+
+:where([data-madex-chat-root]) :where(fieldset) {
+    min-width: 0;
+    border: 0;
+}
+
+:where([data-madex-chat-root]) :where(img, svg) {
+    display: block;
+    max-width: 100%;
+}
+
+:where([data-madex-chat-root]) :where(button, input, select, textarea) {
+    margin: 0;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: none;
+}
+
+:where([data-madex-chat-root]) :where(button) {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+:where([data-madex-chat-root]) :where(select) {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+:where([data-madex-chat-root]) :where(a) {
+    color: var(--madex-teal-700);
+    font-weight: 650;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
+:where([data-madex-chat-root]) :where(a:hover) {
+    color: var(--madex-teal-800);
+}
+
+[data-madex-chat-root] :focus {
+    outline: none;
+}
+
+[data-madex-chat-root] :focus-visible {
+    outline: 2px solid var(--madex-teal-700);
+    outline-offset: 1px;
+}
+
+[data-madex-chat-root] ::selection {
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-800);
+}
+
+.madex-visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Floating shell */
+.madex-chatbot-container {
+    position: fixed !important;
+    right: max(24px, env(safe-area-inset-right)) !important;
+    bottom: max(24px, env(safe-area-inset-bottom)) !important;
+    z-index: 999999 !important;
+}
+
+.madex-chat-window {
+    position: absolute;
+    right: 0;
+    bottom: 76px;
+    display: flex;
+    width: 412px;
+    max-width: calc(100vw - 32px);
+    height: min(700px, calc(100vh - 120px));
+    max-height: 760px;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-xl);
+    background: var(--madex-surface);
+    box-shadow: var(--madex-shadow-float);
+    color: var(--madex-ink);
+    transform-origin: right bottom;
+}
+
+.madex-chat-window.madex-open {
+    animation: madex-panel-in 240ms ease-out both;
+}
+
+.madex-chat-embedded {
+    position: relative;
+    width: 100%;
+    max-width: 820px;
+    margin: 24px auto;
+}
+
+.madex-chat-embedded .madex-chat-window {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    height: clamp(560px, 68vh, 720px);
+    box-shadow: var(--madex-shadow-2);
+}
+
+@keyframes madex-panel-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.985); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Header */
+.madex-chat-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    min-height: 72px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--madex-space-3);
+    padding: 14px 12px 14px var(--madex-space-4);
+    border-bottom: 1px solid var(--madex-border);
+    background: rgba(255, 255, 255, 0.97);
+}
+
+.madex-chat-header-info {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: var(--madex-space-3);
+}
+
+.madex-chat-avatar {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    flex: 0 0 38px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-700);
+}
+
+.madex-sparkle {
+    display: block;
+    fill: currentColor;
+}
+
+.madex-chat-back {
+    margin-left: -6px;
+    margin-right: -4px;
+}
+
+.madex-chat-back[hidden] {
+    display: none;
+}
+
+.madex-chat-header-text {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.madex-chat-title {
+    overflow: hidden;
+    margin: 0;
+    color: var(--madex-ink);
+    font-size: 15px;
+    font-weight: 750;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.madex-chat-status {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    color: var(--madex-ink-muted);
+    font-size: 11px;
+    font-weight: 550;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.madex-status-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 7px;
+    border-radius: 50%;
+    background: var(--madex-success);
+}
+
+/* Header controls are quiet: an icon only, with a tint on hover. */
+.madex-icon-button {
+    display: inline-grid;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    flex: 0 0 36px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--madex-radius-md);
+    background: transparent;
+    color: var(--madex-ink-muted);
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease;
+}
+
+.madex-icon-button:hover {
+    background: var(--madex-sunken);
+    color: var(--madex-ink);
+}
+
+/* Launcher */
+.madex-chat-toggle {
+    position: relative;
+    display: grid;
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--madex-teal-700);
+    box-shadow: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background 160ms ease, transform 160ms ease;
+}
+
+.madex-chat-toggle:hover {
+    background: var(--madex-teal-800);
+    transform: scale(1.04);
+}
+
+/* Chat bubble with an AI sparkle, white on the brand colour. */
+.madex-toggle-icon {
+    display: block;
+    fill: #fff;
+    transition: opacity 160ms ease;
+}
+
+.madex-is-open .madex-toggle-icon {
+    opacity: 0;
+    transform: none;
+}
+
+.madex-toggle-close {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+
+.madex-is-open .madex-toggle-close {
+    opacity: 1;
+}
+
+/* Main scroll areas */
+.madex-chat-content {
+    position: relative;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    background: var(--madex-canvas);
+}
+
+.madex-welcome,
+.madex-flow,
+.madex-chat-conversation {
+    width: 100%;
+    height: 100%;
+}
+
+.madex-welcome,
+.madex-flow-body {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
+
+.madex-welcome {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: var(--madex-space-5);
+}
+
+/*
+ * In the compact floating panel the header already carries the Madex mark, so
+ * the wordmark is reserved for the roomier embedded layout. That keeps the
+ * privacy card visible without scrolling on a 640px panel.
+ */
+.madex-welcome-logo {
+    display: none;
+    width: 150px;
+    max-height: 34px;
+    object-fit: contain;
+    object-position: left center;
+}
+
+.madex-chat-embedded .madex-welcome-logo {
+    display: block;
+}
+
+.madex-welcome-copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--madex-space-2);
+}
+
+.madex-eyebrow {
+    margin: 0;
+    color: var(--madex-teal-700);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.madex-welcome h2,
+.madex-flow-title,
+.madex-success-state h2 {
+    margin: 0;
+    color: var(--madex-ink);
+    font-size: 23px;
+    font-weight: 750;
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+}
+
+.madex-welcome-copy > p:last-child,
+.madex-flow-description,
+.madex-success-state > p {
+    margin: 0;
+    color: var(--madex-ink-soft);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.madex-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--madex-space-3);
+}
+
+.madex-quick-action {
+    display: flex;
+    min-height: 78px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+    color: var(--madex-ink);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.35;
+    text-align: left;
+    transition: border-color 150ms ease, background 150ms ease;
+}
+
+.madex-quick-action:hover {
+    border-color: var(--madex-teal-500);
+    background: var(--madex-teal-50);
+}
+
+.madex-quick-action-primary {
+    border-color: var(--madex-teal-border);
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-800);
+}
+
+.madex-quick-action svg,
+.madex-quick-action-primary svg {
+    stroke-width: 1.6;
+}
+
+.madex-quick-action svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: var(--madex-teal-700);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.madex-text-action {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    align-self: flex-start;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--madex-teal-700);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.madex-text-action:hover {
+    color: var(--madex-teal-800);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.madex-privacy-note {
+    margin: auto 0 0;
+    padding-top: var(--madex-space-3);
+    border-top: 1px solid var(--madex-border);
+    color: var(--madex-ink-muted);
+    font-size: 11.5px;
+    line-height: 1.55;
+}
+
+:where([data-madex-chat-root]) .madex-privacy-note a {
+    color: var(--madex-ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* Buttons */
+.madex-button {
+    display: inline-flex;
+    min-height: 46px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border-radius: var(--madex-radius-md);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.25;
+    text-align: center;
+    transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.madex-button:disabled {
+    opacity: 0.62;
+    cursor: not-allowed;
+}
+
+.madex-button-primary {
+    border: 1px solid var(--madex-teal-700);
+    background: var(--madex-teal-700);
+    color: #fff;
+}
+
+.madex-button-primary:hover:not(:disabled) {
+    border-color: var(--madex-teal-800);
+    background: var(--madex-teal-800);
+}
+
+.madex-button-secondary {
+    border: 1px solid var(--madex-border-strong);
+    background: var(--madex-surface);
+    color: var(--madex-ink);
+}
+
+.madex-button-secondary:hover:not(:disabled) {
+    border-color: var(--madex-teal-500);
+    background: var(--madex-teal-50);
+}
+
+/* Conversation */
+.madex-chat-conversation {
+    position: relative;
+    min-height: 0;
+}
+
+.madex-chat-messages {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    gap: var(--madex-space-3);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--madex-space-5) var(--madex-space-4) var(--madex-space-4);
+    scroll-behavior: smooth;
+}
+
+.madex-message {
+    display: flex;
+    max-width: 86%;
+    flex-direction: column;
+    gap: 5px;
+    padding: 11px 15px;
+    border-radius: var(--madex-radius-lg);
+    animation: madex-message-in 160ms ease-out both;
+    font-size: 14px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+}
+
+@keyframes madex-message-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.madex-message-user {
+    align-self: flex-end;
+    border-radius: var(--madex-radius-lg) var(--madex-radius-lg) 4px var(--madex-radius-lg);
+    background: var(--madex-teal-700);
+    color: #fff;
+}
+
+.madex-message-ai {
+    align-self: flex-start;
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-lg) var(--madex-radius-lg) var(--madex-radius-lg) 4px;
+    background: var(--madex-surface);
+    color: var(--madex-ink);
+}
+
+.madex-message.is-failed {
+    border: 2px solid var(--madex-error);
+    background: var(--madex-error-bg);
+    color: var(--madex-error-dark);
+}
+
+.madex-message-content {
+    white-space: normal;
+}
+
+.madex-message-content.is-collapsed {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 8;
+}
+
+.madex-message-more {
+    align-self: flex-start;
+    min-height: 36px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--madex-teal-700);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.madex-message-state {
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.madex-message-link {
+    overflow-wrap: anywhere;
+}
+
+.madex-fallback-card {
+    display: flex;
+    width: 92%;
+    align-self: flex-start;
+    flex-direction: column;
+    gap: var(--madex-space-2);
+    margin-top: var(--madex-space-1);
+    padding: var(--madex-space-4);
+    border: 1px solid var(--madex-teal-border);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+}
+
+.madex-fallback-note {
+    margin: 0;
+    color: var(--madex-ink-soft);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.madex-contact-list {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-md);
+}
+
+:where([data-madex-chat-root]) .madex-contact-link {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    color: var(--madex-ink);
+    font-size: 13.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 150ms ease;
+}
+
+:where([data-madex-chat-root]) .madex-contact-link + .madex-contact-link {
+    border-top: 1px solid var(--madex-border);
+}
+
+:where([data-madex-chat-root]) .madex-contact-link:hover {
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-800);
+}
+
+.madex-contact-link svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 16px;
+    fill: none;
+    stroke: var(--madex-teal-700);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+}
+
+.madex-fallback-primary {
+    width: 100%;
+}
+
+.madex-fallback-other {
+    min-height: 36px;
+    align-self: center;
+    font-size: 13px;
+}
+
+.madex-new-message-notice {
+    position: absolute;
+    right: 16px;
+    bottom: 12px;
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--madex-teal-border);
+    border-radius: 999px;
+    background: var(--madex-surface);
+    box-shadow: var(--madex-shadow-2);
+    color: var(--madex-teal-800);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+/* Typing and composer */
+.madex-typing-indicator {
+    display: flex;
+    width: fit-content;
+    flex: 0 0 auto;
+    gap: 5px;
+    margin: 0 16px 10px;
+    padding: 12px 16px;
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-lg) var(--madex-radius-lg) var(--madex-radius-lg) 4px;
+    background: var(--madex-surface);
+}
+
+.madex-typing-indicator span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--madex-teal-500);
+    animation: madex-dot 1.2s infinite;
+}
+
+.madex-typing-indicator span:nth-child(2) { animation-delay: 150ms; }
+.madex-typing-indicator span:nth-child(3) { animation-delay: 300ms; }
+
+@keyframes madex-dot {
+    0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-3px); }
+}
+
+.madex-chat-input-area {
+    flex: 0 0 auto;
+    padding: var(--madex-space-3) var(--madex-space-4);
+    border-top: 1px solid var(--madex-border);
+    background: var(--madex-surface);
+}
+
+.madex-chat-form {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--madex-space-2);
+}
+
+.madex-chat-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    max-height: 112px;
+    resize: none;
+    padding: 11px 13px;
+    border: 1px solid var(--madex-border-strong);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+    color: var(--madex-ink);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.madex-chat-input::placeholder,
+.madex-input::placeholder,
+.madex-textarea::placeholder {
+    color: var(--madex-ink-muted);
+    opacity: 1;
+}
+
+.madex-chat-input:focus,
+.madex-input:focus,
+.madex-select:focus,
+.madex-textarea:focus {
+    border-color: var(--madex-teal-700);
+}
+
+/* The composer shows focus through its border only, no outer ring. */
+[data-madex-chat-root] .madex-chat-input:focus-visible {
+    outline: none;
+}
+
+.madex-chat-send {
+    display: grid;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    place-items: center;
+    padding: 0;
+    border: 1px solid var(--madex-teal-700);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-teal-700);
+    color: #fff;
+    cursor: pointer;
+}
+
+.madex-chat-send:hover:not(:disabled) {
+    border-color: var(--madex-teal-800);
+    background: var(--madex-teal-800);
+}
+
+.madex-chat-send:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/*
+ * Status banner. It sits directly under the header instead of floating over the
+ * composer, so it never covers the message the visitor is typing.
+ */
+.madex-chat-alert {
+    z-index: 4;
+    flex: 0 0 auto;
+    padding: 11px var(--madex-space-5);
+    border-bottom: 1px solid var(--madex-teal-border);
+    background: var(--madex-teal-50);
+    box-shadow: var(--madex-shadow-1);
+    color: var(--madex-teal-800);
+    font-size: 12.5px;
+    font-weight: 650;
+    line-height: 1.45;
+    animation: madex-alert-in 160ms ease-out both;
+}
+
+@keyframes madex-alert-in {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.madex-chat-alert.is-error {
+    border-color: #f1c6c1;
+    background: var(--madex-error-bg);
+    color: var(--madex-error-dark);
+}
+
+/* Flows */
+.madex-flow-body {
+    height: 100%;
+    padding: var(--madex-space-5);
+}
+
+.madex-flow-shell {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    gap: var(--madex-space-4);
+}
+
+.madex-flow-top {
+    display: flex;
+    align-items: center;
+}
+
+.madex-flow-back {
+    min-height: 40px;
+    padding: 0 4px;
+    border: 0;
+    background: transparent;
+    color: var(--madex-teal-700);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.madex-client-paths {
+    display: grid;
+    gap: 10px;
+}
+
+.madex-choice-button {
+    min-height: 54px;
+    padding: 12px 14px;
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+    color: var(--madex-ink);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: left;
+}
+
+.madex-choice-button:hover {
+    border-color: var(--madex-teal-500);
+    background: var(--madex-teal-50);
+}
+
+.madex-flow-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--madex-space-4);
+}
+
+.madex-field,
+.madex-fieldset {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: var(--madex-space-2);
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.madex-field-label {
+    margin: 0;
+    color: var(--madex-ink);
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.madex-input,
+.madex-select,
+.madex-textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid var(--madex-border-strong);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+    color: var(--madex-ink);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.madex-select {
+    padding-right: 34px;
+}
+
+.madex-textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.madex-segmented {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.madex-radio-card {
+    position: relative;
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border: 1px solid var(--madex-border-strong);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+    cursor: pointer;
+    color: var(--madex-ink);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.madex-radio-card input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.madex-radio-card:has(input:checked) {
+    border-color: var(--madex-teal-700);
+    background: var(--madex-teal-50);
+    box-shadow: inset 0 0 0 1px var(--madex-teal-700);
+    color: var(--madex-teal-800);
+}
+
+.madex-radio-card:has(input:focus-visible) {
+    outline: 2px solid var(--madex-teal-700);
+    outline-offset: 1px;
+}
+
+.madex-form-note {
+    margin: 0;
+    padding: 12px;
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-sunken);
+    color: var(--madex-ink-soft);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.madex-form-actions {
+    display: flex;
+    gap: var(--madex-space-3);
+    margin-top: var(--madex-space-2);
+    padding-top: var(--madex-space-1);
+}
+
+.madex-form-actions .madex-button-primary {
+    flex: 1 1 auto;
+}
+
+/* Package finder */
+.madex-goal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.madex-goal {
+    position: relative;
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--madex-border-strong);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+    color: var(--madex-ink);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.3;
+}
+
+.madex-goal input {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--madex-teal-700);
+}
+
+.madex-goal:has(input:checked) {
+    border-color: var(--madex-teal-700);
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-800);
+}
+
+.madex-goal:has(input:focus-visible) {
+    outline: 2px solid var(--madex-teal-700);
+    outline-offset: 1px;
+}
+
+/* Package cards */
+.madex-package-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--madex-space-3);
+}
+
+.madex-package-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--madex-space-3);
+    padding: var(--madex-space-5);
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-lg);
+    background: var(--madex-surface);
+}
+
+.madex-package-card.is-recommended {
+    border-color: var(--madex-teal-700);
+    box-shadow: 0 0 0 1px var(--madex-teal-700), var(--madex-shadow-1);
+}
+
+.madex-package-head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.madex-package-badge {
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-800);
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.madex-package-title {
+    margin: 0;
+    color: var(--madex-ink);
+    font-size: 17px;
+    font-weight: 750;
+    line-height: 1.3;
+}
+
+.madex-package-why {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    color: var(--madex-teal-800);
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.45;
+}
+
+.madex-package-why svg,
+.madex-package-features svg {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    fill: none;
+    stroke: var(--madex-teal-700);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.madex-package-missing {
+    margin: 0;
+    color: var(--madex-ink-muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.madex-package-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--madex-space-3);
+}
+
+.madex-package-description {
+    margin: 0;
+    color: var(--madex-ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.madex-package-features ul {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.madex-package-features li {
+    display: flex;
+    gap: 8px;
+    color: var(--madex-ink);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.madex-package-features li[hidden] {
+    display: none;
+}
+
+.madex-package-group {
+    margin: var(--madex-space-2) 0 6px;
+    color: var(--madex-ink-muted);
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.madex-package-group:first-child {
+    margin-top: 0;
+}
+
+.madex-package-more {
+    min-height: 32px;
+    padding: 0;
+    font-size: 13px;
+}
+
+.madex-package-details summary {
+    color: var(--madex-teal-700);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    list-style-position: inside;
+}
+
+.madex-package-details[open] summary {
+    margin-bottom: var(--madex-space-3);
+}
+
+.madex-package-card .madex-button {
+    width: 100%;
+    justify-content: center;
+}
+
+.madex-package-divider {
+    margin: var(--madex-space-3) 0 0;
+    color: var(--madex-ink-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.madex-package-help {
+    margin: var(--madex-space-2) 0 0;
+    color: var(--madex-ink-muted);
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.madex-package-help .madex-text-action {
+    display: inline;
+    min-height: 0;
+    padding: 0;
+    font-size: inherit;
+}
+
+/* Suggested next steps under an assistant reply */
+.madex-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: -4px 0 4px;
+}
+
+.madex-suggestion {
+    min-height: 34px;
+    padding: 6px 12px;
+    border: 1px solid var(--madex-teal-border);
+    border-radius: 999px;
+    background: var(--madex-surface);
+    color: var(--madex-teal-800);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 650;
+}
+
+.madex-suggestion:hover {
+    border-color: var(--madex-teal-700);
+    background: var(--madex-teal-50);
+}
+
+/* Proactive greeting beside the launcher */
+.madex-teaser {
+    position: absolute;
+    right: 0;
+    bottom: 72px;
+    display: flex;
+    width: max-content;
+    max-width: min(300px, calc(100vw - 48px));
+    border: 1px solid var(--madex-border);
+    border-radius: 12px 12px 4px 12px;
+    background: var(--madex-surface);
+    box-shadow: var(--madex-shadow-float);
+}
+
+.madex-teaser.is-visible {
+    animation: madex-teaser-in 260ms ease-out both;
+}
+
+.madex-teaser[hidden] {
+    display: none;
+}
+
+.madex-teaser-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 8px 14px 16px;
+    border: 0;
+    background: transparent;
+    color: var(--madex-ink);
+    cursor: pointer;
+    text-align: left;
+}
+
+.madex-teaser-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--madex-ink-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.madex-teaser-mark {
+    display: grid;
+    width: 22px;
+    height: 22px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-700);
+}
+
+.madex-teaser-text {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.madex-teaser-close {
+    display: grid;
+    flex: none;
+    width: 28px;
+    height: 28px;
+    margin: 8px 8px 0 0;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--madex-ink-muted);
+    cursor: pointer;
+}
+
+.madex-teaser-close:hover {
+    background: var(--madex-sunken);
+    color: var(--madex-ink);
+}
+
+.madex-toggle-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    box-sizing: border-box;
+    display: flex;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    border-radius: 11px;
+    background: #d93a2f;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+
+.madex-toggle-badge[hidden] {
+    display: none;
+}
+
+@keyframes madex-teaser-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.madex-empty-state {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px;
+    border: 1px dashed var(--madex-border-strong);
+    border-radius: var(--madex-radius-lg);
+    background: var(--madex-surface);
+}
+
+.madex-empty-state h3,
+.madex-empty-state p {
+    margin: 0;
+}
+
+.madex-empty-state h3 {
+    font-size: 17px;
+}
+
+.madex-empty-state p {
+    color: var(--madex-ink-soft);
+    font-size: 13px;
+}
+
+/* Appointment */
+.madex-stepper {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--madex-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.madex-stepper li {
+    position: relative;
+    overflow: hidden;
+    padding-top: var(--madex-space-3);
+    color: var(--madex-ink-muted);
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.madex-stepper li::before {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--madex-border);
+    content: "";
+}
+
+.madex-stepper li.is-current,
+.madex-stepper li.is-complete {
+    color: var(--madex-teal-800);
+}
+
+.madex-stepper li.is-current::before,
+.madex-stepper li.is-complete::before {
+    background: var(--madex-teal-500);
+}
+
+.madex-step-title {
+    margin: 2px 0 0;
+    color: var(--madex-ink);
+    font-size: 18px;
+    font-weight: 750;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+}
+
+.madex-review-list {
+    display: grid;
+    grid-template-columns: minmax(95px, 0.8fr) minmax(0, 1.2fr);
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+    font-size: 12.5px;
+}
+
+.madex-review-list dt,
+.madex-review-list dd {
+    margin: 0;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--madex-border);
+    overflow-wrap: anywhere;
+}
+
+.madex-review-list dt {
+    color: var(--madex-ink-muted);
+}
+
+.madex-review-list dd {
+    font-weight: 700;
+    text-align: right;
+}
+
+.madex-review-list dt:nth-last-of-type(1),
+.madex-review-list dd:nth-last-of-type(1) {
+    border-bottom: 0;
+}
+
+.madex-edit-appointment {
+    min-height: 38px;
+}
+
+.madex-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--madex-ink-soft);
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.madex-consent input {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    margin: 0;
+    accent-color: var(--madex-teal-700);
+}
+
+.madex-submit-status {
+    padding: 11px 12px;
+    border: 1px solid #f1c6c1;
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-error-bg);
+    color: var(--madex-error-dark);
+    font-size: 12px;
+    font-weight: 650;
+    line-height: 1.5;
+}
+
+.madex-success-state {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+    gap: var(--madex-space-5);
+    padding: var(--madex-space-7) var(--madex-space-1) var(--madex-space-2);
+}
+
+.madex-success-icon {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-700);
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.madex-reference-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--madex-space-1);
+    padding: var(--madex-space-5);
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-md);
+    background: var(--madex-surface);
+}
+
+.madex-reference-card > span,
+.madex-reference-card small {
+    color: var(--madex-ink-muted);
+    font-size: 11px;
+    font-weight: 650;
+}
+
+.madex-reference-card strong {
+    color: var(--madex-ink);
+    font-size: 18px;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+.madex-success-state > .madex-button {
+    margin-top: auto;
+}
+
+.madex-success-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--madex-space-3);
+    margin-top: auto;
+    padding-top: var(--madex-space-4);
+}
+
+.madex-success-actions .madex-text-action {
+    justify-content: center;
+}
+
+.madex-reference-card strong {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    letter-spacing: 0.04em;
+}
+
+.madex-package-audience {
+    margin: 0;
+    color: var(--madex-ink-muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+/* Scrollbars */
+.madex-welcome,
+.madex-flow-body,
+.madex-chat-messages {
+    scrollbar-color: var(--madex-border-strong) transparent;
+    scrollbar-width: thin;
+}
+
+.madex-welcome::-webkit-scrollbar,
+.madex-flow-body::-webkit-scrollbar,
+.madex-chat-messages::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.madex-welcome::-webkit-scrollbar-thumb,
+.madex-flow-body::-webkit-scrollbar-thumb,
+.madex-chat-messages::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--madex-border-strong);
+}
+
+/* Larger embedded presentation */
+@media (min-width: 700px) {
+    .madex-chat-embedded .madex-welcome {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
+        align-content: start;
+        gap: 20px 32px;
+        padding: 36px;
+    }
+
+    .madex-chat-embedded .madex-welcome-logo,
+    .madex-chat-embedded .madex-welcome-copy,
+    .madex-chat-embedded .madex-text-action {
+        grid-column: 1;
+    }
+
+    .madex-chat-embedded .madex-quick-actions {
+        grid-column: 2;
+        grid-row: 1 / span 3;
+        align-content: start;
+        grid-auto-rows: minmax(92px, max-content);
+    }
+
+    .madex-chat-embedded .madex-privacy-note {
+        grid-column: 1 / -1;
+    }
+
+    .madex-chat-embedded .madex-flow-body {
+        padding: 30px 36px;
+    }
+
+    .madex-chat-embedded .madex-flow-shell {
+        max-width: 680px;
+        margin: 0 auto;
+    }
+
+}
+
+/* Phone: the floating widget becomes a true full-screen chat. */
+@media (max-width: 599px) {
+    .madex-chatbot-container {
+        right: max(16px, env(safe-area-inset-right)) !important;
+        bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    }
+
+    .madex-chatbot-container .madex-chat-window {
+        position: fixed;
+        inset: 0;
+        /* No double-tap or pinch zoom inside the chat. */
+        touch-action: pan-x pan-y;
+        width: 100%;
+        max-width: none;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .madex-chatbot-container .madex-chat-header {
+        min-height: calc(64px + env(safe-area-inset-top));
+        padding-top: calc(10px + env(safe-area-inset-top));
+    }
+
+    .madex-teaser {
+        max-width: calc(100vw - 32px);
+    }
+
+    .madex-chatbot-container.madex-is-open .madex-chat-toggle {
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .madex-chatbot-container .madex-chat-input-area {
+        padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    }
+
+    .madex-chat-alert {
+        bottom: calc(92px + env(safe-area-inset-bottom));
+    }
+
+    .madex-chat-embedded {
+        margin: 16px 0;
+    }
+
+    .madex-chat-embedded .madex-chat-window {
+        height: min(720px, 82vh);
+        border-radius: var(--madex-radius-lg);
+    }
+
+    .madex-welcome {
+        padding: 18px 16px;
+    }
+
+    .madex-flow-body {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 359px) {
+    .madex-quick-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .madex-quick-action {
+        min-height: 58px;
+    }
+
+    .madex-chat-status {
+        max-width: 205px;
+    }
+
+    .madex-form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .madex-form-actions .madex-button {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-madex-chat-root] *,
+    [data-madex-chat-root] *::before,
+    [data-madex-chat-root] *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}
+
+@media (forced-colors: active) {
+    [data-madex-chat-root] button,
+    [data-madex-chat-root] input,
+    [data-madex-chat-root] select,
+    [data-madex-chat-root] textarea,
+    .madex-message,
+    .madex-package-card {
+        border: 1px solid ButtonText;
+    }
+}
+
+/* Earlier conversations on the welcome view */
+.madex-history {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.madex-history[hidden] {
+    display: none;
+}
+
+.madex-history-title {
+    margin: 0;
+    color: var(--madex-ink-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.madex-history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.madex-history-item {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--madex-border);
+    border-radius: var(--madex-radius-lg);
+    background: var(--madex-surface);
+    color: var(--madex-ink);
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    transition: border-color 150ms ease, background 150ms ease;
+}
+
+.madex-history-item:hover {
+    border-color: var(--madex-teal-border);
+    background: var(--madex-teal-50);
+}
+
+.madex-history-item svg {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    fill: none;
+    stroke: var(--madex-teal-700);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}
+
+.madex-history-text {
+    display: flex;
+    min-width: 0;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.madex-history-name {
+    overflow: hidden;
+    font-size: 13px;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.madex-history-date {
+    color: var(--madex-ink-muted);
+    font-size: 11px;
+}
+
+.madex-history-current {
+    flex: none;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-700);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Links inside answers render as small buttons */
+.madex-inline-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 2px 0;
+    padding: 3px 10px;
+    border: 1px solid var(--madex-teal-border);
+    border-radius: 999px;
+    background: var(--madex-teal-50);
+    color: var(--madex-teal-700) !important;
+    cursor: pointer;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.5;
+    text-decoration: none !important;
+    vertical-align: baseline;
+    transition: background 150ms ease, border-color 150ms ease;
+}
+
+.madex-inline-link:hover {
+    border-color: var(--madex-teal-500);
+    background: #dff0ee;
+}
+
+.madex-inline-link svg {
+    width: 12px;
+    height: 12px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2.2;
+}
+
+/*
+ * iOS zooms the page when a focused field's text is under 16px, which pushes
+ * the send button off screen. Phones and touch screens get 16px fields.
+ */
+@media (max-width: 599px), (pointer: coarse) {
+    .madex-chat-input,
+    .madex-input,
+    .madex-select,
+    .madex-textarea {
+        font-size: 16px;
+    }
+}
+
+/* Call and e-mail buttons under an answer */
+.madex-suggestion-contact {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none !important;
+}
+
+.madex-suggestion-contact svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+}

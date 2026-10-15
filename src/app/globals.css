@@ -35,7 +35,7 @@
   --radius-l: 36px;
   --gutter: clamp(16px, 4vw, 56px);
   --maxw: 1400px;
-  --header-h: 72px;
+  --header-h: 84px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in-out: cubic-bezier(0.83, 0, 0.17, 1);
 }
@@ -264,47 +264,80 @@ p {
 
 /* ---------- Buttons ---------- */
 .btn {
-  --btn-bg: var(--action);
+  --btn-bg: var(--teal);
   --btn-fg: #fff;
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 15px 24px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 15.5px;
-  line-height: 1.2;
+  gap: 14px;
+  padding: 17px 28px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1;
   color: var(--btn-fg);
   background: var(--btn-bg);
-  border: 1.5px solid transparent;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    color 0.45s var(--ease-out),
+    box-shadow 0.45s var(--ease-out);
+  box-shadow: 0 14px 40px -18px rgba(2, 141, 134, 0.9);
   white-space: nowrap;
 }
-.btn:hover {
-  --btn-bg: var(--petrol);
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--petrol);
+  border-radius: inherit;
+  transform: translateY(101%);
+  transition: transform 0.55s var(--ease-out);
+}
+.btn:hover::before,
+.btn:focus-visible::before {
+  transform: translateY(0);
 }
 .btn .btn__icon {
-  display: none;
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  transition: transform 0.55s var(--ease-out);
+}
+.btn:hover .btn__icon {
+  transform: rotate(-45deg);
 }
 .btn--light {
   --btn-bg: #fff;
-  --btn-fg: var(--deep);
+  --btn-fg: var(--petrol);
+}
+.btn--light::before {
+  background: var(--teal);
 }
 .btn--light:hover {
-  --btn-bg: var(--mint);
+  color: #fff;
+}
+.btn--light .btn__icon {
+  background: rgba(2, 81, 89, 0.1);
 }
 .btn--ghost {
   --btn-bg: transparent;
   --btn-fg: currentColor;
-  border-color: currentColor;
+  box-shadow: inset 0 0 0 1.5px currentColor;
+}
+.btn--ghost::before {
+  background: var(--teal);
 }
 .btn--ghost:hover {
-  --btn-bg: transparent;
-  border-color: var(--teal);
+  color: #fff;
+  box-shadow: inset 0 0 0 1.5px var(--teal);
 }
 .btn--sm {
-  padding: 11px 16px;
+  padding: 12px 18px;
   font-size: 14px;
 }
 

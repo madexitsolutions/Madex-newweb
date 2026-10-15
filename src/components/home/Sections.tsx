@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Link } from "@/components/layout/Transition";
+import { openOrion } from "@/components/layout/Orion";
 import { offerSteps, packages } from "@/content/site";
 
 const CHECKS = [
@@ -189,7 +190,7 @@ export function AiSection() {
             </li>
           </ul>
           <div className="offer__cta">
-            <button type="button" className="b b--light" onClick={() => window.dispatchEvent(new Event("orion:open"))}>
+            <button type="button" className="b b--light" onClick={openOrion}>
               Unseren Assistenten testen
             </button>
             <Link href="/marketing-solutions/ki-integration" className="b b--quiet-dark">

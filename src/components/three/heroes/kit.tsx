@@ -1,5 +1,6 @@
 "use client";
 
+import { ContactShadows } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef, type ReactNode } from "react";
 import * as THREE from "three";
@@ -18,7 +19,7 @@ export const C = {
  * Places a hero object to the right of the headline on desktop and below it on
  * mobile, adds pointer parallax and a gentle scroll-driven drift.
  */
-export function SceneRig({ children, scale = 1, tilt = 0.35, y = 0 }: { children: ReactNode; scale?: number; tilt?: number; y?: number }) {
+export function SceneRig({ children, scale = 1, tilt = 0.35, y = 0, shadow = true }: { children: ReactNode; scale?: number; tilt?: number; y?: number; shadow?: boolean }) {
   const outer = useRef<THREE.Group>(null);
   const inner = useRef<THREE.Group>(null);
   const { viewport, size, pointer } = useThree();
@@ -42,6 +43,7 @@ export function SceneRig({ children, scale = 1, tilt = 0.35, y = 0 }: { children
   return (
     <group ref={outer} position={[px, py, 0]} scale={s}>
       <group ref={inner}>{children}</group>
+      {shadow && <ContactShadows position={[0, -2.25, 0]} scale={7} blur={2.6} far={4.5} opacity={0.55} resolution={256} color="#000c0e" />}
     </group>
   );
 }

@@ -2,7 +2,7 @@
 import { createHash, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
 import { nowIso, read, update } from "./store";
 
-export type ChatMessage = { role: "user" | "assistant"; content: string; at: string; actions?: string[] };
+export type ChatMessage = { id?: number; role: "user" | "assistant"; content: string; at: string; actions?: string[]; fallback?: boolean };
 export type ChatSession = {
   id: string; // public uuid
   tokenHash: string;
@@ -11,6 +11,9 @@ export type ChatSession = {
   page?: string;
   customerType?: "client" | "prospect";
   requestRef?: string;
+  topic?: string;
+  closedAt?: string;
+  lastSeen?: string;
   messages: ChatMessage[];
 };
 
@@ -36,13 +39,24 @@ export async function getSession(id: string, token: string) {
   return a.length === b.length && timingSafeEqual(a, b) ? s : null;
 }
 
+/** Appends messages (numbering them per session) and returns them with their ids. */
 export async function appendMessages(id: string, msgs: ChatMessage[], patch?: Partial<ChatSession>) {
-  await update<Data>("chats", EMPTY, (d) => {
+  return update<Data, ChatMessage[]>("chats", EMPTY, (d) => {
     const s = d.items.find((x) => x.id === id);
-    if (!s) return;
-    s.messages.push(...msgs);
+    if (!s) return [];
+    let next = s.messages.reduce((m, x, i) => Math.max(m, x.id ?? i + 1), 0);
+    const added = msgs.map((m) => ({ ...m, id: ++next }));
+    s.messages.push(...added);
     if (s.messages.length > 200) s.messages = s.messages.slice(-200);
     Object.assign(s, patch, { updatedAt: nowIso() });
+    return added;
+  });
+}
+
+export async function touchSession(id: string, patch: Partial<ChatSession> = {}) {
+  await update<Data>("chats", EMPTY, (d) => {
+    const s = d.items.find((x) => x.id === id);
+    if (s) Object.assign(s, patch, { lastSeen: nowIso() });
   });
 }
 

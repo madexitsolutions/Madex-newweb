@@ -1,37 +1,63 @@
 "use client";
 
-import { RoundedBox } from "@react-three/drei";
+import { Float } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { MarkModel } from "../HeroScene";
 import { C, Glossy, SceneRig } from "./kit";
 
-/** Eight modules (one per solution) assembling around the Madex mark. */
-export default function SolutionsScene() {
-  const ref = useRef<THREE.Group>(null);
-  const colors = [C.petrol, C.teal, C.glow, C.petrol, C.teal, C.sun, C.petrol, C.teal];
+/** The Madex mark at the centre, its eight solutions travelling on two orbits. */
+const ORBITS = [
+  { r: 1.9, tilt: [0.95, 0.2, 0.4] as [number, number, number], speed: 0.32, items: 4, color: C.teal },
+  { r: 2.35, tilt: [1.05, -0.25, -0.5] as [number, number, number], speed: -0.22, items: 4, color: C.glow },
+];
+
+function Orbit({ r, tilt, speed, items, color, offset }: (typeof ORBITS)[number] & { offset: number }) {
+  const group = useRef<THREE.Group>(null);
+  const colors = useMemo(() => [C.teal, C.sun, "#f4fbfa", C.petrol], []);
   useFrame((s) => {
-    const t = s.clock.elapsedTime;
-    ref.current?.children.forEach((c, i) => {
-      const a = (i / 8) * Math.PI * 2 + t * 0.25;
-      const breathe = 1.75 + Math.sin(t * 0.9 + i) * 0.18;
-      c.position.set(Math.cos(a) * breathe, Math.sin(a * 2 + t) * 0.35, Math.sin(a) * breathe);
-      c.rotation.set(t * 0.4 + i, t * 0.3 + i * 0.5, 0);
+    const t = s.clock.elapsedTime * speed + offset;
+    group.current?.children.forEach((c, i) => {
+      const a = t + (i / items) * Math.PI * 2;
+      c.position.set(Math.cos(a) * r, Math.sin(a) * r, 0);
     });
   });
   return (
-    <SceneRig>
-      <group scale={0.55}>
-        <MarkModel />
-      </group>
-      <group ref={ref} rotation={[0.35, 0, 0]}>
-        {colors.map((c, i) => (
-          <RoundedBox key={i} args={[0.42, 0.42, 0.42]} radius={0.08} smoothness={4}>
-            <Glossy color={c} />
-          </RoundedBox>
+    <group rotation={tilt}>
+      <mesh>
+        <torusGeometry args={[r, 0.008, 8, 200]} />
+        <meshBasicMaterial color={color} transparent opacity={0.45} toneMapped={false} />
+      </mesh>
+      <group ref={group}>
+        {Array.from({ length: items }, (_, i) => (
+          <group key={i}>
+            <mesh>
+              <sphereGeometry args={[0.15 + (i % 2) * 0.05, 48, 48]} />
+              <Glossy color={colors[(i + offset * 2) % colors.length]} rough={0.12} />
+            </mesh>
+            <mesh>
+              <sphereGeometry args={[0.3, 24, 24]} />
+              <meshBasicMaterial color={C.glow} transparent opacity={0.06} depthWrite={false} toneMapped={false} />
+            </mesh>
+          </group>
         ))}
       </group>
+    </group>
+  );
+}
+
+export default function SolutionsScene() {
+  return (
+    <SceneRig scale={0.95}>
+      <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.4}>
+        <group scale={0.85}>
+          <MarkModel />
+        </group>
+      </Float>
+      {ORBITS.map((o, i) => (
+        <Orbit key={i} {...o} offset={i} />
+      ))}
     </SceneRig>
   );
 }
