@@ -1,7 +1,7 @@
 "use client";
 
 import { Float, RoundedBox } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { C, Glossy, SceneRig, useExtrude } from "./kit";
@@ -310,8 +310,10 @@ function TrendArrow() {
 }
 
 export default function GoogleScene() {
+  // wide composition: shrink a little on phones so nothing is cut at the sides
+  const mobile = useThree((st) => st.size.width < 900);
   return (
-    <SceneRig scale={1.03} y={-0.1}>
+    <SceneRig scale={mobile ? 0.75 : 1.03} y={-0.1}>
       <Float speed={1.4} rotationIntensity={0.12} floatIntensity={0.35}>
         <group position={[0, 1.5, 0.25]} rotation={[0.08, -0.18, 0]}>
           <SearchBar />

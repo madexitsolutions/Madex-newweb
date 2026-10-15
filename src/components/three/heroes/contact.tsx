@@ -1,7 +1,7 @@
 "use client";
 
 import { Float, RoundedBox } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { C, Glossy, SceneRig } from "./kit";
@@ -258,8 +258,10 @@ function MapPin() {
 }
 
 export default function ContactScene() {
+  // wide composition: shrink a little on phones so nothing is cut at the sides
+  const mobile = useThree((st) => st.size.width < 900);
   return (
-    <SceneRig scale={1.1} y={-0.25}>
+    <SceneRig scale={mobile ? 0.78 : 1.1} y={-0.25}>
       <Float speed={1.2} rotationIntensity={0.12} floatIntensity={0.3}>
         <group position={[-0.3, -0.35, 0]} rotation={[0.1, -0.3, 0.02]}>
           <Envelope />

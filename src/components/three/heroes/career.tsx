@@ -10,7 +10,7 @@ import { C, Glossy, SceneRig, useExtrude } from "./kit";
  * Career growth: a figure climbs a staircase of glossy blocks towards a glowing
  * star; a briefcase waits at the foot of the stairs.
  * Layout (local units, stairs group): ground y G, step i spans x[i] ± 0.3,
- * top at G + RISE·(i+1); star floats 1.1 above the top step, clear of the
+ * top at G + RISE·(i+1); star floats 1.65 above the top step, clear of the
  * figure's head; briefcase stands on the ground left of step 0.
  */
 const G = -2.1;

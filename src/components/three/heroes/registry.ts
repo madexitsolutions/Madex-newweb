@@ -21,7 +21,6 @@ export const heroScenes = {
   contact: dynamic(() => import("./contact"), { ssr: false }),
   check: dynamic(() => import("./check"), { ssr: false }),
   legal: dynamic(() => import("./legal"), { ssr: false }),
-  laptop: dynamic(() => import("./laptop"), { ssr: false }) as ComponentType<{ image?: string }>,
   lost: dynamic(() => import("./lost"), { ssr: false }),
 } satisfies Record<string, ComponentType<{ image?: string }>>;
 

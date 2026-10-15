@@ -1,7 +1,7 @@
 "use client";
 
 import { Float, RoundedBox } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { C, Glossy, SceneRig, roundRect } from "./kit";
@@ -273,8 +273,10 @@ function Roadmap() {
 }
 
 export default function AnalysisScene() {
+  // wide composition: shrink a little on phones so nothing is cut at the sides
+  const mobile = useThree((st) => st.size.width < 900);
   return (
-    <SceneRig scale={1.04} y={0.05}>
+    <SceneRig scale={mobile ? 0.8 : 1.04} y={0.05}>
       <Float speed={1} rotationIntensity={0.08} floatIntensity={0.25}>
         <group position={[0.1, 0.35, -0.3]} rotation={[-0.06, -0.28, 0.02]}>
           <Dashboard />

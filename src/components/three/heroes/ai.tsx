@@ -1,7 +1,7 @@
 "use client";
 
 import { Float, RoundedBox } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import { C, Glossy, SceneRig, roundRect, useExtrude } from "./kit";
@@ -354,8 +354,10 @@ function Link({ to, index }: { to: [number, number, number]; index: number }) {
 }
 
 export default function AiScene() {
+  // wide composition: shrink a little on phones so nothing is cut at the sides
+  const mobile = useThree((st) => st.size.width < 900);
   return (
-    <SceneRig scale={1.02} y={-0.2}>
+    <SceneRig scale={mobile ? 0.76 : 1.02} y={-0.2}>
       <Float speed={1.1} rotationIntensity={0.12} floatIntensity={0.3}>
         <group position={[-0.1, 0, 0]} rotation={[0.18, -0.28, 0]}>
           <Chip />
