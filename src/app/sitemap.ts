@@ -1,31 +1,21 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/content/site";
-import { services } from "@/content/services";
 import { posts } from "@/content/posts";
+import { allSeoPages } from "@/lib/seo-pages";
+import { getSettings } from "@/lib/server/settings";
 
-const staticPaths = [
-  "",
-  "/marketing-solutions",
-  "/uber-uns",
-  "/das-team",
-  "/blog",
-  "/karriere",
-  "/portfolio",
-  "/website-portfolio",
-  "/graphic-design-portfolio",
-  "/werbevideos-portfolio",
-  "/partners",
-  "/kontakt",
-  "/kostenlose-prufung",
-  "/agb",
-  "/datenschutz",
-];
+export const revalidate = 3600;
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  return [
-    ...staticPaths.map((p) => ({ url: `${site.url}${p}`, lastModified: now, changeFrequency: "monthly" as const, priority: p === "" ? 1 : 0.8 })),
-    ...services.map((s) => ({ url: `${site.url}/marketing-solutions/${s.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.8 })),
-    ...posts.map((p) => ({ url: `${site.url}/${p.slug}`, lastModified: new Date(p.date), changeFrequency: "yearly" as const, priority: 0.5 })),
-  ];
+  const seo = (await getSettings().catch(() => null))?.seo ?? {};
+  const postDates = new Map(posts.map((p) => [`/${p.slug}`, new Date(p.date)]));
+  return allSeoPages()
+    .filter((p) => !seo[p.path]?.noindex)
+    .map((p) => ({
+      url: `${site.url}${p.path === "/" ? "" : p.path}`,
+      lastModified: postDates.get(p.path) ?? now,
+      changeFrequency: p.group === "Beiträge" ? ("yearly" as const) : ("monthly" as const),
+      priority: p.path === "/" ? 1 : p.group === "Beiträge" ? 0.5 : 0.8,
+    }));
 }

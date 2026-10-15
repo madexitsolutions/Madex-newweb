@@ -1,20 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource/syne/600.css";
-import "@fontsource/syne/700.css";
-import "@fontsource/syne/800.css";
-import "@fontsource/kanit/300.css";
-import "@fontsource/kanit/400.css";
-import "@fontsource/kanit/500.css";
+import "@fontsource-variable/schibsted-grotesk";
 import "./globals.css";
 import { site } from "@/content/site";
-import { SmoothScroll } from "@/components/layout/SmoothScroll";
-import { TransitionProvider } from "@/components/layout/Transition";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
-import { Cursor } from "@/components/layout/Cursor";
-import { Preloader } from "@/components/layout/Preloader";
-import { Orion } from "@/components/layout/Orion";
-import { organizationJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -36,32 +23,15 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#011b1e",
+  themeColor: "#01363b",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="de-CH">
-      <body>
-        <a href="#inhalt" className="skip-link">
-          Zum Inhalt springen
-        </a>
-        <SmoothScroll>
-          <TransitionProvider>
-            <Preloader />
-            <Header />
-            <main id="inhalt" tabIndex={-1}>
-              {children}
-            </main>
-            <Footer />
-            <Orion />
-            <Cursor />
-          </TransitionProvider>
-        </SmoothScroll>
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }} />
-      </body>
+    <html lang="de-CH" data-scroll-behavior="smooth">
+      <body>{children}</body>
     </html>
   );
 }

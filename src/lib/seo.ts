@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { site } from "@/content/site";
 import { services } from "@/content/services";
+import { getSettings } from "@/lib/server/settings";
+export { staticSeo } from "@/content/seo-pages";
 
 export function pageMeta({ title, description, path, image }: { title: string; description: string; path: string; image?: string }): Metadata {
   return {
@@ -18,6 +20,25 @@ export function pageMeta({ title, description, path, image }: { title: string; d
     },
     twitter: { card: "summary_large_image", title, description },
   };
+}
+
+/** pageMeta + the overrides saved in the admin (title, description, image, noindex). */
+export async function withSeo(defaults: { title: string; description: string; path: string; image?: string }): Promise<Metadata> {
+  let o: Awaited<ReturnType<typeof getSettings>>["seo"][string] | undefined;
+  try {
+    o = (await getSettings()).seo[defaults.path];
+  } catch {
+    o = undefined;
+  }
+  const meta = pageMeta({
+    path: defaults.path,
+    title: o?.title?.trim() || defaults.title,
+    description: o?.description?.trim() || defaults.description,
+    image: o?.image?.trim() || defaults.image,
+  });
+  if (defaults.path === "/") meta.title = { absolute: String(meta.title) };
+  if (o?.noindex) meta.robots = { index: false, follow: true };
+  return meta;
 }
 
 /** ProfessionalService – only verified facts (no ratings, no opening hours). */

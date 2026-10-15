@@ -1,8 +1,10 @@
 import { BackdropCanvas } from "@/components/three/Scenes";
 import { Button } from "@/components/ui/Button";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 
 export default function NotFound() {
   return (
+    <SiteChrome>
     <section className="nf dark">
       <BackdropCanvas className="nf__canvas" scene="lost" />
       <div className="container nf__inner">
@@ -30,5 +32,6 @@ export default function NotFound() {
         .nf__ctas{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
       `}</style>
     </section>
+    </SiteChrome>
   );
 }
