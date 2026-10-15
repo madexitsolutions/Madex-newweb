@@ -14,7 +14,7 @@ type Props = {
   target?: string;
 };
 
-export function Button({ href, children, variant = "primary", size = "md", icon = true, magnetic = true, className, target }: Props) {
+export function Button({ href, children, variant = "primary", size = "md", icon = true, magnetic = false, className, target }: Props) {
   const cls = ["btn", variant !== "primary" && `btn--${variant}`, size === "sm" && "btn--sm", className].filter(Boolean).join(" ");
   const external = /^https?:/.test(href);
   const inner = (

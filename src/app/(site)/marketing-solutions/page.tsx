@@ -71,7 +71,7 @@ export default function MarketingSolutionsPage() {
         `}</style>
       </section>
 
-      <ServicesConstellation title="Ein Netzwerk. Acht Disziplinen." eyebrow="Alles aus einer Hand" />
+      <ServicesConstellation title="Alles aus einer Hand" eyebrow="Alles aus einer Hand" />
 
       <section className="section white" aria-labelledby="ms-strategy">
         <div className="container grid-2">

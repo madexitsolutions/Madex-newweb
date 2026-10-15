@@ -7,3 +7,7 @@ next-env.d.ts
 .env.local
 .DS_Store
 npm-debug.log*
+
+# runtime data (requests, chats, settings)
+/.data/
+/data/

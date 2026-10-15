@@ -21,7 +21,6 @@ export function Accordion({ items, dark = false }: { items: { q: string; a: stri
                 className="acc__btn"
                 onClick={() => setOpen(isOpen ? null : i)}
               >
-                <span className="acc__num">{String(i + 1).padStart(2, "0")}</span>
                 <span className="acc__q">{it.q}</span>
                 <span className="acc__icon">
                   <Icon name="plus" size={20} />

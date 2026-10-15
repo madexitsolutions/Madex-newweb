@@ -12,7 +12,7 @@ const vertex = /* glsl */ `
   }
 `;
 
-// Flowing petrol/teal field with a perspective grid and a pointer light.
+// Calm flowing petrol field with a soft pointer light.
 const fragment = /* glsl */ `
   precision highp float;
   uniform float uTime;
@@ -52,28 +52,19 @@ const fragment = /* glsl */ `
     n += 0.5 * snoise(p * 2.6 - vec2(t * 1.3, t));
     n = n * 0.5 + 0.5;
 
-    vec3 night = vec3(0.004, 0.106, 0.118);
+    vec3 night = vec3(0.004, 0.18, 0.196);
     vec3 petrol = vec3(0.008, 0.318, 0.349);
     vec3 teal = vec3(0.008, 0.553, 0.525);
     vec3 glow = vec3(0.31, 0.88, 0.82);
 
     vec3 col = mix(night, petrol, smoothstep(0.25, 0.85, n) * 0.9);
-    col = mix(col, teal, smoothstep(0.7, 1.0, n) * 0.55);
+    col = mix(col, teal, smoothstep(0.75, 1.0, n) * 0.3);
 
-    // perspective grid in lower half
-    float horizon = 0.42;
-    if (uv.y < horizon) {
-      float depth = (horizon - uv.y) / horizon;
-      vec2 g = vec2((uv.x - 0.5) / (depth + 0.05), 1.0 / (depth + 0.05) + uTime * 0.25);
-      vec2 gl = abs(fract(g * vec2(1.5, 0.6)) - 0.5);
-      float line = smoothstep(0.03, 0.0, min(gl.x, gl.y) * (0.6 + depth));
-      col += glow * line * depth * 0.22 * uIntensity;
-    }
 
     // pointer light
     vec2 m = (uMouse - 0.5) * vec2(uRes.x / uRes.y, 1.0);
     float d = length(p - m);
-    col += glow * smoothstep(0.55, 0.0, d) * 0.22 * uIntensity;
+    col += glow * smoothstep(0.55, 0.0, d) * 0.06 * uIntensity;
 
     // vignette
     col *= smoothstep(1.25, 0.25, length(p * vec2(0.9, 1.2)));

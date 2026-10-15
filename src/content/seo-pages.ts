@@ -6,7 +6,7 @@ export const staticSeo: Record<string, { title: string; description: string }> =
   },
   "/marketing-solutions": {
     title: "Marketinglösungen in Schaffhausen",
-    description: "Acht Marketinglösungen aus einer Hand: Webdesign, Digital Marketing, SEO, Photo & Werbevideos, Social Media, Google Marketing, Graphic Design sowie Analyse und Planung.",
+    description: "Marketinglösungen aus einer Hand: Webdesign, Digital Marketing, SEO, Photo & Werbevideos, Social Media, Google Marketing, Graphic Design, Analyse und Planung sowie KI-Assistenten für Websites.",
   },
   "/uber-uns": {
     title: "Über uns",

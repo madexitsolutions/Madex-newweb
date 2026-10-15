@@ -18,7 +18,7 @@ export function ServicesConstellation({ title = "Was wir tun", eyebrow = "Market
   const current = services[hover ?? active];
 
   return (
-    <section className="sc dark-ink section grain" aria-labelledby="sc-title">
+    <section className="sc dark-ink section" aria-labelledby="sc-title">
       <div className="container">
         <div className="sc__head">
           <div>
@@ -33,7 +33,7 @@ export function ServicesConstellation({ title = "Was wir tun", eyebrow = "Market
         </div>
 
         <div className="sc__stage">
-          <ol className="sc__list">
+          <ul className="sc__list">
             {services.map((s, i) => (
               <li key={s.slug}>
                 <Link
@@ -42,13 +42,12 @@ export function ServicesConstellation({ title = "Was wir tun", eyebrow = "Market
                   onPointerEnter={() => setActive(i)}
                   onFocus={() => setActive(i)}
                 >
-                  <span className="sc__num">{String(i + 1).padStart(2, "0")}</span>
                   <span className="sc__name">{s.name}</span>
                   <Icon name="arrow-up-right" size={20} className="sc__arrow" />
                 </Link>
               </li>
             ))}
-          </ol>
+          </ul>
 
           <div className="sc__visual">
             <OrbitCanvas className="sc__canvas" count={services.length} focus={active} highlight={hover} onSelect={(i) => navigate(`/marketing-solutions/${services[i].slug}`)} onHover={setHover} />
@@ -85,12 +84,11 @@ export function ServicesConstellation({ title = "Was wir tun", eyebrow = "Market
         .sc__head{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end;margin-bottom:clamp(40px,5vw,70px)}
         .sc__stage{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:40px;align-items:center}
         .sc__list{list-style:none;margin:0;padding:0;counter-reset:s}
-        .sc__item{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:12px;padding:17px 6px;border-bottom:1px solid rgba(255,255,255,.1);
+        .sc__item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:17px 6px;border-bottom:1px solid rgba(255,255,255,.1);
           transition:padding .5s var(--ease-out),color .3s}
-        .sc__num{font-size:13px;color:var(--teal-glow);letter-spacing:.1em}
-        .sc__name{font:600 clamp(17px,1.55vw,24px)/1.2 var(--font-display);letter-spacing:-.02em;opacity:.55;transition:opacity .35s}
+        .sc__name{font:600 clamp(17px,1.55vw,24px)/1.2 var(--font-display);letter-spacing:-.02em;opacity:.62;transition:opacity .25s}
         .sc__arrow{opacity:0;transform:translate(-10px,10px);transition:.45s var(--ease-out);color:var(--teal-glow)}
-        .sc__item.is-active{padding-left:18px}
+        .sc__item.is-active{padding-left:10px}
         .sc__item.is-active .sc__name{opacity:1}
         .sc__item.is-active .sc__arrow{opacity:1;transform:none}
         .sc__visual{position:relative;aspect-ratio:1/1;max-height:640px}

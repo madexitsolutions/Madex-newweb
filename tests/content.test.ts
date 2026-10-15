@@ -11,9 +11,9 @@ import partners from "@/content/generated/partners.json";
 const pub = (p: string) => join(process.cwd(), "public", p);
 
 describe("Inhalte", () => {
-  it("enthält alle acht Leistungen mit eindeutigen Slugs", () => {
-    expect(services).toHaveLength(8);
-    expect(new Set(services.map((s) => s.slug)).size).toBe(8);
+  it("enthält alle neun Leistungen (inkl. KI-Assistent) mit eindeutigen Slugs", () => {
+    expect(services).toHaveLength(9);
+    expect(new Set(services.map((s) => s.slug)).size).toBe(9);
     for (const s of services) expect(s.faq.length).toBeGreaterThan(0);
   });
 
@@ -32,7 +32,7 @@ describe("Inhalte", () => {
 
   it("hat dieselbe Hauptnavigation wie madex-it.ch", () => {
     expect(mainNav.map((n) => n.label)).toEqual(["Marketing Lösungen", "Wer wir sind", "Portfolio", "Partner", "Kontakt"]);
-    expect(mainNav[0].children).toHaveLength(8);
+    expect(mainNav[0].children).toHaveLength(9);
   });
 });
 

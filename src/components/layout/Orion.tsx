@@ -187,8 +187,16 @@ function OrionWidget({ config }: { config: OrionConfig }) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onOpen = () => {
+      setTeaser(false);
+      setOpen(true);
+    };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener("orion:open", onOpen);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("orion:open", onOpen);
+    };
   }, []);
 
   const ensureSession = useCallback(async () => {

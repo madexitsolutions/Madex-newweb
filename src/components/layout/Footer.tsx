@@ -123,9 +123,9 @@ export function Footer() {
           </div>
         </div>
         <style>{`
-          .ft{position:relative;overflow:hidden;padding:clamp(90px,10vw,150px) 0 28px;background:radial-gradient(90% 70% at 15% 0%,rgba(2,141,134,.28),transparent 60%),var(--night)}
+          .ft{position:relative;overflow:hidden;padding:clamp(90px,10vw,150px) 0 28px;background:var(--deep)}
           .ft__cta{display:grid;gap:10px;padding-bottom:clamp(60px,7vw,110px);border-bottom:1px solid rgba(255,255,255,.1)}
-          .ft__title{font-size:clamp(34px,4.4vw,72px);font-weight:700;letter-spacing:-.035em;line-height:.95;margin:0 0 20px;max-width:13ch}
+          .ft__title{font-size:clamp(30px,3.4vw,52px);font-weight:700;letter-spacing:-.028em;line-height:1.05;margin:0 0 20px;max-width:16ch}
           .ft__cta-row{display:flex;flex-wrap:wrap;gap:14px}
           .ft__grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-block:clamp(50px,6vw,90px)}
           .ft__logo{display:block;margin-bottom:24px}
@@ -133,8 +133,8 @@ export function Footer() {
           .ft__addr{font-style:normal;color:var(--on-dark-soft);margin-bottom:18px;line-height:1.7}
           .ft__contact,.ft__col ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
           .ft__contact a{display:inline-flex;gap:10px;align-items:center;transition:color .3s}
-          .ft__contact a:hover,.ft__col a:hover{color:var(--teal-glow)}
-          .ft__col h3{font:600 13px/1 var(--font-body);text-transform:uppercase;letter-spacing:.2em;color:var(--teal-glow);margin-bottom:22px}
+          .ft__contact a:hover,.ft__col a:hover{color:#fff}
+          .ft__col h3{font:600 15px/1.2 var(--font-body);color:#fff;margin-bottom:18px;letter-spacing:0}
           .ft__col a{color:var(--on-dark-soft);transition:color .3s}
           .ft__social-h{margin-top:30px}
           .ft__social{display:flex!important;flex-wrap:wrap;gap:10px 18px!important}

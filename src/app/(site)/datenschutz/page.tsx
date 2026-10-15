@@ -30,7 +30,15 @@ export default function PrivacyPage() {
           <h2>Kontakt- und Terminformular</h2>
           <p>
             Wenn Sie uns über das Formular kontaktieren, bearbeiten wir die von Ihnen angegebenen Daten (z. B. Name, Unternehmen, E-Mail, Telefonnummer, Projektbeschreibung und Terminwunsch), um Ihre Anfrage zu beantworten.
-            Die Angaben werden per E-Mail an uns übermittelt und nur so lange aufbewahrt, wie es für die Bearbeitung Ihrer Anfrage und allfällige gesetzliche Pflichten erforderlich ist.
+            Die Angaben werden verschlüsselt auf unserem Server gespeichert, per E-Mail an uns übermittelt und nur so lange aufbewahrt, wie es für die Bearbeitung Ihrer Anfrage und allfällige gesetzliche Pflichten erforderlich ist.
+          </p>
+
+          <h2>KI-Chat-Assistent</h2>
+          <p>
+            Auf dieser Website steht ein Chat-Assistent zur Verfügung. Ihre Nachrichten werden zur Beantwortung an die OpenAI, L.L.C. (USA) übermittelt und dort verarbeitet; OpenAI verwendet über die API übermittelte Daten
+            gemäss eigenen Angaben nicht zum Training seiner Modelle. Der Gesprächsverlauf wird auf unserem Server gespeichert, damit Sie das Gespräch fortsetzen können und wir Ihre Anfrage bearbeiten können, und nach Ablauf
+            der festgelegten Aufbewahrungsfrist automatisch gelöscht. Bitte geben Sie im Chat keine besonders schützenswerten Personendaten ein. Wenn Sie über den Chat einen Termin anfragen, gelten die Angaben zum
+            Kontaktformular.
           </p>
 
           <h2>Server-Logdateien</h2>
@@ -38,8 +46,13 @@ export default function PrivacyPage() {
 
           <h2>Cookies und Tracking</h2>
           <p>
-            Diese Website setzt keine Tracking- oder Marketing-Cookies. Für Komfortfunktionen (z. B. ob die Startanimation bereits gezeigt wurde) wird lediglich der lokale Sitzungsspeicher Ihres Browsers genutzt; diese
-            Information verlässt Ihr Gerät nicht.
+            Ohne Ihre Zustimmung setzt diese Website keine Tracking- oder Marketing-Cookies. Für Komfortfunktionen (z. B. ob die Startanimation bereits gezeigt wurde oder Ihre bisherigen Chat-Gespräche) wird der lokale
+            Speicher Ihres Browsers genutzt.
+          </p>
+          <p>
+            Wenn Sie zustimmen, verwenden wir Google Analytics (Google Ireland Ltd. bzw. Google LLC, USA), um anonymisiert zu messen, wie unsere Website genutzt wird. Dabei werden Cookies gesetzt und Nutzungsdaten (z. B.
+            gekürzte IP-Adresse, aufgerufene Seiten, Gerät und Browser) an Google übermittelt. Ihre Entscheidung wird in Ihrem Browser gespeichert; Sie können sie jederzeit ändern, indem Sie die Website-Daten in Ihrem
+            Browser löschen.
           </p>
 
           <h2>Schriften und Medien</h2>

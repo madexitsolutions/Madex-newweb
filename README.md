@@ -17,20 +17,45 @@ Node.js ≥ 20.9. Für Coolify reichen `npm install`, `npm run build` und `npm r
 
 ## Umgebungsvariablen
 
-Siehe `.env.example`. Das Kontakt-/Terminformular (`/api/kontakt`) versendet per SMTP:
+Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablage, SMTP, OpenAI, Google Analytics/Tag Manager, GA4-Berichte). Mindestens nötig für den Betrieb:
 
 | Variable | Zweck |
 |---|---|
-| `NEXT_PUBLIC_SITE_URL` | Basis-URL für Canonicals, Sitemap, Open Graph |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD` | Mailserver |
-| `CONTACT_TO_EMAIL` | Empfänger der Anfragen (z. B. info@madex-it.ch) |
-| `CONTACT_FROM_EMAIL` | Absenderadresse |
+| `NEXT_PUBLIC_SITE_URL` | Basis-URL für Canonicals, Sitemap, Open Graph, Links in E-Mails |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` | Zugang zum Admin-Dashboard `/admin` |
+| `DATA_DIR`, `DATA_ENCRYPTION_KEY` | Ablage und Verschlüsselung von Anfragen, Chats, Einstellungen |
+| `SMTP_*`, `MAIL_FROM`, `CONTACT_TO_EMAIL` | E-Mail-Benachrichtigung bei neuen Anfragen |
+| `OPENAI_API_KEY`, `OPENAI_MODEL` | KI-Chatbot «Orion» |
+| `NEXT_PUBLIC_GA4_ID` / `NEXT_PUBLIC_GTM_ID` | Tracking (alternativ im Admin eintragen) |
+| `GA4_PROPERTY_ID`, `GOOGLE_SERVICE_ACCOUNT_*` | Analytics-Berichte im Admin |
 
-Ohne SMTP-Konfiguration zeigt das Formular eine freundliche Fehlermeldung mit Telefon und E-Mail; eingegebene Daten bleiben erhalten. Validierung (Zod) läuft im Browser und auf dem Server, dazu Honeypot und Rate Limiting.
+### Coolify
+
+1. Build: `npm install`, `npm run build`, Start: `npm run start`.
+2. **Persistenten Speicher anlegen** (Storages → Volume) z. B. auf `/app/.data` und `DATA_DIR=/app/.data` setzen. Ohne Volume gehen Anfragen, Chats und Einstellungen bei jedem Deploy verloren.
+3. `DATA_ENCRYPTION_KEY` einmal erzeugen (`openssl rand -base64 32`) und nie mehr ändern – sonst sind bestehende Daten nicht mehr lesbar.
+
+## Admin-Dashboard (`/admin`)
+
+Anmeldung mit Benutzername/Passwort aus der `.env` und verpflichtender Zwei-Faktor-Anmeldung (Authenticator-App, QR-Code beim ersten Login, 8 Wiederherstellungscodes). Sperre nach Fehlversuchen, automatische Abmeldung nach Inaktivität, Protokoll aller Anmeldungen.
+
+- **Übersicht** – neue Anfragen, Chats, Einrichtungsstatus (SMTP, OpenAI, Analytics)
+- **Anfragen** – alle Formulare (Kontakt, kostenlose Analyse, Hero-Formular) und Terminanfragen aus dem Chat; Status, Notizen, Verlauf, E-Mail erneut senden, CSV-Export
+- **Chat-Verläufe** – Gespräche mit Orion (pseudonym), Löschung nach Aufbewahrungsfrist
+- **SEO** – Titel, Beschreibung, Vorschaubild und noindex pro Seite mit Google-Vorschau; wirkt sofort, auch auf die Sitemap
+- **Google Analytics** – Mess-ID/Tag-Manager-ID, Zustimmungs-Banner, Berichte der letzten 28 Tage
+- **Chatbot & Wissen** – Name, Begrüssung, Hinweis-Blase, Modell, Firmenprofil, Wissensdatenbank, Verbindungstest
+- **Pakete** – Pakete für den Paket-Finder im Chat
+- **Sicherheit** – Limits, Spam-Schutz, IP-Sperren, Ereignisprotokoll
+- **Konto** – 2FA zurücksetzen, Sitzungen beenden, Protokoll
+
+## KI-Chatbot «Orion»
+
+Portierung des bisherigen WordPress-Plugins (`madex-chatbot-main (14).zip`): Startansicht (Neu-/Bestandskunde), freie Fragen über OpenAI mit Firmenprofil und Wissensdatenbank (antwortet nur mit bestätigten Informationen, sonst Weiterleitung ans Team), Paket-Finder mit drei Fragen, Termin-/Analyse-/Support-Anfrage mit Prüfschritt und Referenznummer, frühere Gespräche im Browser, Kontakt-Buttons, Rate Limits und Spam-Schutz. API unter `/api/chat/*`.
 
 ## Seitenstruktur (wie madex-it.ch)
 
-- **Marketing Lösungen** – `/marketing-solutions` + 8 Leistungsseiten (`/marketing-solutions/website-development`, `digital-marketing`, `seo-optimierung`, `photo-werbevideos`, `social-media-marketing`, `google-marketing`, `graphic-design`, `analyse-und-planung`)
+- **Marketing Lösungen** – `/marketing-solutions` + 9 Leistungsseiten (`/marketing-solutions/website-development`, `digital-marketing`, `seo-optimierung`, `photo-werbevideos`, `social-media-marketing`, `google-marketing`, `graphic-design`, `analyse-und-planung`, neu `ki-integration`)
 - **Wer wir sind** – `/uber-uns`, `/das-team`, `/blog`, `/karriere`
 - **Portfolio** – `/portfolio`, `/website-portfolio` (74 Projekte, 3D-Projektring, Suche & Jahresfilter), `/graphic-design-portfolio` (Brandings, Print, Social Media mit Lightbox), `/werbevideos-portfolio`
 - **Partner** – `/partners`
@@ -39,14 +64,12 @@ Ohne SMTP-Konfiguration zeigt das Formular eine freundliche Fehlermeldung mit Te
 
 Die bisherigen URLs bleiben gültig; geänderte oder entfernte URLs werden per 308 weitergeleitet. Vollständige Zuordnung aller 109 archivierten URLs: [`docs/migration.md`](docs/migration.md).
 
-## 3D & Interaktion
+## Design & Interaktion
 
-- Hero: extrudierte, glänzende Doppel-M-Bildmarke (abstrahiert aus dem Logo), reagiert auf Maus und Scrollen, Partikel, Lichtringe
-- Unterseiten: Shader-Hintergrund (Petrol/Türkis-Strömung, Perspektivraster, Maus-Licht) mit schwebender Marke
-- „Was wir tun“: 3D-Konstellation der acht Leistungen, synchron mit der HTML-Liste
-- Website-Portfolio: drehbarer 3D-Ring mit Projekt-Mockups (ziehen/klicken)
-- Seitenübergänge mit Vorhang, Preloader beim ersten Besuch, Smooth Scrolling, Magnet-Buttons, 3D-Tilt-Karten, Text-Reveals, horizontales Projekt-Scrolling, eigener Cursor, Orion-Assistent
-- Three.js wird nur bei Bedarf nachgeladen, pausiert ausserhalb des Sichtbereichs; bei `prefers-reduced-motion`, fehlendem WebGL oder schwachen Geräten gibt es statische Fallbacks
+- Startseite: Angebot zuerst – Hero mit Gratis-Analyse-Formular und Arbeitsproben-Collage, «Offerte» (Website CHF 8’000 → CHF 0.–), Ablauf, KI-Assistent, Leistungen, Pakete & Preise, Referenzen, FAQ
+- Schrift: Schibsted Grotesk; Farben Petrol/Türkis aus dem Logo auf ruhigem Hellgrund
+- Unterseiten: ruhiger Petrol-Hintergrund mit einem thematischen 3D-Objekt pro Seite; «Was wir tun» als 3D-Konstellation der Leistungen
+- Three.js wird nur bei Bedarf nachgeladen; bei `prefers-reduced-motion`, fehlendem WebGL oder schwachen Geräten gibt es statische Fallbacks
 
 ## Inhalte & Medien aktualisieren
 
@@ -59,7 +82,9 @@ Die bisherigen URLs bleiben gültig; geänderte oder entfernte URLs werden per 3
 
 - Angebotsangaben (CHF 250/Monat, Website im Wert von CHF 8’000, Laufzeiten) sowie „100+ Kunden“, „Antwort innerhalb 24h“ und „35+ Kundenrezensionen“ wurden wie auf der bisherigen Website übernommen – bitte auf Aktualität prüfen.
 - Teamliste und offene Stelle aktualisieren (`src/content/site.ts`, `src/app/karriere/page.tsx`).
-- Die Datenschutzerklärung beschreibt das Verhalten der neuen Website (keine Tracking-Cookies, YouTube erst nach Klick); bei Einführung von Analytics ergänzen.
+- «4.4 auf Google» im Hero entspricht der Vorlage – bitte mit dem aktuellen Google-Profil abgleichen (`src/components/home/Hero.tsx`).
+- Preise: Auf der Website stehen Basic/Premium «Auf Anfrage». Das Firmenprofil des Chatbots (aus dem Plugin) nennt Basic CHF 500 und Premium CHF 750 – im Admin unter «Chatbot & Wissen» anpassen, damit Website und Chat übereinstimmen.
+- Die Datenschutzerklärung beschreibt Chatbot (OpenAI) und Google Analytics (nur nach Zustimmung) – bitte rechtlich prüfen lassen.
 
 ---
 

@@ -52,6 +52,7 @@ export const mainNav: NavItem[] = [
       { label: "Google Marketing", href: "/marketing-solutions/google-marketing" },
       { label: "Graphic Design", href: "/marketing-solutions/graphic-design" },
       { label: "Analyse und Planung", href: "/marketing-solutions/analyse-und-planung" },
+      { label: "KI-Assistent für Ihre Website", href: "/marketing-solutions/ki-integration" },
     ],
   },
   {

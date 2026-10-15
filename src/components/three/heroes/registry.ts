@@ -12,6 +12,7 @@ export const heroScenes = {
   google: dynamic(() => import("./google"), { ssr: false }),
   design: dynamic(() => import("./design"), { ssr: false }),
   analysis: dynamic(() => import("./analysis"), { ssr: false }),
+  ai: dynamic(() => import("./ai"), { ssr: false }),
   about: dynamic(() => import("./about"), { ssr: false }),
   team: dynamic(() => import("./team"), { ssr: false }),
   blog: dynamic(() => import("./blog"), { ssr: false }),

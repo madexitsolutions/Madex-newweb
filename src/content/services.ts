@@ -1,5 +1,5 @@
 /**
- * Die acht Marketing-Lösungen mit den Inhalten der bestehenden Service-Seiten
+ * Die Marketing-Lösungen mit den Inhalten der bestehenden Service-Seiten
  * (archive/pages/page/013–020). URLs bleiben identisch zu madex-it.ch.
  */
 export type ServiceSection = { title: string; text: string; image?: string };
@@ -27,7 +27,7 @@ export type Service = {
   faq: Faq[];
 };
 
-export type IconName = "web" | "digital" | "seo" | "video" | "social" | "google" | "design" | "analysis";
+export type IconName = "web" | "digital" | "seo" | "video" | "social" | "google" | "design" | "analysis" | "ai";
 
 export const services: Service[] = [
   {
@@ -578,6 +578,74 @@ export const services: Service[] = [
       {
         q: "Was ist der Unterschied zwischen strategischer Planung und Projektmanagement?",
         a: "Strategische Planung legt den langfristigen Fahrplan fest, einschliesslich Zielsetzung und Ressourcen. Projektmanagement konzentriert sich auf die operative Umsetzung: Koordination, Fortschrittskontrolle und Termine.",
+      },
+    ],
+  },
+  {
+    slug: "ki-integration",
+    name: "KI-Assistent für Ihre Website",
+    short: "Ein Chat-Assistent, der Ihre Leistungen kennt, Kundenfragen rund um die Uhr beantwortet und Anfragen an Ihr Team weiterleitet.",
+    metaTitle: "KI-Assistent für Ihre Website – KI-Integration für Schweizer KMU",
+    metaDescription:
+      "Madex integriert einen KI-Chat-Assistenten in Ihre Website: auf Ihr Unternehmen zugeschnitten, beantwortet Fragen rund um die Uhr, nimmt Termin- und Offertanfragen auf.",
+    eyebrow: "Neu bei Madex",
+    heroTitle: "Ein KI-Assistent, der Ihr Unternehmen kennt",
+    image: "/media/brand/service-digital-marketing.webp",
+    icon: "ai",
+    introTitle: "Antworten in Sekunden – auch abends und am Wochenende",
+    intro:
+      "Viele Besucher haben eine konkrete Frage, bevor sie anrufen oder ein Formular ausfüllen: Was kostet das? Haben Sie Zeit? Machen Sie das auch? Ein KI-Assistent auf Ihrer Website beantwortet diese Fragen sofort – mit den Informationen, die Sie ihm geben. Was er nicht sicher weiss, leitet er an Ihr Team weiter. So werden aus Besuchern Anfragen.",
+    bullets: [
+      "Auf Ihre Leistungen, Preise und Abläufe zugeschnitten",
+      "Antwortet rund um die Uhr, in Ihrer Sprache und Tonalität",
+      "Nimmt Termin-, Rückruf- und Offertanfragen auf",
+      "Erfindet nichts – unbekannte Fragen gehen an Ihr Team",
+      "Eigenes Dashboard für Wissen, Verläufe und Anfragen",
+      "Schutz vor Spam und Missbrauch inklusive",
+    ],
+    featureTitle: "So arbeitet der Assistent auf unserer eigenen Website",
+    featureText:
+      "Unser Assistent Orion beantwortet auf madex-it.ch Fragen zu Paketen und Leistungen, findet mit drei Fragen das passende Paket und nimmt Terminanfragen auf. Testen Sie ihn unten rechts – genau so kann er auf Ihrer Website für Ihre Kunden da sein.",
+    sections: [
+      {
+        title: "Ihr Wissen, nicht das Internet",
+        text: "Der Assistent arbeitet mit einem Firmenprofil und einer Wissensdatenbank, die wir gemeinsam mit Ihnen aufbauen: Leistungen, Preise, Öffnungszeiten, Abläufe, häufige Fragen. Er antwortet nur mit diesen Informationen. Fehlt etwas, verweist er freundlich an Ihr Team.",
+      },
+      {
+        title: "Aus Fragen werden Anfragen",
+        text: "Wenn ein Besucher einen Termin, einen Rückruf oder eine Offerte möchte, nimmt der Assistent die Angaben Schritt für Schritt auf und sendet sie Ihnen per E-Mail – mit Referenznummer, damit nichts verloren geht.",
+      },
+      {
+        title: "Sie behalten die Kontrolle",
+        text: "In Ihrem Dashboard sehen Sie alle Gespräche und Anfragen, passen das Wissen des Assistenten an und legen fest, wie er auftritt. Änderungen sind sofort aktiv.",
+      },
+      {
+        title: "Sicher und datensparsam",
+        text: "Besucher werden auf den Datenschutz hingewiesen, Gespräche werden nach einer von Ihnen festgelegten Frist gelöscht, und Limits schützen vor Spam und unnötigen Kosten.",
+      },
+    ],
+    whyTitle: "Für wen sich ein KI-Assistent lohnt",
+    why: [
+      "Unternehmen, die oft die gleichen Fragen per Telefon oder E-Mail beantworten",
+      "Betriebe mit Terminen, Offerten oder Reservationen",
+      "KMU, deren Website auch ausserhalb der Bürozeiten Anfragen gewinnen soll",
+    ],
+    faq: [
+      {
+        q: "Kann der Assistent falsche Auskünfte geben?",
+        a: "Er ist so eingestellt, dass er nur mit den Informationen antwortet, die Sie freigeben. Wenn er etwas nicht sicher weiss, sagt er das und bietet den Kontakt zu Ihrem Team an.",
+      },
+      {
+        q: "Funktioniert der Assistent mit meiner bestehenden Website?",
+        a: "In den meisten Fällen ja. Wir prüfen Ihre Website im kostenlosen Erstgespräch und zeigen Ihnen, wie die Integration aussieht.",
+      },
+      {
+        q: "Was kostet ein KI-Assistent?",
+        a: "Das hängt vom Umfang ab – etwa von der Menge an Wissen und den gewünschten Funktionen. Wir erstellen Ihnen gerne eine unverbindliche Offerte.",
+      },
+      {
+        q: "In welchen Sprachen antwortet der Assistent?",
+        a: "Er antwortet in der Sprache, in der Ihre Besucher schreiben – zum Beispiel Deutsch, Englisch, Französisch oder Italienisch.",
       },
     ],
   },
