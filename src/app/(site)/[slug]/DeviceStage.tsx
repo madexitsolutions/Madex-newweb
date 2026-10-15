@@ -1,5 +1,8 @@
 import Image from "next/image";
 
+/** one size for all three screens, so the browser fetches the screenshot only once */
+const SIZES = "(max-width: 900px) 70vw, 560px";
+
 /**
  * Laptop, tablet and phone showing the same project screenshot – pure HTML/CSS
  * 3D (no WebGL), so it is crisp, responsive and visible on first paint.
@@ -17,7 +20,7 @@ export function DeviceStage({ image, alt }: { image: string; alt: string }) {
               <div className="dv__lid">
                 <span className="dv__cam" />
                 <div className="dv__screen">
-                  <Image src={image} alt={alt} fill sizes="(max-width: 900px) 70vw, 560px" loading="eager" fetchPriority="high" className="dv__img dv__img--lap" />
+                  <Image src={image} alt={alt} fill sizes={SIZES} loading="eager" fetchPriority="high" className="dv__img dv__img--lap" />
                 </div>
               </div>
               <div className="dv__deck">
@@ -34,7 +37,7 @@ export function DeviceStage({ image, alt }: { image: string; alt: string }) {
                 <div className="dv__tab">
                   <span className="dv__cam" />
                   <div className="dv__screen">
-                    <Image src={image} alt="" fill sizes="(max-width: 900px) 30vw, 240px" loading="eager" className="dv__img dv__img--tab" />
+                    <Image src={image} alt="" fill sizes={SIZES} loading="eager" fetchPriority="high" className="dv__img dv__img--tab" />
                   </div>
                 </div>
                 <div className="dv__floor" />
@@ -45,7 +48,7 @@ export function DeviceStage({ image, alt }: { image: string; alt: string }) {
               <div className="dv__float" style={{ animationDelay: "-4.1s" }}>
                 <div className="dv__ph">
                   <div className="dv__screen">
-                    <Image src={image} alt="" fill sizes="(max-width: 900px) 20vw, 140px" loading="eager" className="dv__img dv__img--ph" />
+                    <Image src={image} alt="" fill sizes={SIZES} loading="eager" fetchPriority="high" className="dv__img dv__img--ph" />
                     <span className="dv__island" />
                   </div>
                 </div>

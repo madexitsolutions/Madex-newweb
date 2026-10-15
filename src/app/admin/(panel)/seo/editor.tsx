@@ -92,9 +92,9 @@ export function SeoEditor({ page, override, origin }: { page: SeoPage; override?
             Standard wiederherstellen
           </button>
         )}
-        <a className="a-btn a-btn--quiet a-savebar__end" href={page.path} target="_blank" rel="noopener">
+        <a className="a-btn a-btn--quiet a-savebar__end" href={page.path} target="_blank" rel="noopener" aria-label="Seite ansehen">
           <Icon name="external" size={16} />
-          Seite ansehen
+          <span className="a-hide-sm">Seite ansehen</span>
         </a>
       </div>
     </form>
