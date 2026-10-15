@@ -305,7 +305,7 @@ export default async function Chatbot({ searchParams }: { searchParams: Promise<
       )}
 
       {tab === "verbindung" && (
-        <div className="a-grid2 a-grid2--wide">
+        <>
           <section className="a-panel a-panel--form">
             <ActionForm action={saveChatbot} className="a-form">
               <Keep c={c} notify={s.notifyEmails} show={["model", "temperature"]} />
@@ -342,7 +342,7 @@ export default async function Chatbot({ searchParams }: { searchParams: Promise<
               </div>
             </ActionForm>
           </Panel>
-        </div>
+        </>
       )}
     </>
   );

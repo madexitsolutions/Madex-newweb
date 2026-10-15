@@ -210,11 +210,12 @@ function ResultsCard() {
 }
 
 /** Google-Maps style pin with ripples on the ground. */
+const PIN = { cy: 0.12, r: 0.32, tip: -0.5 };
+
 function MapPin() {
-  const cy = 0.12;
-  const r = 0.32;
-  const tip = -0.5;
+  const { cy } = PIN;
   const body = useMemo(() => {
+    const { cy, r, tip } = PIN;
     const s = new THREE.Shape();
     const a = Math.asin(r / (cy - tip));
     s.moveTo(0, tip);
@@ -325,7 +326,7 @@ export default function GoogleScene() {
         <MapPin />
       </group>
       <Float speed={2} rotationIntensity={0.25} floatIntensity={0.5}>
-        <group position={[-1.95, -1.75, 0.6]} rotation={[0.1, 0.4, 0]}>
+        <group position={[-2.2, -1.85, 0.6]} rotation={[0.1, 0.4, 0]}>
           <TrendArrow />
         </group>
       </Float>

@@ -220,14 +220,15 @@ export default function CareerScene() {
             <Figure />
           </group>
         </group>
-        <group position={[stepX(N - 1), stepTop(N - 1) + 1.95, -0.1]}>
+        <group position={[stepX(N - 1), stepTop(N - 1) + 1.65, -0.1]}>
           <Float speed={1.4} floatIntensity={0.3} rotationIntensity={0}>
-            <group scale={1.2}>
+            {/* undo the stairs' rotation so the star faces the viewer */}
+            <group scale={1.2} rotation={[-0.3, -0.62, 0]}>
               <Star celebrate={celebrate} />
             </group>
           </Float>
         </group>
-        <group position={[stepX(0) - 1.0, G, 0.25]} rotation={[0, -0.35, 0]} scale={1.15}>
+        <group position={[stepX(0) - 1.1, G, 0.35]} rotation={[0, -0.35, 0]} scale={1.15}>
           <Briefcase />
         </group>
       </group>

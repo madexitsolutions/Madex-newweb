@@ -108,7 +108,7 @@ export default async function Packages({ searchParams }: { searchParams: Promise
                       </Link>
                       {p.shortDescription && <small className="a-clip a-clip--wide">{p.shortDescription}</small>}
                     </td>
-                    <td className="a-clip">{p.audience || <span className="a-muted">–</span>}</td>
+                    <td className="a-clip a-clip--narrow">{p.audience || <span className="a-muted">–</span>}</td>
                     <td className="a-num" data-label="Leistungen">{p.features.length}</td>
                     <td className="a-num a-muted" data-label="Reihenfolge">{p.order}</td>
                     <td>{p.active ? <span className="a-state a-state--ok">Im Chat aktiv</span> : <span className="a-state a-state--muted">Inaktiv</span>}</td>

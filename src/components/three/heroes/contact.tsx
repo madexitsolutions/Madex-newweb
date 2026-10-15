@@ -18,6 +18,7 @@ import { C, Glossy, SceneRig } from "./kit";
 const W = 2.1;
 const H = 1.35;
 const CYCLE = 6;
+const LINES = [1.5, 1.3, 0.8];
 
 const smooth = (x: number) => {
   const k = Math.min(1, Math.max(0, x));
@@ -85,8 +86,8 @@ function Envelope() {
             <meshBasicMaterial color={C.petrol} />
           </mesh>
           {[0.22, 0.1, -0.02].map((y, i) => (
-            <mesh key={y} position={[-0.76 + (i === 2 ? 0.55 : 0.68) / 2, y, 0]}>
-              <planeGeometry args={[i === 2 ? 0.55 : 1.36 - i * 0.2, 0.04]} />
+            <mesh key={y} position={[-0.76 + LINES[i] / 2, y, 0]}>
+              <planeGeometry args={[LINES[i], 0.04]} />
               <meshBasicMaterial color="#9bb8b7" />
             </mesh>
           ))}
@@ -137,7 +138,7 @@ function Phone() {
     if (body.current) body.current.rotation.z = ringing ? Math.sin(t * 38) * 0.035 * Math.sin((k / 1.4) * Math.PI) : 0;
     rings.current?.children.forEach((r, i) => {
       const p = ((t * 0.55 + i / 3) % 1);
-      r.scale.setScalar(0.62 + p * 0.65);
+      r.scale.setScalar(0.6 + p * 0.5);
       ((r as THREE.Mesh).material as THREE.MeshBasicMaterial).opacity = (1 - p) * 0.55;
     });
     if (btn.current) btn.current.scale.setScalar(1 + (ringing ? Math.sin(t * 9) * 0.06 : 0));
@@ -158,7 +159,7 @@ function Phone() {
         </RoundedBox>
         {/* screen */}
         <RoundedBox args={[0.76, 1.58, 0.01]} radius={0.004} position={[0, 0, 0.051]}>
-          <meshPhysicalMaterial color="#0c4146" roughness={0.1} clearcoat={1} emissive="#0a5b5f" emissiveIntensity={0.35} />
+          <meshPhysicalMaterial color="#0c4146" roughness={0.3} clearcoat={0.4} clearcoatRoughness={0.3} envMapIntensity={0.5} emissive="#0a5b5f" emissiveIntensity={0.4} />
         </RoundedBox>
         <group position={[0, 0, 0.062]}>
           {/* camera notch */}
@@ -258,14 +259,14 @@ function MapPin() {
 
 export default function ContactScene() {
   return (
-    <SceneRig scale={1.02} y={0.05}>
+    <SceneRig scale={1.1} y={-0.25}>
       <Float speed={1.2} rotationIntensity={0.12} floatIntensity={0.3}>
         <group position={[-0.3, -0.35, 0]} rotation={[0.1, -0.3, 0.02]}>
           <Envelope />
         </group>
       </Float>
       <Float speed={1.6} rotationIntensity={0.15} floatIntensity={0.45}>
-        <group position={[1.75, 0.35, 0.7]} rotation={[0.05, -0.42, 0.08]}>
+        <group position={[1.6, 0.3, 0.7]} rotation={[0.05, -0.42, 0.08]}>
           <Phone />
         </group>
       </Float>
