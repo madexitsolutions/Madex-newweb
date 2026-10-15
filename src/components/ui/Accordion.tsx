@@ -53,7 +53,7 @@ export function Accordion({ items, dark = false }: { items: { q: string; a: stri
         .acc--dark .acc__item{border-color:rgba(255,255,255,.12)}
         .acc__h{margin:0;font:inherit}
         .acc__btn{width:100%;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center;text-align:left;padding:28px 6px}
-        .acc__num{font:600 13px/1 var(--font-body);color:var(--teal);letter-spacing:.1em}
+        .acc__num{font:600 13px/1 var(--font-body);color:var(--teal-ink);letter-spacing:.1em}
         .acc--dark .acc__num{color:var(--teal-glow)}
         .acc__q{font:600 clamp(18px,1.6vw,23px)/1.3 var(--font-display);letter-spacing:-.01em}
         .acc__icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1px solid currentColor;opacity:.6;transition:transform .5s var(--ease-out),background .4s,opacity .4s}

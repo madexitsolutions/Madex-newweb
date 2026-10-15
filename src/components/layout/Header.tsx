@@ -246,7 +246,7 @@ export function Header() {
         .drop__item{display:grid;grid-template-columns:1fr auto;align-items:center;padding:14px 18px;border-radius:16px;transition:background .3s}
         .drop__item strong{font:600 16px/1.2 var(--font-display)}
         .drop__item small{grid-column:1;color:var(--text-soft);font-size:13px}
-        .drop__arrow{grid-row:1/span 2;grid-column:2;color:var(--teal);transform:translateX(-8px);opacity:0;transition:.35s var(--ease-out)}
+        .drop__arrow{grid-row:1/span 2;grid-column:2;color:var(--teal-ink);transform:translateX(-8px);opacity:0;transition:.35s var(--ease-out)}
         .drop__item:hover{background:rgba(2,141,134,.08)}
         .drop__item:hover .drop__arrow{transform:none;opacity:1}
         .mega{display:grid;grid-template-columns:1fr 260px;gap:12px}

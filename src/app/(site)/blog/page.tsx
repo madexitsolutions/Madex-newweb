@@ -43,7 +43,7 @@ export default function BlogPage() {
           .bp__img img{object-fit:cover;transition:transform 1.2s var(--ease-out)}
           .bp:hover .bp__img img{transform:scale(1.06)}
           .bp__body{padding:clamp(28px,4vw,56px);display:flex;flex-direction:column;justify-content:center;gap:10px}
-          .bp__date{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal)}
+          .bp__date{font-size:13.5px;color:var(--teal-ink)}
           @media(max-width:900px){.bp{grid-template-columns:minmax(0,1fr)}.bp__img{min-height:240px}}
         `}</style>
       </section>

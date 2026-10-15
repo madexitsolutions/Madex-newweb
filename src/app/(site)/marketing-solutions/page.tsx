@@ -58,7 +58,7 @@ export default function MarketingSolutionsPage() {
           .msg__card{position:relative;display:flex;flex-direction:column;gap:10px;height:100%;padding:28px;border-radius:var(--radius-m);background:#fff;overflow:hidden;
             border:1px solid rgba(2,81,89,.08);transition:background .6s var(--ease-out),color .6s}
           .msg__card:hover{background:var(--petrol);color:#fff}
-          .msg__n{font:700 13px/1 var(--font-body);color:var(--teal);letter-spacing:.12em}
+          .msg__n{font:700 13px/1 var(--font-body);color:var(--teal-ink);letter-spacing:.12em}
           .msg__img{position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;overflow:hidden;opacity:0;transform:scale(.6);transition:.7s var(--ease-out)}
           .msg__img img{width:100%;height:100%;object-fit:cover}
           .msg__card:hover .msg__img{opacity:.9;transform:scale(1)}

@@ -47,7 +47,7 @@ export function MobileCta() {
             transform:translateY(140%);opacity:0;transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .3s;pointer-events:none}
           .mcta.is-on{transform:none;opacity:1;pointer-events:auto}
           .mcta__btn{display:flex;align-items:center;justify-content:center;gap:10px;height:48px;border-radius:999px;font-weight:600;font-size:15.5px;color:#03262a;
-            background:linear-gradient(120deg,#6ff3e1,#19b3a9);box-shadow:0 14px 34px -12px rgba(1,27,30,.55),inset 0 1px 0 rgba(255,255,255,.45)}
+            background:linear-gradient(120deg,#6ff3e1,var(--teal-bright));box-shadow:0 14px 34px -12px rgba(1,27,30,.55),inset 0 1px 0 rgba(255,255,255,.45)}
         }
         @media(prefers-reduced-motion:reduce){.mcta{transition:none}}
       `}</style>

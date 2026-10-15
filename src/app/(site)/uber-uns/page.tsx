@@ -60,7 +60,7 @@ export default function AboutPage() {
         </div>
         <style>{`
           .ab__tag{font:700 clamp(22px,2.2vw,32px)/1.2 var(--font-display);margin-top:24px}
-          .ab__tag .text-gradient{background:linear-gradient(100deg,var(--petrol),var(--teal));-webkit-background-clip:text;background-clip:text}
+          .ab__tag .text-gradient{color:var(--petrol)}
           .ab__photos{position:relative;min-height:520px}
           .ab__p1{position:absolute;left:0;top:0;width:78%;border-radius:var(--radius-l);overflow:hidden;box-shadow:0 40px 80px -40px rgba(1,41,45,.6)}
           .ab__p2{position:absolute;right:0;bottom:0;width:62%;border-radius:var(--radius-m);overflow:hidden;border:8px solid var(--mist);box-shadow:0 40px 80px -40px rgba(1,41,45,.6)}

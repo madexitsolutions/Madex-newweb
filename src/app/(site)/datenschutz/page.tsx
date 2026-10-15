@@ -85,7 +85,7 @@ export default function PrivacyPage() {
           .legal h2{font-size:clamp(22px,2vw,28px);margin:44px 0 14px;padding-top:24px;border-top:1px solid var(--line)}
           .legal h2:first-child{margin-top:0;border:0;padding:0}
           .legal p{color:var(--text-soft)}
-          .legal a{color:var(--teal);text-decoration:underline}
+          .legal a{color:var(--teal-ink);text-decoration:underline}
         `}</style>
       </section>
     </>

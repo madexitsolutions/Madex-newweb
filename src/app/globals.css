@@ -17,6 +17,9 @@
   --line-soft: #e6ebeb;
   --action: #027872;
   --teal-ink: #01716b;
+  --danger: #b3261e;
+  --danger-soft: #fdecea;
+  --danger-ink: #8a1c14;
   --abyss: #000f11;
   --mist: #f7f7fa;
   --line: #d9e1e1;
@@ -121,7 +124,7 @@ p {
 }
 
 ::selection {
-  background: var(--teal);
+  background: var(--action);
   color: #fff;
 }
 
@@ -317,7 +320,7 @@ p {
   --btn-fg: var(--petrol);
 }
 .btn--light::before {
-  background: var(--teal);
+  background: var(--action);
 }
 .btn--light:hover {
   color: #fff;
@@ -331,7 +334,7 @@ p {
   box-shadow: inset 0 0 0 1.5px currentColor;
 }
 .btn--ghost::before {
-  background: var(--teal);
+  background: var(--action);
 }
 .btn--ghost:hover {
   color: #fff;
@@ -500,3 +503,12 @@ p {
 .b--quiet-dark:hover { text-decoration-color: #fff; }
 .b--block { width: 100%; }
 
+/* phones: long button labels wrap instead of widening the page */
+@media (max-width: 640px) {
+  .btn,
+  .b {
+    white-space: normal;
+    text-align: center;
+    max-width: 100%;
+  }
+}

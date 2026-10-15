@@ -76,13 +76,12 @@ export default function ContactPage() {
           .kt__cards{display:grid;gap:12px}
           .kt__card{display:flex;gap:18px;padding:24px;border-radius:var(--radius-m);background:#fff;box-shadow:0 20px 40px -34px rgba(1,41,45,.6)}
           .kt__icon{flex:none;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--teal),var(--petrol))}
-          .kt__label{font:500 12.5px/1 var(--font-body);text-transform:uppercase;letter-spacing:.18em;color:var(--teal);margin:4px 0 10px}
-          .kt__line{display:block;font:600 19px/1.4 var(--font-display);transition:color .3s}
-          .kt__line:hover{color:var(--teal)}
+          .kt__label{font:600 14px/1.2 var(--font-body);color:var(--teal-ink);margin:4px 0 8px}
+          .kt__line{display:flex;align-items:center;min-height:44px;width:fit-content;font:600 19px/1.4 var(--font-display);transition:color .3s}
+          .kt__line:hover{color:var(--teal-ink)}
           .kt__map{margin-top:12px}
           .kt__map-link{position:relative;display:block;height:280px;border-radius:var(--radius-m);overflow:hidden;color:#fff;background:radial-gradient(60% 70% at 50% 45%,rgba(2,141,134,.55),transparent 70%),var(--night)}
-          .kt__map-grid{position:absolute;inset:-50%;background-image:linear-gradient(rgba(79,224,210,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(79,224,210,.14) 1px,transparent 1px);background-size:34px 34px;transform:perspective(500px) rotateX(55deg);animation:gridMove 12s linear infinite}
-          @keyframes gridMove{to{background-position:0 340px}}
+          .kt__map-grid{position:absolute;inset:-50%;background-image:linear-gradient(rgba(79,224,210,.14) 1px,transparent 1px),linear-gradient(90deg,rgba(79,224,210,.14) 1px,transparent 1px);background-size:34px 34px;transform:perspective(500px) rotateX(55deg)}
           .kt__pin{position:absolute;left:50%;top:42%;translate:-50% -50%;width:22px;height:22px;border-radius:50%;background:var(--teal-glow);box-shadow:0 0 0 0 rgba(79,224,210,.6);animation:pinPulse 2s infinite}
           .kt__pin span{position:absolute;inset:6px;border-radius:50%;background:#fff}
           @keyframes pinPulse{70%{box-shadow:0 0 0 36px rgba(79,224,210,0)}100%{box-shadow:0 0 0 0 rgba(79,224,210,0)}}

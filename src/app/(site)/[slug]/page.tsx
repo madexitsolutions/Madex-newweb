@@ -78,7 +78,7 @@ function Body({ blocks, skipImage }: { blocks: Block[]; skipImage?: string }) {
         .pb__h{font-size:clamp(22px,2.2vw,32px);margin:50px 0 14px}
         .pb__p{font-size:clamp(16px,1.15vw,19px);color:var(--text-soft)}
         .pb__li{display:flex;gap:10px;align-items:baseline;color:var(--text-soft);margin:0 0 8px}
-        .pb__li svg{color:var(--teal);flex:none}
+        .pb__li svg{color:var(--teal-ink);flex:none}
         .pb__img{margin:40px -6vw;border-radius:var(--radius-m);box-shadow:0 40px 80px -50px rgba(1,41,45,.6)}
         @media(max-width:1000px){.pb__img{margin:30px 0}}
       `}</style>

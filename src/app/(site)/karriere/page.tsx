@@ -61,7 +61,7 @@ export default function CareerPage() {
           .job:hover{background:var(--petrol);color:#fff;transform:translateX(10px)}
           .job__title{font:700 clamp(20px,2vw,28px)/1.2 var(--font-display)}
           .job__loc{display:flex;gap:6px;align-items:center;opacity:.7}
-          .job__cta{display:flex;gap:8px;align-items:center;font-weight:500;color:var(--teal)}
+          .job__cta{display:flex;gap:8px;align-items:center;font-weight:500;color:var(--teal-ink)}
           .job:hover .job__cta{color:var(--teal-glow)}
           .jobs__hint{font-size:14px}
           @media(max-width:800px){.job{grid-template-columns:minmax(0,1fr);gap:10px}}

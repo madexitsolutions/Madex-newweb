@@ -175,7 +175,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         .sv__bullets{list-style:none;margin:30px 0 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
         .sv__bullets li{display:flex;gap:10px;align-items:flex-start;padding:4px 0;font-weight:500;color:var(--deep)}
         .sv__bullets li svg{margin-top:3px}
-        .sv__bullets svg{flex:none;color:var(--teal)}
+        .sv__bullets svg{flex:none;color:var(--teal-ink)}
         .sv__feature{background:var(--deep);overflow:hidden;position:relative}
         .sv__feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,5vw,80px);align-items:start}
         .sv__feature .lead{color:var(--on-dark-soft);margin-bottom:28px}
@@ -194,7 +194,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         .sv__why{padding:clamp(30px,5vw,64px);border-radius:20px;background:#fff;border:1px solid var(--line-soft)}
         .sv__why-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:20px}
         .sv__why-item{display:flex;gap:14px;padding:20px;border-radius:12px;background:var(--paper)}
-        .sv__why-item svg{flex:none;color:var(--teal);margin-top:3px}
+        .sv__why-item svg{flex:none;color:var(--teal-ink);margin-top:3px}
         .sv__why-item p{margin:0}
         .sv__pager{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding-bottom:40px;background:var(--mist)}
         .sv__pg{display:grid;gap:6px;padding:24px 28px;border-radius:14px;background:#fff;border:1px solid var(--line-soft);transition:border-color .2s}

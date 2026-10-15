@@ -151,7 +151,8 @@ export default function TeamPage() {
       <style>{`
         .tm__img{aspect-ratio:16/10;border-radius:var(--radius-l)}
         .tm__beliefs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
-        .tm__belief{padding:18px 20px;border-radius:16px;background:#fff;font:700 18px/1 var(--font-display);border-left:4px solid var(--teal)}
+        .tm__belief{position:relative;padding:18px 20px 18px 44px;border-radius:16px;background:#fff;font:700 18px/1 var(--font-display)}
+        .tm__belief::before{content:"";position:absolute;left:20px;top:50%;width:10px;height:10px;margin-top:-5px;border-radius:3px;background:var(--teal)}
         .tm__grid{display:grid;gap:18px;margin-top:36px}
         .tm__grid--3{grid-template-columns:repeat(3,1fr)}
         .tm__grid--4{grid-template-columns:repeat(4,1fr)}

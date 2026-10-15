@@ -208,16 +208,16 @@ export function ContactForm({ source = "kontakt", defaultService = "", submitLab
         .cf__field input:focus,.cf__field textarea:focus,.cf__field select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(2,141,134,.15)}
         .cf__field label{position:absolute;left:19px;top:18px;color:var(--text-soft);pointer-events:none;transition:transform .3s var(--ease-out),font-size .3s,color .3s;transform-origin:left top}
         .cf__field input:focus+label,.cf__field textarea:focus+label,.cf__field select:focus+label,
-        .cf__field.has-value label,.cf__field input:not(:placeholder-shown)+label{transform:translateY(-10px);font-size:12px;color:var(--teal)}
-        .cf__field.has-error input,.cf__field.has-error textarea{border-color:#c0392b}
-        .cf__err{display:block;margin-top:6px;font-size:13px;color:#b3261e}
+        .cf__field.has-value label,.cf__field input:not(:placeholder-shown)+label{transform:translateY(-10px);font-size:12px;color:var(--teal-ink)}
+        .cf__field.has-error input,.cf__field.has-error textarea{border-color:var(--danger)}
+        .cf__err{display:block;margin-top:6px;font-size:13px;color:var(--danger)}
         .cf__wish{border:1.5px dashed rgba(2,81,89,.2);border-radius:18px;padding:18px;margin:0}
         .cf__wish legend{padding:0 8px;font-weight:500;font-size:14px;color:var(--petrol)}
         .cf__wish-row{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:center}
         .cf__slots{display:flex;flex-wrap:wrap;gap:8px}
         .cf__slot{position:relative;padding:10px 14px;border-radius:999px;border:1.5px solid rgba(2,81,89,.2);font-size:14px;cursor:pointer;transition:.3s}
         .cf__slot input{position:absolute;opacity:0;pointer-events:none}
-        .cf__slot.is-on{background:var(--teal);border-color:var(--teal);color:#fff}
+        .cf__slot.is-on{background:var(--action);border-color:var(--action);color:#fff}
         .cf__slot:focus-within{box-shadow:0 0 0 3px rgba(2,141,134,.3)}
         .cf__hint{margin:10px 0 0;font-size:13px;color:var(--text-soft)}
         .cf__hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
@@ -227,7 +227,7 @@ export function ContactForm({ source = "kontakt", defaultService = "", submitLab
         .cf__consent input:checked+.cf__box{background:var(--teal);border-color:var(--teal);color:#fff}
         .cf__consent input:focus-visible+.cf__box{box-shadow:0 0 0 3px rgba(2,141,134,.35)}
         .cf__consent a{text-decoration:underline;color:var(--petrol)}
-        .cf__alert{margin:18px 0 0;padding:14px 18px;border-radius:14px;background:#fdecea;color:#8a1c14}
+        .cf__alert{margin:18px 0 0;padding:14px 18px;border-radius:14px;background:var(--danger-soft);color:var(--danger-ink)}
         .cf__submit{margin-top:24px}
         .cf__submit[disabled]{opacity:.7}
         .cf__success{text-align:center;display:grid;justify-items:center;gap:6px;padding:40px 10px}

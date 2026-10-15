@@ -87,12 +87,12 @@ export function ProjectExplorer({ posts }: { posts: Post[] }) {
         .pe-ring__label{position:absolute;left:0;right:0;bottom:36px;text-align:center;font:600 clamp(18px,2vw,28px)/1 var(--font-display);color:#fff;pointer-events:none}
         .pe__bar{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:40px}
         .pe__bar .h2{margin:0}
-        .pe__bar sup{font-size:.4em;color:var(--teal);vertical-align:super}
+        .pe__bar sup{font-size:.4em;color:var(--teal-ink);vertical-align:super}
         .pe__filters{display:grid;gap:12px;justify-items:end}
         .pe__search input{width:min(360px,80vw);font:inherit;padding:14px 20px;border-radius:999px;border:1.5px solid rgba(2,81,89,.18);background:#fff}
         .pe__search input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px rgba(2,141,134,.15)}
         .pe__years{display:flex;flex-wrap:wrap;gap:6px}
-        .pe__years button{padding:8px 16px;border-radius:999px;border:1.5px solid rgba(2,81,89,.18);font-size:14px;transition:.3s}
+        .pe__years button{min-height:44px;padding:8px 18px;border-radius:999px;border:1.5px solid rgba(2,81,89,.18);font-size:14px;transition:.3s}
         .pe__years button.is-on{background:var(--petrol);color:#fff;border-color:var(--petrol)}
         .pe__grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px 24px}
         .pe__more{display:flex;justify-content:center;margin-top:50px}

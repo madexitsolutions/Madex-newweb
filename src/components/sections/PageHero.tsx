@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { BackdropCanvas } from "@/components/three/Scenes";
 import type { HeroSceneKey } from "@/components/three/heroes/registry";
-import { SplitText, Reveal } from "@/components/ui/motion";
+import { SplitText } from "@/components/ui/motion";
 import { Link } from "@/components/layout/Transition";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
@@ -48,20 +48,18 @@ export function PageHero({
           </nav>
         )}
         {eyebrow && (
-          <Reveal y={20}>
-            <p className="eyebrow">{eyebrow}</p>
-          </Reveal>
+          <p className="eyebrow ph-in">{eyebrow}</p>
         )}
         <SplitText as="h1" text={title} className="h1 ph__title" immediate delay={0.15} />
         {lead && (
-          <Reveal delay={0.45} y={24}>
-            <p className="lead ph__lead">{lead}</p>
-          </Reveal>
+          <p className="lead ph__lead ph-in" style={{ animationDelay: ".25s" }}>
+            {lead}
+          </p>
         )}
         {children && (
-          <Reveal delay={0.6} y={24} className="ph__extra">
+          <div className="ph__extra ph-in" style={{ animationDelay: ".4s" }}>
             {children}
-          </Reveal>
+          </div>
         )}
         </div>
       </div>
@@ -77,9 +75,11 @@ export function PageHero({
         .ph__title{margin-bottom:22px;text-wrap:balance}
         .ph__lead{color:var(--on-dark-soft);max-width:48ch;margin:0}
         .ph__extra{margin-top:32px;display:flex;flex-wrap:wrap;gap:12px}
-        .ph__crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:8px;list-style:none;margin:0 0 26px;padding:0;font-size:13px;letter-spacing:.02em;color:var(--on-dark-soft)}
+        .ph-in{animation:phIn .8s cubic-bezier(.16,1,.3,1) both}
+        @keyframes phIn{from{opacity:.35;transform:translateY(14px)}to{opacity:1;transform:none}}
+        .ph__crumbs ol{display:flex;flex-wrap:wrap;align-items:center;gap:8px;list-style:none;margin:-12px 0 14px;padding:0;font-size:13px;letter-spacing:.02em;color:var(--on-dark-soft)}
         .ph__crumbs li+li::before{content:"/";margin-right:8px;opacity:.45}
-        .ph__crumbs a{transition:color .3s}
+        .ph__crumbs a{transition:color .3s;display:inline-flex;align-items:center;min-height:44px}
         .ph__crumbs a:hover{color:#fff}
         .ph__crumbs [aria-current]{color:var(--on-dark);max-width:32ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:bottom}
         @media(max-width:900px){.ph__copy{max-width:none}.ph{align-items:flex-start;padding-top:calc(var(--header-h) + 40px);min-height:auto;padding-bottom:min(118vw,480px)}.ph__shade{background:linear-gradient(180deg,rgba(1,46,50,.75),rgba(1,46,50,.1))}}

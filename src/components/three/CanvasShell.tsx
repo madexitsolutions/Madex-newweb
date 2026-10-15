@@ -29,7 +29,22 @@ export function CanvasShell({ children, fallback, className, camera, eager = fal
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setMode(!reduced && hasWebGL() && !isLowPower() ? "webgl" : "fallback");
+    if (reduced || !hasWebGL() || isLowPower()) {
+      setMode("fallback");
+      return;
+    }
+    // three.js is ~230 KB gzipped: fetch it only once the page has painted and gone idle
+    let idle = 0;
+    const start = () => {
+      const ric = window.requestIdleCallback ?? ((cb: () => void) => window.setTimeout(cb, 200));
+      idle = ric(() => setMode("webgl"), { timeout: 2000 }) as number;
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      window.removeEventListener("load", start);
+      window.cancelIdleCallback?.(idle);
+    };
   }, []);
 
   useEffect(() => {
