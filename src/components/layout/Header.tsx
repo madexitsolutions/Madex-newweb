@@ -162,7 +162,7 @@ export function Header() {
               <span>{site.contact.phonePrimary.label}</span>
             </a>
             <Link href="/kostenlose-prufung" className="btn btn--sm hd__cta">
-              Kostenloses Erstgespräch
+              Gratis-Analyse anfordern
             </Link>
             <button className={`hd__burger${mobile ? " is-open" : ""}`} aria-label={mobile ? "Menü schliessen" : "Menü öffnen"} aria-expanded={mobile} aria-controls="mobile-menu" onClick={() => setMobile(!mobile)}>
               <span />
@@ -210,7 +210,7 @@ export function Header() {
                 <a href={site.contact.phonePrimary.href}>{site.contact.phonePrimary.label}</a>
                 <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
                 <Link href="/kostenlose-prufung" className="btn">
-                  Kostenloses Erstgespräch buchen
+                  Gratis-Analyse anfordern
                 </Link>
               </div>
             </nav>
@@ -235,7 +235,7 @@ export function Header() {
         .hd__link::after{content:"";position:absolute;left:12px;right:12px;bottom:4px;height:2px;border-radius:2px;background:var(--teal-glow);transform:scaleX(0);transform-origin:right;transition:transform .45s var(--ease-out)}
         .hd__link:hover,.hd__link.is-active{opacity:1}
         .hd__link:hover::after,.hd__link.is-active::after{transform:scaleX(1);transform-origin:left}
-        .hd__caret{margin-left:-6px;width:22px;height:22px;display:grid;place-items:center;opacity:.7;border-radius:50%}
+        .hd__caret{margin-left:-6px;width:28px;height:28px;display:grid;place-items:center;opacity:.7;border-radius:50%}
         .hd__caret[aria-expanded="true"] svg{transform:rotate(180deg)}
         .hd__caret svg{transition:transform .35s}
         .hd__drop{position:absolute;top:calc(100% + 18px);left:50%;translate:-50% 0;transform-origin:top center;background:rgba(255,255,255,.97);color:var(--text);

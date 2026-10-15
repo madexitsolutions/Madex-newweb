@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link } from "@/components/layout/Transition";
 
-const WORDS = ["Design", "Websites", "Marketing", "Code & KI"];
+const WORDS = ["Design", "Websites", "Marketing", "KI"];
 
 const reduced = () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -158,11 +158,10 @@ function Rotator() {
     return () => clearInterval(t);
   }, []);
   return (
-    <span className="hx__rot" aria-live="polite">
+    <span className="hx__rot" aria-hidden="true">
+      {/* words drawn via CSS content so they stay out of the heading's text */}
       {WORDS.map((w, k) => (
-        <span key={w} className={k === i ? "on" : k === prev ? "off" : ""} aria-hidden={k !== i}>
-          {w}
-        </span>
+        <span key={w} data-word={w} className={k === i ? "on" : k === prev ? "off" : ""} />
       ))}
     </span>
   );
@@ -414,6 +413,28 @@ function Visual() {
   );
 }
 
+/* --------------------------------------------- rating stars */
+function Stars({ value }: { value: number }) {
+  return (
+    <span className="hx__stars" aria-hidden="true">
+      {[0, 1, 2, 3, 4].map((i) => {
+        const fill = Math.max(0, Math.min(1, value - i));
+        return (
+          <svg key={i} viewBox="0 0 24 24" width="15" height="15">
+            <defs>
+              <linearGradient id={`hxStar${i}`}>
+                <stop offset={fill} stopColor="#ffbe11" />
+                <stop offset={fill} stopColor="rgba(255,255,255,.22)" />
+              </linearGradient>
+            </defs>
+            <path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill={`url(#hxStar${i})`} />
+          </svg>
+        );
+      })}
+    </span>
+  );
+}
+
 /* ---------------------------------------------------- quick form */
 function QuickAnalysis() {
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
@@ -463,7 +484,7 @@ function QuickAnalysis() {
         </button>
       </form>
       <p className={`hx__msg${state === "error" ? " is-err" : state === "done" ? " is-ok" : ""}`} role="status">
-        {msg}
+        {msg || "Kostenlos und unverbindlich: SEO-, Website- und Google-Check mit drei konkreten Verbesserungsvorschlägen."}
       </p>
     </>
   );
@@ -484,9 +505,10 @@ export function Hero() {
           <h1 id="hero-title" className="hx__title">
             <span className="hx-word" style={{ ["--d" as string]: ".08s" }}>
               Wir verwandeln
-            </span>
+            </span>{" "}
             <br />
-            <Rotator />
+            <span className="sr-only">{WORDS[0]}</span>
+            <Rotator />{" "}
             <br />
             <span className="hx-word" style={{ ["--d" as string]: ".2s" }}>
               in neue Kunden.
@@ -500,9 +522,7 @@ export function Hero() {
           </div>
           <div className="hx__trust hx-in" style={{ ["--d" as string]: ".6s" }}>
             <span>
-              <b className="hx__stars" aria-hidden="true">
-                ★★★★★
-              </b>
+              <Stars value={4.4} />
               4.4 auf Google
             </span>
             <span>

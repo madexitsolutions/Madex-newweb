@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { contactSchema, serviceOptions, timeSlots } from "@/lib/contact-schema";
 import { Icon } from "@/components/ui/Icon";
 import { Link } from "@/components/layout/Transition";
@@ -21,6 +21,14 @@ export function ContactForm({ source = "kontakt", defaultService = "", submitLab
   const [errors, setErrors] = useState<Errors>({});
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const [message, setMessage] = useState("");
+
+  // arriving from a pricing button (/kontakt?paket=Basic): note the package in the message
+  useEffect(() => {
+    const paket = new URLSearchParams(window.location.search).get("paket");
+    if (paket && ["Website Wartung", "Basic", "Premium"].includes(paket)) {
+      setValues((v) => (v.message ? v : { ...v, message: `Ich interessiere mich für das Paket «${paket}». Bitte kontaktieren Sie mich für eine Offerte.` }));
+    }
+  }, []);
 
   const set = (k: keyof typeof empty) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [k]: e.target.value }));
 

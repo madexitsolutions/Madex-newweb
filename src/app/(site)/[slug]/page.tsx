@@ -150,7 +150,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <h2 className="h3">Sind Sie bereit, Ihr Unternehmen mit Madex IT Solutions auszubauen?</h2>
             <p className="muted">Holen Sie sich ein kostenloses Beratungsgespräch, um Ihr Geschäft anzukurbeln!</p>
             <div className="pp__cta-row">
-              <Button href="/kostenlose-prufung">Kostenloses Erstgespräch buchen</Button>
+              <Button href="/kostenlose-prufung">Gratis-Analyse anfordern</Button>
               {post.external && (
                 <Button href={post.external} target="_blank" variant="ghost">
                   Website ansehen

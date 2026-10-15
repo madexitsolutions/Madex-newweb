@@ -6,7 +6,6 @@ import { LatestProjects, PartnerMarquee } from "@/components/sections/HomeSectio
 import { ServicesConstellation } from "@/components/sections/ServicesConstellation";
 import { Testimonials } from "@/components/sections/Testimonials";
 import { FaqSection } from "@/components/sections/FaqSection";
-import { CtaBand } from "@/components/sections/CtaBand";
 import { homeFaq } from "@/content/site";
 import { projects } from "@/content/posts";
 import partners from "@/content/generated/partners.json";
@@ -27,7 +26,6 @@ export default function HomePage() {
       <LatestProjects posts={projects.slice(0, 8)} />
       <Testimonials />
       <FaqSection items={homeFaq} />
-      <CtaBand title="Bereit für Ihren nächsten digitalen Schritt?" text="Sprechen Sie mit uns – das Erstgespräch und die Analyse sind kostenlos und unverbindlich." href="/kostenlose-prufung" cta="Kostenloses Erstgespräch buchen" />
     </>
   );
 }

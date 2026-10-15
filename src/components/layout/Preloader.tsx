@@ -11,7 +11,7 @@ const MAX_MS = 4000;
  * Loading screen on a full page load. Progress follows real readiness
  * (fonts + window load) with a minimum duration so the sequence can play:
  * the mark is drawn as outline, filled, the brand types in, then three
- * panels open the page. Skipped entirely for reduced motion.
+ * panels open the page. Shown once per visit; skipped for reduced motion.
  */
 export function Preloader() {
   const [phase, setPhase] = useState<"run" | "exit" | "done">("run");
@@ -19,7 +19,13 @@ export function Preloader() {
   const target = useRef(0.12);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem("madex-intro") === "1";
+      sessionStorage.setItem("madex-intro", "1");
+    } catch {}
+    // once per visit: later full loads and reduced motion go straight to the page
+    if (seen || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setPhase("done");
       return;
     }
@@ -121,6 +127,7 @@ export function Preloader() {
 
       <style>{`
         html.is-loading{overflow:hidden}
+        html.intro-seen .ld{display:none}
         .ld{position:fixed;inset:0;z-index:9500;color:var(--deep);pointer-events:all}
         .ld--exit{pointer-events:none}
         .ld__panels{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr)}

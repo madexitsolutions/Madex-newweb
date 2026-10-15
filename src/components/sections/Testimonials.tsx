@@ -17,7 +17,7 @@ export function Testimonials() {
   }, [paused]);
   const t = testimonials[i];
   return (
-    <section className="ts dark section grain" aria-labelledby="ts-title" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
+    <section className="ts dark section" aria-labelledby="ts-title" onPointerEnter={() => setPaused(true)} onPointerLeave={() => setPaused(false)}>
       <div className="container ts__grid">
         <div>
           <p className="eyebrow">Kundenstimmen</p>
@@ -26,7 +26,7 @@ export function Testimonials() {
             {["happy-carefree-dark-skinned-rebellious-young-woman-enjoys-awesome-music-makes-rock-n-roll-gesture-has-fun-on-music-festival-or-cool-event-wears-casual-jumper-poses-against-pink-wall", "pexels-andrea-piacquadio-3799837", "pexels-mikhail-nilov-9301512"].map((a) => (
               <Image key={a} src={`/media/2023/05/${a}.webp`} alt="" width={64} height={64} />
             ))}
-            <span>35+ Kundenrezensionen</span>
+            <span>Über 100 Kunden in der Schweiz</span>
           </div>
           <a href={site.reviewUrl} target="_blank" rel="noopener noreferrer" className="link-arrow">
             Hinterlassen Sie eine Bewertung <Icon name="arrow-up-right" size={16} />
@@ -62,10 +62,13 @@ export function Testimonials() {
         .ts__stage figcaption{display:grid}
         .ts__stage figcaption strong{font:700 18px/1.2 var(--font-display)}
         .ts__stage figcaption span{color:var(--teal-glow)}
-        .ts__nav{display:flex;gap:8px;margin-top:30px}
-        .ts__nav button{width:34px;height:5px;border-radius:5px;background:rgba(255,255,255,.2);transition:.4s}
-        .ts__nav button.is-on{background:var(--teal-glow);width:60px}
-        @media(max-width:900px){.ts__grid{grid-template-columns:minmax(0,1fr)}}
+        .ts__nav{display:flex;gap:4px;margin:18px 0 -10px -6px}
+        .ts__nav button{position:relative;width:46px;height:44px}
+        .ts__nav button::before{content:"";position:absolute;left:6px;right:6px;top:50%;height:5px;margin-top:-2.5px;border-radius:5px;background:rgba(255,255,255,.28);transition:background .3s,right .3s}
+        .ts__nav button.is-on{width:72px}
+        .ts__nav button.is-on::before{background:var(--teal-glow)}
+        .ts__nav button:focus-visible{outline-offset:-4px}
+        @media(max-width:900px){.ts__grid{grid-template-columns:minmax(0,1fr)}.ts__stage{padding:28px 22px 22px}.ts__quote{font-size:130px;right:14px;top:-20px}}
       `}</style>
     </section>
   );

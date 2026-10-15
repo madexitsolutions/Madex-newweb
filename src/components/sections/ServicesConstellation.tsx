@@ -86,7 +86,7 @@ export function ServicesConstellation({ title = "Was wir tun", eyebrow = "Market
         .sc__list{list-style:none;margin:0;padding:0;counter-reset:s}
         .sc__item{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:17px 6px;border-bottom:1px solid rgba(255,255,255,.1);
           transition:padding .5s var(--ease-out),color .3s}
-        .sc__name{font:600 clamp(17px,1.55vw,24px)/1.2 var(--font-display);letter-spacing:-.02em;opacity:.62;transition:opacity .25s}
+        .sc__name{font:600 clamp(17px,1.55vw,24px)/1.2 var(--font-display);letter-spacing:-.02em;opacity:.8;transition:opacity .25s}
         .sc__arrow{opacity:0;transform:translate(-10px,10px);transition:.45s var(--ease-out);color:var(--teal-glow)}
         .sc__item.is-active{padding-left:10px}
         .sc__item.is-active .sc__name{opacity:1}

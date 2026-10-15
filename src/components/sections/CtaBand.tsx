@@ -28,7 +28,7 @@ export function CtaBand({ title = "Mehr Umsatz für Ihr Unternehmen", text, href
         .cta__copy{position:relative}
         .cta__phone{position:relative;justify-self:center;max-width:200px;margin-block:-20px -130px}
         .cta__phone img{width:100%;height:auto;filter:drop-shadow(0 30px 40px rgba(0,0,0,.3))}
-        @media(max-width:800px){.cta__box{grid-template-columns:minmax(0,1fr)}.cta__phone{display:none}}
+        @media(max-width:800px){.cta__box{grid-template-columns:minmax(0,1fr)}.cta__phone{display:none}.cta__box .btn{white-space:normal;max-width:100%}}
       `}</style>
     </section>
   );

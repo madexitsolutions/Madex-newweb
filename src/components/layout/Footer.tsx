@@ -20,9 +20,9 @@ export function Footer() {
               Lassen Sie uns <span className="text-gradient">gemeinsam</span> wachsen.
             </h2>
             <div className="ft__cta-row">
-              <Button href="/kostenlose-prufung">Kostenloses Erstgespräch buchen</Button>
+              <Button href="/kostenlose-prufung">Gratis-Analyse anfordern</Button>
               <Button href="/kontakt" variant="ghost">
-                Kontakt aufnehmen
+                Erstgespräch buchen
               </Button>
             </div>
           </div>
@@ -131,15 +131,17 @@ export function Footer() {
           .ft__logo{display:block;margin-bottom:24px}
           .ft__logo img{width:170px;height:auto}
           .ft__addr{font-style:normal;color:var(--on-dark-soft);margin-bottom:18px;line-height:1.7}
-          .ft__contact,.ft__col ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+          .ft__contact,.ft__col ul{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+          .ft__contact a,.ft__col a{display:inline-flex;align-items:center;min-height:44px}
           .ft__contact a{display:inline-flex;gap:10px;align-items:center;transition:color .3s}
           .ft__contact a:hover,.ft__col a:hover{color:#fff}
           .ft__col h3{font:600 15px/1.2 var(--font-body);color:#fff;margin-bottom:18px;letter-spacing:0}
           .ft__col a{color:var(--on-dark-soft);transition:color .3s}
           .ft__social-h{margin-top:30px}
-          .ft__social{display:flex!important;flex-wrap:wrap;gap:10px 18px!important}
+          .ft__social{display:flex!important;flex-wrap:wrap;gap:0 18px!important}
           .ft__bottom{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding:24px 84px 0 0;border-top:1px solid rgba(255,255,255,.1);font-size:14px;color:var(--on-dark-soft)}
           .ft__bottom ul{display:flex;gap:22px;list-style:none;margin:0;padding:0}
+          .ft__bottom a{display:inline-flex;align-items:center;min-height:44px}
           @media(max-width:1000px){.ft__grid{grid-template-columns:1fr 1fr}}
           @media(max-width:560px){.ft__grid{grid-template-columns:minmax(0,1fr)}}
         `}</style>

@@ -44,7 +44,7 @@ export function Offer() {
           </ul>
           <div className="offer__cta">
             <Link href="/kostenlose-prufung" className="b b--primary">
-              Angebot sichern
+              Gratis-Analyse anfordern
             </Link>
             <Link href="/website-portfolio" className="b b--quiet">
               Realisierte Websites ansehen
@@ -235,8 +235,8 @@ export function Pricing() {
                   {meta.price}
                   {meta.unit && <span>{meta.unit}</span>}
                 </p>
-                <Link href="/kostenlose-prufung" className={`b ${p.highlight ? "b--primary" : "b--outline"} b--block`}>
-                  {meta.unit ? "Angebot sichern" : "Offerte anfragen"}
+                <Link href={`/kontakt?paket=${encodeURIComponent(p.name)}`} className={`b ${p.highlight ? "b--primary" : "b--outline"} b--block`}>
+                  {p.name} anfragen
                 </Link>
                 <ul className="price__features" id={`pf-${p.id}`}>
                   {(all ? p.features : p.features.slice(0, 8)).map((f) => (
@@ -256,6 +256,7 @@ export function Pricing() {
           })}
         </div>
         <ul className="price__foot">
+          <li>Mindestlaufzeit 12 Monate, Kündigungsfrist 3 Monate</li>
           <li>Keine versteckten Kosten</li>
           <li>Website gehört Ihnen – auch nach Vertragsende</li>
           <li>Änderungen während der Zusammenarbeit kostenlos</li>

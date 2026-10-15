@@ -21,7 +21,7 @@ export default function WebsitePortfolioPage() {
           { name: "Website Portfolio", path: "/website-portfolio" },
         ]}
       >
-        <Button href="/kostenlose-prufung">Kostenloses Erstgespräch buchen</Button>
+        <Button href="/kostenlose-prufung">Gratis-Analyse anfordern</Button>
       </PageHero>
       <section className="section--tight white" aria-labelledby="wp-why">
         <div className="container grid-2">

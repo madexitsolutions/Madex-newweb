@@ -691,11 +691,18 @@
             self.$root.find('[data-madex-teaser]').prop('hidden', false).addClass('is-visible');
             self.$root.find('[data-madex-badge]').prop('hidden', false);
             self.$toggle.attr('aria-label', 'Madex Chat öffnen – 1 neue Nachricht');
+            // Madex web app: the greeting steps aside after a few seconds so it
+            // never covers page content; the badge on the launcher stays.
+            self.teaserHideTimer = window.setTimeout(function () {
+                self.$root.find('[data-madex-teaser]').removeClass('is-visible').prop('hidden', true);
+                writeSessionFlag(TEASER_KEY, '1');
+            }, 9000);
         }, Math.max(0, Number(teaser.delay) || 0) * 1000);
     };
 
     ChatWidget.prototype.hideTeaser = function (remember) {
         window.clearTimeout(this.teaserTimer);
+        window.clearTimeout(this.teaserHideTimer);
         this.$root.find('[data-madex-teaser]').removeClass('is-visible').prop('hidden', true);
         this.$root.find('[data-madex-badge]').prop('hidden', true);
         this.$toggle.attr('aria-label', 'Madex Chat öffnen');

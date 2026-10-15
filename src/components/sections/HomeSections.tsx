@@ -15,18 +15,20 @@ export function PartnerMarquee({ logos }: { logos: string[] }) {
         <h2 id="pm-title">Über 100 Schweizer Unternehmen arbeiten mit Madex</h2>
         <Link href="/partners">Partner und Kunden ansehen</Link>
       </div>
-      <Marquee speed={60}>
-        {logos.map((l, i) => (
-          <span className="pm__logo" key={l + i}>
-            <Image src={media(l)} alt="Kundenlogo" width={150} height={150} loading="lazy" />
-          </span>
-        ))}
-      </Marquee>
+      <div aria-hidden="true">
+        <Marquee speed={60}>
+          {logos.map((l, i) => (
+            <span className="pm__logo" key={l + i}>
+              <Image src={media(l)} alt="" width={150} height={150} loading="lazy" />
+            </span>
+          ))}
+        </Marquee>
+      </div>
       <style>{`
         .pm{overflow:hidden;background:#fff;border-top:1px solid var(--line-soft);padding:34px 0 30px}
         .pm__head{display:flex;justify-content:space-between;align-items:baseline;gap:8px 20px;margin-bottom:18px;flex-wrap:wrap}
         .pm__head h2{font-size:15px;font-weight:600;color:var(--ink-soft);margin:0;letter-spacing:0}
-        .pm__head a{font-size:14.5px;font-weight:600;color:var(--petrol);text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(2,81,89,.3)}
+        .pm__head a{display:inline-flex;align-items:center;min-height:44px;font-size:14.5px;font-weight:600;color:var(--petrol);text-decoration:underline;text-underline-offset:4px;text-decoration-color:rgba(2,81,89,.3)}
         .pm__logo{display:grid;place-items:center;width:130px;height:72px;margin:0 18px;filter:grayscale(1);opacity:.6;transition:filter .3s,opacity .3s}
         .pm__logo:hover{filter:none;opacity:1}
         .pm__logo img{width:110px;height:56px;object-fit:contain}

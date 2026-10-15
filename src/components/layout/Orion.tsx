@@ -11,7 +11,7 @@ import { SERVICE_LABELS } from "@/content/chatbot";
 
 type Config = { enabled: boolean; name: string; welcome: string; teaserEnabled: boolean; teaserMessage: string; teaserDelay: number; teaserMobile: boolean };
 
-const ASSET_VERSION = "1.5.7-next1";
+const ASSET_VERSION = "1.5.7-next2";
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 

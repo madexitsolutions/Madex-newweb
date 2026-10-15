@@ -3,6 +3,7 @@
 import { motion, useInView, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from "framer-motion";
 import {
   Children,
+  Fragment,
   createElement,
   useEffect,
   useRef,
@@ -125,18 +126,21 @@ export function SplitText({
     { ref, className, "aria-label": text.replace(/\n/g, " ") },
     lines.map((line, li) => (
       <span key={li} className="split-row" aria-hidden="true" style={{ display: "block" }}>
-        {line.split(" ").map((word, wi) => {
+        {line.split(" ").map((word, wi, all) => {
           const i = wordIndex++;
           return (
-            <span key={wi} className="split-line" style={{ display: "inline-block", marginRight: "0.24em" }}>
-              <motion.span
-                initial={{ y: "110%", rotate: 4 }}
-                animate={show ? { y: "0%", rotate: 0 } : undefined}
-                transition={{ duration: 1.05, delay: delay + i * stagger, ease }}
-              >
-                {word}
-              </motion.span>
-            </span>
+            <Fragment key={wi}>
+              <span className="split-line" style={{ display: "inline-block" }}>
+                <motion.span
+                  initial={{ y: "110%", rotate: 4 }}
+                  animate={show ? { y: "0%", rotate: 0 } : undefined}
+                  transition={{ duration: 1.05, delay: delay + i * stagger, ease }}
+                >
+                  {word}
+                </motion.span>
+              </span>
+              {wi < all.length - 1 ? " " : null}
+            </Fragment>
           );
         })}
       </span>

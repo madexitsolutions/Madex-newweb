@@ -1,14 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { Suspense, useEffect, useRef } from "react";
 import { CanvasShell } from "./CanvasShell";
 import { MarkSvg } from "@/components/ui/MarkSvg";
 import type { RingItem } from "./ProjectRing";
 import { heroScenes, type HeroSceneKey } from "./heroes/registry";
 
-const HeroScene = dynamic(() => import("./HeroScene"), { ssr: false });
 const ShaderBackdrop = dynamic(() => import("./ShaderBackdrop"), { ssr: false });
 const ServicesOrbit = dynamic(() => import("./ServicesOrbit"), { ssr: false });
 const ProjectRing = dynamic(() => import("./ProjectRing"), { ssr: false });
@@ -26,25 +24,6 @@ function useScrollProgress(distance = 1) {
     return () => window.removeEventListener("scroll", onScroll);
   }, [distance]);
   return ref;
-}
-
-export function HeroCanvas({ className }: { className?: string }) {
-  const progress = useScrollProgress(1);
-  return (
-    <CanvasShell
-      className={className}
-      eager
-      camera={{ position: [0, 0, 7], fov: 38 }}
-      fallback={
-        <div className="hero-fallback">
-          <Image src="/media/brand/business-cover.webp" alt="" fill priority sizes="100vw" style={{ objectFit: "cover", opacity: 0.35 }} />
-          <MarkSvg className="hero-fallback__mark" />
-        </div>
-      }
-    >
-      <HeroScene scrollRef={progress} />
-    </CanvasShell>
-  );
 }
 
 export function BackdropCanvas({ className, intensity = 1, withMark = false, scene, sceneProps }: { className?: string; intensity?: number; withMark?: boolean; scene?: HeroSceneKey; sceneProps?: { image?: string } }) {
