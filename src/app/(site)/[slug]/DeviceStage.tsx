@@ -85,11 +85,11 @@ export function DeviceStage({ image, alt }: { image: string; alt: string }) {
         .dv__deck{position:absolute;top:calc(100% - .3cqw);left:-5%;width:110%;height:38cqw;transform-origin:50% 0;transform:rotateX(90deg);transform-style:preserve-3d;
           border-radius:.6cqw .6cqw 2.4cqw 2.4cqw;background:linear-gradient(180deg,#a9b3b5 0%,#dfe5e6 6%,#d2d9da 60%,#c5cdce 100%);
           box-shadow:0 0 7cqw 1cqw rgba(0,10,12,.55)}
-        .dv__keys{position:absolute;left:12%;right:12%;top:7%;height:46%;border-radius:.8cqw;background-color:#1c2526;
+        .dv__keys{position:absolute;left:12%;right:12%;bottom:7%;height:46%;border-radius:.8cqw;background-color:#1c2526;
           background-image:linear-gradient(90deg,#1c2526 .22cqw,transparent .22cqw),linear-gradient(#1c2526 .22cqw,transparent .22cqw),linear-gradient(#3b4749,#2e3a3c);
           background-size:calc(100% / 14) 100%,100% calc(100% / 6),100% 100%;padding:.3cqw;box-shadow:inset 0 0 0 .3cqw #1c2526}
-        .dv__pad{position:absolute;left:33%;right:33%;top:58%;bottom:7%;border-radius:1cqw;background:linear-gradient(180deg,#cbd2d3,#d9dfe0);box-shadow:inset 0 0 0 .14cqw rgba(0,0,0,.08)}
-        .dv__lip{position:absolute;left:1.2cqw;right:1.2cqw;top:100%;height:1.1cqw;transform-origin:50% 0;transform:rotateX(-90deg);
+        .dv__pad{position:absolute;left:33%;right:33%;top:7%;bottom:58%;border-radius:1cqw;background:linear-gradient(180deg,#cbd2d3,#d9dfe0);box-shadow:inset 0 0 0 .14cqw rgba(0,0,0,.08)}
+        .dv__lip{position:absolute;left:1.2cqw;right:1.2cqw;bottom:100%;height:1.1cqw;transform-origin:50% 100%;transform:rotateX(-90deg);
           border-radius:0 0 1cqw 1cqw;background:linear-gradient(90deg,#8d989a,#c6cecf 50%,#8d989a)}
 
         /* tablet */
