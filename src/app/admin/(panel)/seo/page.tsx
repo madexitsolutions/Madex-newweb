@@ -1,243 +1,234 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/server/auth";
-import { allSeoPages, type SeoPage } from "@/lib/seo-pages";
-import { getSettings } from "@/lib/server/settings";
-import { site } from "@/content/site";
-import { Drawer } from "../../drawer";
-import { Empty, Icon, PageHeader, Pager, Tabs, one, qs } from "../../kit";
-import { SeoEditor } from "./editor";
-import { DESC_MAX, DESC_MIN, TITLE_MAX, evaluate } from "./rules";
+import { eq } from "drizzle-orm";
+import { Drawer } from "@/components/admin/drawer";
+import { ConfirmForm } from "@/components/admin/forms";
+import { Empty, Icon, PageHeader, Pager, one, qs } from "@/components/admin/kit";
+import { number } from "@/lib/format";
+import { requireModule } from "@/modules/registry";
+import { requirePermission } from "@/server/auth/session";
+import { db } from "@/server/db";
+import { media } from "@/server/db/schema";
+import { SEO_LIMITS, descState, getSeo, listSeo, seoSummary, titleState, type SeoFilter } from "@/server/content/seo";
+import { getSettings } from "@/server/settings";
+import { deleteSeoAction } from "./actions";
+import { SeoEntryForm, SitemapImport, type SeoFormEntry } from "./client";
+import "../../content.css";
 
 export const metadata = { title: "SEO" };
 
-const PER_PAGE = 20;
-
-const GROUPS: { key: string; label: string; group?: SeoPage["group"] }[] = [
-  { key: "", label: "Alle" },
-  { key: "seiten", label: "Seiten", group: "Seiten" },
-  { key: "leistungen", label: "Leistungen", group: "Leistungen" },
-  { key: "projekte", label: "Projekte", group: "Beiträge" },
+const PER_PAGE = 25;
+const FILTERS: { key: SeoFilter; param: string; label: string }[] = [
+  { key: "all", param: "", label: "Alle" },
+  { key: "title_long", param: "titel-zu-lang", label: "Titel zu lang" },
+  { key: "title_missing", param: "titel-fehlt", label: "Titel fehlt" },
+  { key: "desc_missing", param: "beschreibung-fehlt", label: "Beschreibung fehlt" },
+  { key: "desc_range", param: "beschreibung-laenge", label: "Beschreibung zu kurz/lang" },
+  { key: "noindex", param: "noindex", label: "noindex" },
 ];
 
-const FILTERS = [
-  { key: "", label: "Alle" },
-  { key: "probleme", label: "Nur Probleme" },
-  { key: "angepasst", label: "Angepasst" },
-  { key: "noindex", label: "Noindex" },
-];
-
-/** Filters reachable from the summary tiles. */
-const DETAIL: Record<string, string> = { titel: "Titel zu lang", lang: "Beschreibung zu lang", kurz: "Beschreibung fehlt/kurz" };
-
-/** Display name of a group from allSeoPages() (the "Beiträge" group only holds portfolio projects). */
-const groupLabel = (g: SeoPage["group"]) => (g === "Beiträge" ? "Projekte" : g);
-
-function Length({ n, max, min, label }: { n: number; max: number; min?: number; label: string }) {
-  const state = n > max ? "bad" : min !== undefined && n < min ? "warn" : "ok";
-  const hint = state === "bad" ? "zu lang" : state === "warn" ? "zu kurz" : "gut";
+function Len({ value, state, max }: { value: string | null; state: "ok" | "warn" | "bad"; max: number }) {
+  const n = (value ?? "").trim().length;
+  const label = n === 0 ? "fehlt" : `${n} Zeichen`;
   return (
-    <span className={`a-len a-len--${state}`} title={`${label}: ${n} von ${max} Zeichen (${hint})`}>
+    <span className={`a-len a-len--${state}`} title={state === "ok" ? "Länge passt" : n === 0 ? "Fehlt" : "Ausserhalb der empfohlenen Länge"}>
       <span className="a-len__bar" aria-hidden="true">
         <i style={{ width: `${Math.min(100, (n / max) * 100)}%` }} />
       </span>
-      <span className="a-len__num">{n}</span>
-      <span className="sr-only">
-        {" "}
-        Zeichen, {hint}
-      </span>
+      <span className="a-len__num">{label}</span>
     </span>
   );
 }
 
-export default async function Seo({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  await requireAdmin();
+export default async function SeoPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const user = await requirePermission("seo.manage");
+  await requireModule("seo");
   const sp = await searchParams;
-  const groupKey = GROUPS.some((g) => g.key === one(sp.group)) ? one(sp.group) : "";
-  const filter = FILTERS.some((f) => f.key === one(sp.f)) || Object.hasOwn(DETAIL, one(sp.f)) ? one(sp.f) : "";
-  const q = one(sp.q).toLowerCase().trim();
-  const editPath = one(sp.edit);
-  const { seo } = await getSettings();
+  const filter = FILTERS.find((f) => f.param === one(sp.filter)) ?? FILTERS[0];
+  const q = one(sp.q).trim().slice(0, 100);
+  const page = Math.max(1, Number(one(sp.seite)) || 1);
+  const editPath = one(sp.bearbeiten);
+  const isNew = one(sp.neu) === "1";
 
-  const rows = allSeoPages().map((p) => ({ page: p, o: seo[p.path], ...evaluate(p, seo[p.path]) }));
-  const group = GROUPS.find((g) => g.key === groupKey)?.group;
-  const inGroup = rows.filter((r) => !group || r.page.group === group);
-  const searched = inGroup.filter((r) => !q || r.page.path.toLowerCase().includes(q) || r.title.toLowerCase().includes(q));
-  const items = searched.filter((r) => (filter === "probleme" ? r.problems > 0 : filter === "angepasst" ? r.custom : filter === "noindex" ? r.noindex : filter === "titel" ? r.titleLong : filter === "lang" ? r.descLong : filter === "kurz" ? r.descShort : true));
-
-  const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
-  const page = Math.min(pages, Math.max(1, Number(one(sp.p)) || 1));
-  const shown = items.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-
-  const state = { group: groupKey, f: filter, q: q || undefined, p: page > 1 ? page : undefined };
-  const href = (patch: Partial<Record<keyof typeof state | "edit", string | number | undefined>>) => `/admin/seo${qs({ ...state, ...patch })}`;
-  const editing = editPath ? rows.find((r) => r.page.path === editPath) : undefined;
-
-  const total = {
-    pages: rows.length,
-    custom: rows.filter((r) => r.custom).length,
-    noindex: rows.filter((r) => r.noindex).length,
-    titleLong: rows.filter((r) => r.titleLong).length,
-    descLong: rows.filter((r) => r.descLong).length,
-    descShort: rows.filter((r) => r.descShort).length,
-  };
-  const problems = rows.filter((r) => r.problems > 0).length;
+  const [{ rows, total }, sum, general, editing] = await Promise.all([listSeo({ q, filter: filter.key }, page, PER_PAGE), seoSummary(), getSettings("general"), editPath ? getSeo(editPath) : null]);
+  let siteHost = "ihre-website.ch";
+  try {
+    if (general.siteUrl) siteHost = new URL(general.siteUrl).host;
+  } catch {
+    /* placeholder */
+  }
+  let ogMedia: SeoFormEntry["ogMedia"] = null;
+  const m = editing?.ogImage?.match(/\/uploads\/(.+)$/);
+  if (m) {
+    const [row] = await db.select().from(media).where(eq(media.path, decodeURI(m[1])));
+    if (row) ogMedia = { id: row.id, path: row.path, alt: row.alt, filename: row.filename, mime: row.mime };
+  }
+  const base = { filter: filter.param || undefined, q, seite: page > 1 ? page : undefined };
+  const closeHref = `/admin/seo${qs(base)}`;
+  const pages = Math.max(1, Math.ceil(total / PER_PAGE));
+  const descProblems = sum.descMissing + sum.descRange;
 
   return (
     <>
       <PageHeader
         title="SEO"
-        description="Titel und Beschreibung jeder Seite, wie sie bei Google erscheinen. Leere Felder verwenden den Standardtext."
+        description="Titel, Beschreibungen und Indexierung je Seite der verbundenen Website. Die Website liest die Angaben über die API."
         actions={
-          <a className="a-btn a-btn--ghost" href="/sitemap.xml" target="_blank" rel="noopener">
-            <Icon name="external" size={16} />
-            Sitemap ansehen
-          </a>
+          <>
+            <SitemapImport siteUrl={general.siteUrl} />
+            <Link href={`/admin/seo${qs({ ...base, neu: 1 })}`} className="a-btn a-btn--primary" scroll={false}>
+              <Icon name="plus" size={16} />
+              Pfad hinzufügen
+            </Link>
+          </>
         }
       />
-
-      <section className="a-stats" aria-label="Zusammenfassung">
-        <Link href={href({ f: undefined, p: undefined })} className={`a-stat${!filter ? " is-active" : ""}`} scroll={false}>
-          <strong>{total.pages}</strong>
-          <span>Seiten gesamt</span>
+      <div className="a-stats sx-stats">
+        <Link href="/admin/seo" className={`a-stat${filter.key === "all" ? " is-active" : ""}`}>
+          <strong>{number(sum.total)}</strong>
+          <span>Seiten erfasst</span>
         </Link>
-        <Link href={href({ f: "angepasst", p: undefined })} className={`a-stat${filter === "angepasst" ? " is-active" : ""}`} scroll={false}>
-          <strong>{total.custom}</strong>
-          <span>Angepasst</span>
+        <Link href="/admin/seo?filter=titel-zu-lang" className={`a-stat${sum.titleLong ? " a-stat--warn" : ""}${filter.key === "title_long" ? " is-active" : ""}`}>
+          <strong>{number(sum.titleLong)}</strong>
+          <span>Titel über {SEO_LIMITS.titleMax} Zeichen</span>
         </Link>
-        <Link href={href({ f: "noindex", p: undefined })} className={`a-stat${filter === "noindex" ? " is-active" : ""}`} scroll={false}>
-          <strong>{total.noindex}</strong>
-          <span>Nicht indexiert</span>
+        <Link href="/admin/seo?filter=titel-fehlt" className={`a-stat${sum.titleMissing ? " a-stat--warn" : ""}${filter.key === "title_missing" ? " is-active" : ""}`}>
+          <strong>{number(sum.titleMissing)}</strong>
+          <span>ohne Titel</span>
         </Link>
-        <Link href={href({ f: "titel", p: undefined })} className={`a-stat${total.titleLong ? " a-stat--warn" : ""}${filter === "titel" ? " is-active" : ""}`} scroll={false}>
-          <strong>{total.titleLong}</strong>
-          <span>Titel zu lang</span>
+        <Link href="/admin/seo?filter=beschreibung-fehlt" className={`a-stat${sum.descMissing ? " a-stat--warn" : ""}${filter.key === "desc_missing" ? " is-active" : ""}`}>
+          <strong>{number(sum.descMissing)}</strong>
+          <span>ohne Beschreibung</span>
         </Link>
-        <Link href={href({ f: "lang", p: undefined })} className={`a-stat${total.descLong ? " a-stat--warn" : ""}${filter === "lang" ? " is-active" : ""}`} scroll={false}>
-          <strong>{total.descLong}</strong>
-          <span>Beschreibung zu lang</span>
+        <Link href="/admin/seo?filter=beschreibung-laenge" className={`a-stat${sum.descRange ? " a-stat--warn" : ""}${filter.key === "desc_range" ? " is-active" : ""}`}>
+          <strong>{number(sum.descRange)}</strong>
+          <span>
+            Beschreibung nicht {SEO_LIMITS.descMin}–{SEO_LIMITS.descMax}
+          </span>
         </Link>
-        <Link href={href({ f: "kurz", p: undefined })} className={`a-stat${total.descShort ? " a-stat--warn" : ""}${filter === "kurz" ? " is-active" : ""}`} scroll={false}>
-          <strong>{total.descShort}</strong>
-          <span>Beschreibung fehlt/kurz</span>
+        <Link href="/admin/seo?filter=noindex" className={`a-stat${filter.key === "noindex" ? " is-active" : ""}`}>
+          <strong>{number(sum.noindex)}</strong>
+          <span>auf noindex</span>
         </Link>
-      </section>
-
+      </div>
       <div className="a-toolbar">
-        <Tabs
-          label="Bereich"
-          active={groupKey}
-          items={GROUPS.map((g) => ({ key: g.key, label: g.label, count: g.group ? rows.filter((r) => r.page.group === g.group).length : rows.length, href: href({ group: g.key, p: undefined }) }))}
-        />
         <div className="a-toolbar__row">
-          <form className="a-filters" role="search">
-            {groupKey && <input type="hidden" name="group" value={groupKey} />}
-            {filter && <input type="hidden" name="f" value={filter} />}
-            <label className="a-search">
-              <Icon name="search" size={16} />
-              <span className="sr-only">Seite suchen</span>
-              <input name="q" type="search" defaultValue={q} placeholder="Pfad oder Titel suchen …" />
+          <form className="a-search" role="search" action="/admin/seo">
+            <Icon name="search" size={16} />
+            <label htmlFor="sx-q" className="sr-only">
+              Seiten suchen
             </label>
-            <button className="a-btn a-btn--ghost" type="submit">
-              Suchen
-            </button>
+            <input id="sx-q" type="search" name="q" defaultValue={q} placeholder="Pfad, Titel oder Beschreibung" />
+            {filter.param && <input type="hidden" name="filter" value={filter.param} />}
           </form>
           <div className="a-chips" role="group" aria-label="Filter">
             {FILTERS.map((f) => (
-              <Link key={f.key} href={href({ f: f.key, p: undefined })} scroll={false} className={`a-chip${filter === f.key ? " is-active" : ""}`} aria-current={filter === f.key ? "true" : undefined}>
-                {f.key === "probleme" && <span className={`a-dot a-dot--${problems ? "warn" : "ok"}`} aria-hidden="true" />}
+              <Link key={f.key} href={`/admin/seo${qs({ q, filter: f.param || undefined })}`} className={`a-chip${f.key === filter.key ? " is-active" : ""}`} aria-current={f.key === filter.key ? "true" : undefined} scroll={false}>
                 {f.label}
-                {f.key === "probleme" && <span className="a-chip__count">{problems}</span>}
               </Link>
             ))}
-            {Object.hasOwn(DETAIL, filter) && (
-              <Link href={href({ f: undefined, p: undefined })} scroll={false} className="a-chip is-active" aria-label={`Filter «${DETAIL[filter]}» entfernen`}>
-                {DETAIL[filter]}
-                <Icon name="close" size={14} />
-              </Link>
-            )}
           </div>
         </div>
       </div>
-
       <section className="a-panel a-panel--flush">
-        {items.length === 0 ? (
-          <Empty icon="search" title="Keine Seite gefunden" action={<Link href="/admin/seo" className="a-btn a-btn--ghost">Filter zurücksetzen</Link>}>
-            {filter === "probleme" ? "In diesem Bereich gibt es keine Probleme – Titel und Beschreibungen haben eine gute Länge." : "Passen Sie die Suche an oder wählen Sie einen anderen Bereich."}
-          </Empty>
+        {rows.length === 0 ? (
+          sum.total === 0 ? (
+            <Empty
+              icon="search"
+              title="Noch keine Seiten erfasst"
+              action={
+                <Link href="/admin/seo?neu=1" className="a-btn a-btn--primary" scroll={false}>
+                  Ersten Pfad hinzufügen
+                </Link>
+              }
+            >
+              Übernehmen Sie alle Seiten mit «Pfade aus Sitemap übernehmen» oder fügen Sie einzelne Pfade hinzu.
+            </Empty>
+          ) : (
+            <Empty icon="check" title={filter.key === "all" ? "Keine Treffer" : "Nichts zu beanstanden"}>
+              {filter.key === "all" ? "Kein Pfad passt zur Suche." : "Keine Seite fällt unter diesen Filter."}{" "}
+              <Link href="/admin/seo" className="a-link">
+                Alle Seiten anzeigen
+              </Link>
+            </Empty>
+          )
         ) : (
-          <>
-            <div className="a-tablewrap">
-              <table className="a-table a-table--seo a-table--stack">
-                <thead>
-                  <tr>
-                    <th>Seite</th>
-                    <th>
-                      Titel <span className="a-th-hint">max. {TITLE_MAX}</span>
-                    </th>
-                    <th>
-                      Beschreibung <span className="a-th-hint">{DESC_MIN}–{DESC_MAX}</span>
-                    </th>
-                    <th>Status</th>
-                    <th>
-                      <span className="sr-only">Aktion</span>
-                    </th>
+          <div className="a-tablewrap">
+            <table className="a-table a-table--stack a-table--seo">
+              <thead>
+                <tr>
+                  <th scope="col">Seite</th>
+                  <th scope="col">
+                    Titel <span className="a-th-hint">bis {SEO_LIMITS.titleMax}</span>
+                  </th>
+                  <th scope="col">
+                    Beschreibung <span className="a-th-hint">
+                      {SEO_LIMITS.descMin}–{SEO_LIMITS.descMax}
+                    </span>
+                  </th>
+                  <th scope="col">Index</th>
+                  <th scope="col" className="a-actions">
+                    <span className="sr-only">Aktionen</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.path} className={r.path === editPath ? "is-selected" : undefined}>
+                    <td className="a-seo-page">
+                      <Link href={`/admin/seo${qs({ ...base, bearbeiten: r.path })}`} className="a-rowlink a-mono-path" scroll={false}>
+                        {r.path}
+                      </Link>
+                      <small>{r.title || <span className="a-muted">Kein eigener Titel</span>}</small>
+                    </td>
+                    <td data-label="Titel">
+                      <Len value={r.title} state={titleState(r.title)} max={SEO_LIMITS.titleMax} />
+                    </td>
+                    <td data-label="Beschreibung">
+                      <Len value={r.description} state={descState(r.description)} max={SEO_LIMITS.descMax} />
+                    </td>
+                    <td data-label="Index">{r.noindex ? <span className="a-pill a-pill--warn">noindex</span> : <span className="a-state a-state--ok">indexiert</span>}</td>
+                    <td className="a-actions">
+                      <Link href={`/admin/seo${qs({ ...base, bearbeiten: r.path })}`} className="a-btn a-btn--quiet a-btn--sm" scroll={false} aria-label={`${r.path} bearbeiten`}>
+                        <Icon name="edit" size={15} />
+                        Bearbeiten
+                      </Link>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {shown.map((r) => {
-                    const sel = editing?.page.path === r.page.path;
-                    return (
-                      <tr key={r.page.path} className={sel ? "is-selected" : undefined}>
-                        <td className="a-seo-page">
-                          <Link href={href({ edit: r.page.path })} scroll={false} className="a-rowlink">
-                            {r.title}
-                          </Link>
-                          <small>
-                            {r.page.path}
-                            {!group && <span className="a-tag">{groupLabel(r.page.group)}</span>}
-                          </small>
-                        </td>
-                        <td data-label="Titel">
-                          <Length n={r.title.length} max={TITLE_MAX} label="Titel" />
-                        </td>
-                        <td data-label="Beschreibung">
-                          <Length n={r.description.length} max={DESC_MAX} min={DESC_MIN} label="Beschreibung" />
-                        </td>
-                        <td>
-                          <span className="a-tags">
-                            {r.custom && <span className="a-pill a-pill--confirmed">Angepasst</span>}
-                            {r.noindex && <span className="a-pill a-pill--cancelled">Noindex</span>}
-                            {!r.custom && !r.noindex && <span className="a-muted a-small0">Standard</span>}
-                          </span>
-                        </td>
-                        <td className="a-actions">
-                          <Link href={href({ edit: r.page.path })} scroll={false} className="a-btn a-btn--ghost a-btn--sm">
-                            <Icon name="edit" size={15} />
-                            Bearbeiten
-                          </Link>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            <Pager page={page} pages={pages} total={items.length} from={(page - 1) * PER_PAGE + 1} to={Math.min(page * PER_PAGE, items.length)} href={(p) => href({ p: p > 1 ? p : undefined })} />
-          </>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
+        <Pager page={page} pages={pages} total={total} from={total ? (page - 1) * PER_PAGE + 1 : 0} to={Math.min(total, page * PER_PAGE)} href={(p) => `/admin/seo${qs({ ...base, seite: p > 1 ? p : undefined })}`} />
       </section>
-
-      {editing && (
-        <Drawer
-          closeHref={href({})}
-          title={editing.page.path === "/" ? "Startseite" : editing.page.title}
-          subtitle={
+      {(isNew || editPath) && (
+        <Drawer closeHref={closeHref} title={isNew ? "Pfad hinzufügen" : editing ? editing.path : "Eintrag nicht gefunden"} subtitle={isNew ? "SEO-Angaben für eine Seite der Website" : editing ? `${siteHost}${editing.path}` : undefined}>
+          {isNew || editing ? (
             <>
-              {editing.page.path} · {groupLabel(editing.page.group)}
+              <SeoEntryForm
+                key={editing?.path ?? "neu"}
+                siteHost={siteHost}
+                canMedia={user.permissions.has("media.manage")}
+                saved={one(sp.gespeichert) === "1"}
+                entry={editing ? { path: editing.path, title: editing.title ?? "", description: editing.description ?? "", canonical: editing.canonical ?? "", ogImage: editing.ogImage ?? "", noindex: editing.noindex, ogMedia } : null}
+              />
+              {editing && (
+                <div className="a-danger a-danger--inset">
+                  <div>
+                    <h2>Eintrag löschen</h2>
+                    <p>Die Website verwendet danach wieder ihre eigenen Standardangaben.</p>
+                  </div>
+                  <ConfirmForm action={deleteSeoAction} label="Löschen" question={`SEO-Eintrag für ${editing.path} löschen?`}>
+                    <input type="hidden" name="path" value={editing.path} />
+                  </ConfirmForm>
+                </div>
+              )}
             </>
-          }
-        >
-          <SeoEditor key={editing.page.path} page={editing.page} override={editing.o} origin={site.url} />
+          ) : (
+            <div className="mx-detail">
+              <p className="a-muted">Für diesen Pfad gibt es keinen Eintrag mehr.</p>
+            </div>
+          )}
         </Drawer>
       )}
     </>

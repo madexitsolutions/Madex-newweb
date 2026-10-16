@@ -38,6 +38,11 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   trailingSlash: false,
   poweredByHeader: false,
+  // dashboard (src/server, /admin): native/wasm database drivers stay outside the bundle
+  serverExternalPackages: ["@electric-sql/pglite", "postgres"],
+  experimental: {
+    serverActions: { bodySizeLimit: "12mb" },
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [480, 640, 828, 1080, 1280, 1600, 1920],
@@ -63,6 +68,13 @@ const nextConfig: NextConfig = {
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+        ],
+      },
+      {
+        source: "/admin/:path*",
+        headers: [
+          { key: "Cache-Control", value: "no-store" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
         ],
       },
     ];

@@ -47,7 +47,7 @@ export async function sendRequestNotification(r: InboxRequest) {
     return false;
   }
   const site = process.env.NEXT_PUBLIC_SITE_URL || "https://madex-it.ch";
-  const adminUrl = `${site.replace(/\/$/, "")}/admin/anfragen/${r.id}`;
+  const adminUrl = `${site.replace(/\/$/, "")}/admin-alt/anfragen/${r.id}`;
   const table = rows(r)
     .map(([k, v]) => `<tr><td style="padding:8px 12px;color:#5b6b6d;font-size:13px;white-space:nowrap;border-bottom:1px solid #e6eceb">${esc(k)}</td><td style="padding:8px 12px;font-size:14px;color:#12262a;border-bottom:1px solid #e6eceb">${esc(v)}</td></tr>`)
     .join("");

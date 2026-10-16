@@ -22,7 +22,8 @@ Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablag
 | Variable | Zweck |
 |---|---|
 | `NEXT_PUBLIC_SITE_URL` | Basis-URL für Canonicals, Sitemap, Open Graph, Links in E-Mails |
-| `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` | Zugang zum Admin-Dashboard `/admin` |
+| `DATABASE_URL`, `APP_SECRET`, `APP_URL` | Neues Dashboard `/admin` (PostgreSQL, Verschlüsselung, öffentliche Adresse) |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` | Altes Dashboard `/admin-alt` |
 | `DATA_DIR`, `DATA_ENCRYPTION_KEY` | Ablage und Verschlüsselung von Anfragen, Chats, Einstellungen |
 | `SMTP_*`, `MAIL_FROM`, `CONTACT_TO_EMAIL` | E-Mail-Benachrichtigung bei neuen Anfragen |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | KI-Chatbot «Orion» |
@@ -36,7 +37,17 @@ Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablag
 2. **Persistenten Speicher anlegen** (Storages → Volume) z. B. auf `/app/.data` und `DATA_DIR=/app/.data` setzen. Ohne Volume gehen Anfragen, Chats und Einstellungen bei jedem Deploy verloren.
 3. `DATA_ENCRYPTION_KEY` einmal erzeugen (`openssl rand -base64 32`) und nie mehr ändern – sonst sind bestehende Daten nicht mehr lesbar.
 
-## Admin-Dashboard (`/admin`)
+## Neues Dashboard (`/admin`)
+
+Die Website enthält das wiederverwendbare Dashboard aus der Vorlage `madexitsolutions/predashboard` (Shop, Beiträge,
+Mediathek, SEO, Anfragen, Statistiken, Benutzer und Rollen). Beim ersten Aufruf von `/admin` wird das Inhaber-Konto
+angelegt. Es braucht zusätzlich `DATABASE_URL`, `APP_SECRET` und `APP_URL` (siehe `.env.example`); lokal genügt `npm run dev`
+(eingebettete Datenbank). Der Kern liegt in `src/app/admin`, `src/server`, `src/components/admin`, `src/modules`,
+`src/app/api/{v1,payments,cron}`, `src/app/uploads` und `tests/dashboard` – Änderungen daran zuerst in der Vorlage machen.
+
+## Altes Admin-Dashboard (`/admin-alt`)
+
+Bleibt erreichbar, bis das neue Dashboard die Funktionen übernommen hat (vor allem Chatbot Orion und Chat-Verläufe).
 
 Anmeldung mit Benutzername/Passwort aus der `.env` und verpflichtender Zwei-Faktor-Anmeldung (Authenticator-App, QR-Code beim ersten Login, 8 Wiederherstellungscodes). Sperre nach Fehlversuchen, automatische Abmeldung nach Inaktivität, Protokoll aller Anmeldungen.
 

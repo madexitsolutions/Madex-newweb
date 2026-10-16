@@ -1,4 +1,4 @@
-/** Default company profile for Orion (from the Madex chatbot plugin v1.5.7). Editable in /admin. */
+/** Default company profile for Orion (from the Madex chatbot plugin v1.5.7). Editable in /admin-alt. */
 export const DEFAULT_COMPANY_PROFILE = `# Unternehmen
 Madex IT Solutions ist eine Schweizer Agentur für Webdesign und Online-Marketing für KMU.
 Adresse: Buchenstrasse 36, 8212 Neuhausen am Rheinfall (Region Schaffhausen).

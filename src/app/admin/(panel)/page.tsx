@@ -1,188 +1,328 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/server/auth";
-import { listRequests, STATUS_LABELS, TYPE_LABELS } from "@/lib/server/requests";
-import { listSessions } from "@/lib/server/chats";
-import { smtpConfigured } from "@/lib/server/mailer";
-import { openAiConfigured } from "@/lib/server/orion";
-import { analyticsIds, getSettings } from "@/lib/server/settings";
-import { ga4Configured } from "@/lib/server/ga4";
-import { dataDir } from "@/lib/server/store";
-import { Bars } from "../chart";
-import { dateTime, perDay } from "../format";
-import { Empty, Icon, PageHeader, Panel, type IconName } from "../kit";
+import { Delta, LineChart } from "@/components/admin/charts-ext";
+import { Empty, Icon, PageHeader, Panel, type IconName } from "@/components/admin/kit";
+import { fullName, money, number, orderNumber, relative } from "@/lib/format";
+import { enabledModules } from "@/modules/registry";
+import { requirePermission } from "@/server/auth/session";
+import { latestInquiries, latestOrders, newInquiryCount, openOrderCount, revenueKpis, setupChecks, shopTodos, userNotifications, type Todo } from "@/server/analytics/overview";
+import { change } from "@/server/analytics/sales";
+import { bucketLabel } from "@/server/analytics/range";
+import { ga4Visitors } from "@/server/analytics/ga4";
+import { INQUIRY_STATUS } from "@/server/content/inquiries";
+import { getSettings } from "@/server/settings";
+import { markReadAction } from "./overview-actions";
+import "../content.css";
 
 export const metadata = { title: "Übersicht" };
 
-type Todo = { icon: IconName; tone: "warn" | "info"; title: string; text: string; href: string; cta: string };
+const ORDER_STATUS: Record<string, { label: string; pill: string }> = {
+  pending: { label: "Ausstehend", pill: "muted" },
+  processing: { label: "In Bearbeitung", pill: "warn" },
+  on_hold: { label: "Zurückgestellt", pill: "warn" },
+  completed: { label: "Abgeschlossen", pill: "ok" },
+  cancelled: { label: "Storniert", pill: "muted" },
+  refunded: { label: "Rückerstattet", pill: "muted" },
+  failed: { label: "Fehlgeschlagen", pill: "bad" },
+};
+
+function greeting(now: Date) {
+  const h = Number(now.toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: "Europe/Zurich" }));
+  return h < 11 ? "Guten Morgen" : h < 18 ? "Guten Tag" : "Guten Abend";
+}
+
+function Kpi({ label, value, hint, delta, href, tone }: { label: string; value: string; hint?: React.ReactNode; delta?: number | null; href?: string; tone?: "accent" | "warn" }) {
+  const body = (
+    <>
+      <span className="a-kpi__label">{label}</span>
+      <strong>{value}</strong>
+      {delta !== undefined ? <Delta value={delta} label={typeof hint === "string" ? hint : "vs. Vorperiode"} /> : hint ? <span className="a-kpi__hint">{hint}</span> : null}
+    </>
+  );
+  const cls = `a-kpi${tone ? ` a-kpi--${tone}` : ""}`;
+  return href ? (
+    <Link href={href} className={cls}>
+      {body}
+    </Link>
+  ) : (
+    <div className={cls}>{body}</div>
+  );
+}
 
 export default async function Overview() {
-  await requireAdmin();
-  const [requests, chats, settings] = await Promise.all([listRequests(), listSessions(), getSettings()]);
-  const since = Date.now() - 30 * 86400000;
-  const recent = requests.filter((r) => new Date(r.createdAt).getTime() >= since);
-  const chats30 = chats.filter((c) => new Date(c.createdAt).getTime() >= since && c.messages.some((m) => m.role === "user"));
-  const fresh = requests.filter((r) => r.status === "new");
-  const failed = requests.filter((r) => r.emailStatus === "failed").length;
-  const ids = analyticsIds(settings.analytics);
-  const checks = [
-    { label: "E-Mail-Versand (SMTP)", ok: smtpConfigured(), hint: "SMTP_HOST, SMTP_USER und SMTP_PASSWORD in der .env setzen.", href: "/admin/anfragen" },
-    { label: "Chatbot (OpenAI)", ok: openAiConfigured(), hint: "OPENAI_API_KEY in der .env setzen.", href: "/admin/chatbot?tab=verbindung" },
-    { label: "Google Analytics Tracking", ok: Boolean(ids.ga4Id || ids.gtmId), hint: "Mess-ID unter Google Analytics eintragen.", href: "/admin/analytics" },
-    { label: "Google Analytics Berichte", ok: ga4Configured(), hint: "GA4_PROPERTY_ID und Dienstkonto in der .env setzen.", href: "/admin/analytics" },
-    { label: "Verschlüsselte Datenablage", ok: Boolean(process.env.DATA_ENCRYPTION_KEY), hint: "DATA_ENCRYPTION_KEY in der .env setzen.", href: "/admin" },
-  ];
-  const setupOk = checks.filter((c) => c.ok).length;
+  const user = await requirePermission("dashboard.view");
+  const now = new Date();
+  const [modules, general] = await Promise.all([enabledModules(), getSettings("general")]);
+  const can = (p: Parameters<typeof user.permissions.has>[0]) => user.permissions.has(p);
+  const showSales = modules.shop && can("orders.view");
+  const showInquiries = modules.inquiries && can("inquiries.view");
+  const showVisitors = modules.analytics && can("analytics.view");
+  const isAdmin = can("settings.manage");
 
-  const todos: Todo[] = [];
-  if (fresh.length)
-    todos.push({
-      icon: "inbox",
-      tone: "info",
-      title: fresh.length === 1 ? "1 neue Anfrage wartet auf Antwort" : `${fresh.length} neue Anfragen warten auf Antwort`,
-      text: `Älteste vom ${dateTime(fresh.map((r) => r.createdAt).sort()[0])}`,
-      href: "/admin/anfragen?status=new",
-      cta: "Anfragen öffnen",
-    });
-  if (failed)
-    todos.push({
-      icon: "mail",
-      tone: "warn",
-      title: failed === 1 ? "1 Benachrichtigung wurde nicht zugestellt" : `${failed} Benachrichtigungen wurden nicht zugestellt`,
-      text: "Prüfen Sie die SMTP-Angaben und senden Sie die E-Mail in der Anfrage erneut.",
-      href: "/admin/anfragen?email=failed",
-      cta: "Betroffene ansehen",
-    });
-  for (const c of checks.filter((x) => !x.ok && x.href !== "/admin"))
-    todos.push({ icon: "alert", tone: "warn", title: `${c.label} ist nicht eingerichtet`, text: c.hint, href: c.href, cta: "Einrichten" });
+  const [sales, open, newInq, visitors, todos, checks, orders, inqs, notes] = await Promise.all([
+    showSales ? revenueKpis(now) : null,
+    showSales ? openOrderCount() : 0,
+    showInquiries ? newInquiryCount() : 0,
+    showVisitors ? ga4Visitors() : null,
+    modules.shop ? shopTodos(user, now) : [],
+    isAdmin ? setupChecks(modules) : [],
+    showSales ? latestOrders(6) : [],
+    showInquiries ? latestInquiries(6) : [],
+    userNotifications(user, 8),
+  ]);
+
+  const allTodos: Todo[] = [...todos];
+  if (showInquiries && newInq) allTodos.push({ key: "inq", tone: "info", icon: "inbox", title: `${newInq} neue Anfrage${newInq === 1 ? "" : "n"}`, text: "Noch nicht bearbeitet – zeitnah antworten.", href: "/admin/anfragen", action: "Anfragen" });
+  const openChecks = checks.filter((c) => !c.ok);
+  const firstName = user.name.split(" ")[0];
 
   return (
     <>
       <PageHeader
-        title="Übersicht"
-        description="Was in den letzten 30 Tagen auf madex-it.ch passiert ist – und was jetzt zu tun ist."
+        title={`${greeting(now)}, ${firstName}`}
+        description={`${now.toLocaleDateString("de-CH", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Zurich" })} · ${general.siteName}`}
         actions={
-          <Link href="/admin/anfragen" className="a-btn a-btn--primary">
-            <Icon name="inbox" size={16} />
-            Zu den Anfragen
-          </Link>
+          modules.analytics && can("analytics.view") ? (
+            <Link href="/admin/statistiken" className="a-btn a-btn--ghost">
+              <Icon name="chart" size={16} />
+              Statistiken
+            </Link>
+          ) : undefined
         }
       />
 
-      <section className="a-kpis" aria-label="Kennzahlen">
-        <Link href="/admin/anfragen?status=new" className={`a-kpi${fresh.length ? " a-kpi--accent" : ""}`}>
-          <span className="a-kpi__label">Neue Anfragen</span>
-          <strong>{fresh.length}</strong>
-          <span className="a-kpi__hint">{fresh.length ? "noch nicht bearbeitet" : "alles beantwortet"}</span>
-        </Link>
-        <Link href="/admin/anfragen" className="a-kpi">
-          <span className="a-kpi__label">Anfragen</span>
-          <strong>{recent.length}</strong>
-          <span className="a-kpi__hint">in 30 Tagen</span>
-        </Link>
-        <Link href="/admin/chats" className="a-kpi">
-          <span className="a-kpi__label">Chat-Gespräche</span>
-          <strong>{chats30.length}</strong>
-          <span className="a-kpi__hint">in 30 Tagen</span>
-        </Link>
-        <Link href="/admin/anfragen?email=failed" className={`a-kpi${failed ? " a-kpi--warn" : ""}`}>
-          <span className="a-kpi__label">E-Mails nicht zugestellt</span>
-          <strong>{failed}</strong>
-          <span className="a-kpi__hint">{failed ? "bitte prüfen" : "alle zugestellt"}</span>
-        </Link>
-      </section>
+      {(sales || showInquiries || visitors) && (
+        <div className="a-kpis ov-kpis">
+          {sales && (
+            <>
+              <Kpi label="Umsatz heute" value={money(sales.today.current.revenue)} delta={change(sales.today.current.revenue, sales.today.previous.revenue)} hint="vs. gestern" href="/admin/bestellungen" tone="accent" />
+              <Kpi label="Umsatz 7 Tage" value={money(sales.week.current.revenue)} delta={change(sales.week.current.revenue, sales.week.previous.revenue)} hint="vs. Vorwoche" />
+              <Kpi label="Umsatz 30 Tage" value={money(sales.month.current.revenue)} delta={change(sales.month.current.revenue, sales.month.previous.revenue)} hint="vs. Vormonat" />
+              <Kpi label="Bestellungen 7 Tage" value={number(sales.ordersWeek)} delta={change(sales.ordersWeek, sales.ordersPrevWeek)} hint="vs. Vorwoche" href="/admin/bestellungen" />
+              <Kpi label="Offene Bestellungen" value={number(open)} hint={open ? "In Bearbeitung oder zurückgestellt" : "Alles versendet"} href="/admin/bestellungen?status=offen" tone={open ? "warn" : undefined} />
+            </>
+          )}
+          {showInquiries && <Kpi label="Neue Anfragen" value={number(newInq)} hint={newInq ? "Warten auf Antwort" : "Alles beantwortet"} href="/admin/anfragen" tone={newInq ? "warn" : undefined} />}
+          {visitors &&
+            ("error" in visitors ? (
+              <Kpi label="Besucher 7 Tage" value="–" hint={<span title={visitors.error}>Google Analytics: Fehler</span>} href="/admin/statistiken" />
+            ) : (
+              <Kpi label="Besucher 7 Tage" value={number(visitors.users)} delta={change(visitors.users, visitors.previous)} hint="vs. Vorwoche" href="/admin/statistiken#besucher" />
+            ))}
+        </div>
+      )}
 
       <div className="a-grid2 a-grid2--wide">
-        <Panel title="Was ist zu tun" description={todos.length ? `${todos.length} offene ${todos.length === 1 ? "Aufgabe" : "Aufgaben"}` : undefined}>
-          {todos.length === 0 ? (
-            <Empty icon="check" title="Alles erledigt">
-              Keine offenen Anfragen, alle E-Mails zugestellt und alles eingerichtet.
-            </Empty>
-          ) : (
-            <ul className="a-todo">
-              {todos.map((t) => (
-                <li key={t.title} className={`a-todo__item a-todo__item--${t.tone}`}>
-                  <span className="a-todo__icon">
-                    <Icon name={t.icon} />
-                  </span>
-                  <div className="a-todo__text">
-                    <strong>{t.title}</strong>
-                    <small>{t.text}</small>
-                  </div>
-                  <Link href={t.href} className="a-btn a-btn--ghost a-btn--sm">
-                    {t.cta}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panel>
-        <Panel title="Anfragen pro Tag" description={`${recent.length} in den letzten 30 Tagen`}>
-          <Bars data={perDay(recent.map((r) => r.createdAt))} label="Anfragen pro Tag in den letzten 30 Tagen" />
-        </Panel>
-      </div>
-
-      <Panel
-        flush
-        title="Neueste Anfragen"
-        action={
-          <Link href="/admin/anfragen" className="a-link">
-            Alle anzeigen <Icon name="arrow" size={15} />
-          </Link>
-        }
-      >
-        {requests.length === 0 ? (
-          <Empty title="Noch keine Anfragen">Sobald jemand ein Formular auf der Website oder den Chat nutzt, erscheint die Anfrage hier.</Empty>
-        ) : (
-          <div className="a-tablewrap">
-            <table className="a-table a-table--stack">
-              <thead>
-                <tr>
-                  <th>Kontakt</th>
-                  <th>Art</th>
-                  <th>Eingang</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {requests.slice(0, 6).map((r) => (
-                  <tr key={r.id} className={r.status === "new" ? "is-new" : undefined}>
-                    <td>
-                      <Link href={`/admin/anfragen/${r.id}`} className="a-rowlink">
-                        {r.name}
-                      </Link>
-                      <small>{r.company || r.email}</small>
-                    </td>
-                    <td>{TYPE_LABELS[r.type]}</td>
-                    <td className="a-nowrap">{dateTime(r.createdAt)}</td>
-                    <td>
-                      <span className={`a-pill a-pill--${r.status}`}>{STATUS_LABELS[r.status]}</span>
-                    </td>
-                  </tr>
+        <div className="a-stack">
+          <Panel title="Was ist zu tun" description={allTodos.length ? undefined : "Alles erledigt."}>
+            {allTodos.length === 0 && openChecks.length === 0 ? (
+              <Empty icon="check" title="Nichts Dringendes">
+                Neue Bestellungen, überfällige Rechnungen, tiefe Lagerbestände und Anfragen erscheinen hier.
+              </Empty>
+            ) : (
+              <ul className="a-todo">
+                {allTodos.map((t) => (
+                  <li key={t.key} className={`a-todo__item a-todo__item--${t.tone}`}>
+                    <span className="a-todo__icon" aria-hidden="true">
+                      <Icon name={t.icon as IconName} size={18} />
+                    </span>
+                    <span className="a-todo__text">
+                      <strong>{t.title}</strong>
+                      <small>{t.text}</small>
+                    </span>
+                    <Link href={t.href} className="a-btn a-btn--ghost a-btn--sm">
+                      {t.action}
+                    </Link>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </Panel>
+                {allTodos.length === 0 && (
+                  <li className="a-todo__item a-todo__item--info">
+                    <span className="a-todo__icon" aria-hidden="true">
+                      <Icon name="check" size={18} />
+                    </span>
+                    <span className="a-todo__text">
+                      <strong>Keine offenen Aufgaben</strong>
+                      <small>Bestellungen, Rechnungen, Lager und Anfragen sind im grünen Bereich.</small>
+                    </span>
+                  </li>
+                )}
+              </ul>
+            )}
+          </Panel>
+          {sales && (
+            <Panel title="Umsatz der letzten 30 Tage" description={`${money(sales.month.current.revenue)} aus ${number(sales.month.current.orders)} bezahlten Bestellungen, nach Rückerstattungen`}>
+              <LineChart
+                title="Umsatz pro Tag, letzte 30 Tage"
+                labels={sales.series.map((p) => bucketLabel(p.key, "day"))}
+                shortLabels={sales.series.map((p) => bucketLabel(p.key, "day", true))}
+                series={[{ name: "Umsatz", values: sales.series.map((p) => p.revenue) }]}
+                format="money"
+                unit="CHF"
+                height={220}
+              />
+            </Panel>
+          )}
+          {sales && (
+            <Panel
+              title="Neueste Bestellungen"
+              flush
+              action={
+                <Link href="/admin/bestellungen" className="a-link">
+                  Alle <Icon name="arrow" size={14} />
+                </Link>
+              }
+            >
+              {orders.length === 0 ? (
+                <Empty icon="cart" title="Noch keine Bestellungen">
+                  Sobald im Shop bestellt wird, erscheinen die Bestellungen hier.
+                </Empty>
+              ) : (
+                <div className="a-tablewrap">
+                  <table className="a-table a-table--stack">
+                    <thead>
+                      <tr>
+                        <th scope="col">Bestellung</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" className="a-num">
+                          Betrag
+                        </th>
+                        <th scope="col">Eingang</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((o) => (
+                        <tr key={o.id}>
+                          <td>
+                            <Link href={`/admin/bestellungen/${o.id}`} className="a-rowlink">
+                              #{orderNumber(o.number)}
+                            </Link>
+                            <small>{fullName(o.billing) || o.email}</small>
+                          </td>
+                          <td data-label="Status">
+                            <span className={`a-pill a-pill--${ORDER_STATUS[o.status]?.pill ?? "muted"}`}>{ORDER_STATUS[o.status]?.label ?? o.status}</span>
+                          </td>
+                          <td className="a-num" data-label="Betrag">
+                            {money(o.total)}
+                          </td>
+                          <td className="a-nowrap" data-label="Eingang">
+                            {relative(o.createdAt, now.getTime())}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Panel>
+          )}
+        </div>
 
-      <Panel title="Einrichtung" description={`${setupOk} von ${checks.length} Punkten erledigt`}>
-        <ul className="a-checks">
-          {checks.map((c) => (
-            <li key={c.label} className={c.ok ? "is-ok" : "is-off"}>
-              <span className="a-checks__dot">
-                <Icon name={c.ok ? "check" : "alert"} size={14} />
-              </span>
-              <div>
-                {c.label}
-                <small>{c.ok ? "Eingerichtet" : c.hint}</small>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <p className="a-footnote">
-          Datenablage: <code>{dataDir}</code>
-        </p>
-      </Panel>
+        <div className="a-stack">
+          <Panel
+            title={
+              <>
+                Mitteilungen {notes.unread > 0 && <span className="a-tabs__count ov-unread">{notes.unread} neu</span>}
+              </>
+            }
+            action={
+              notes.unread > 0 ? (
+                <form action={markReadAction}>
+                  <button type="submit" className="a-btn a-btn--quiet a-btn--sm">
+                    Alle gelesen
+                  </button>
+                </form>
+              ) : undefined
+            }
+          >
+            {notes.rows.length === 0 ? (
+              <p className="a-muted a-small0">Keine Mitteilungen in den letzten 60 Tagen.</p>
+            ) : (
+              <ul className="ov-feed">
+                {notes.rows.map((n) => (
+                  <li key={n.id} className={n.read ? undefined : "is-unread"}>
+                    <span className="ov-feed__dot" aria-hidden="true" />
+                    <div className="ov-feed__text">
+                      {n.href ? (
+                        <Link href={n.href} className="a-rowlink">
+                          {n.title}
+                        </Link>
+                      ) : (
+                        <strong>{n.title}</strong>
+                      )}
+                      {n.body && <small>{n.body}</small>}
+                      <time dateTime={n.createdAt.toISOString()}>{relative(n.createdAt, now.getTime())}</time>
+                    </div>
+                    {!n.read && (
+                      <form action={markReadAction}>
+                        <input type="hidden" name="id" value={n.id} />
+                        <button type="submit" className="a-iconbtn ov-feed__read" aria-label={`«${n.title}» als gelesen markieren`} title="Als gelesen markieren">
+                          <Icon name="check" size={16} />
+                        </button>
+                      </form>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+
+          {showInquiries && (
+            <Panel
+              title="Neueste Anfragen"
+              action={
+                <Link href="/admin/anfragen?status=alle" className="a-link">
+                  Alle <Icon name="arrow" size={14} />
+                </Link>
+              }
+            >
+              {inqs.length === 0 ? (
+                <p className="a-muted a-small0">Noch keine Anfragen eingegangen.</p>
+              ) : (
+                <ul className="ov-list">
+                  {inqs.map((q) => (
+                    <li key={q.id}>
+                      <div>
+                        <Link href={`/admin/anfragen/${q.id}`} className="a-rowlink">
+                          {q.name || q.email}
+                        </Link>
+                        <small>{q.subject || q.message.slice(0, 80) || "Ohne Betreff"}</small>
+                      </div>
+                      <div className="ov-list__meta">
+                        <span className={`a-pill a-pill--${INQUIRY_STATUS[q.status].pill}`}>{INQUIRY_STATUS[q.status].label}</span>
+                        <small>{relative(q.createdAt, now.getTime())}</small>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          )}
+
+          {isAdmin && checks.length > 0 && (
+            <Panel title="Einrichtung" description={openChecks.length ? `${checks.length - openChecks.length} von ${checks.length} erledigt` : "Alles eingerichtet."}>
+              <ul className="ov-checks">
+                {checks.map((c) => (
+                  <li key={c.key} className={c.ok ? "is-ok" : "is-off"}>
+                    <span className="a-checks__dot" aria-hidden="true">
+                      <Icon name={c.ok ? "check" : "alert"} size={13} />
+                    </span>
+                    <span>
+                      {c.ok ? (
+                        <strong>{c.title}</strong>
+                      ) : (
+                        <Link href={c.href} className="a-rowlink">
+                          {c.title}
+                        </Link>
+                      )}
+                      <small>{c.text}</small>
+                    </span>
+                    <span className="sr-only">{c.ok ? "erledigt" : "offen"}</span>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
+        </div>
+      </div>
     </>
   );
 }

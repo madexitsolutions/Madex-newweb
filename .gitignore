@@ -11,3 +11,6 @@ npm-debug.log*
 # runtime data (requests, chats, settings)
 /.data/
 /data/
+
+# dashboard: embedded database, uploads and imports live in DATA_DIR (default .data)
+.next-*/

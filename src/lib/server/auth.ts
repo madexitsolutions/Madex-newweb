@@ -194,7 +194,7 @@ export async function currentAdmin() {
 /** Use at the top of every admin page and server action. */
 export async function requireAdmin() {
   const a = await currentAdmin();
-  if (!a) redirect("/admin/login");
+  if (!a) redirect("/admin-alt/login");
   return a;
 }
 

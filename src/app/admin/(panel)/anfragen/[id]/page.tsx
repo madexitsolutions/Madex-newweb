@@ -1,176 +1,200 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { requireAdmin } from "@/lib/server/auth";
-import { getRequest, STATUS_LABELS, TIME_LABELS, TYPE_LABELS, type RequestStatus } from "@/lib/server/requests";
-import { SERVICE_OPTIONS } from "@/lib/server/packages";
-import { removeRequest, resendRequestEmail, saveRequestNotes, setRequestStatus } from "../../../actions";
-import { ConfirmForm, Submit } from "../../../ui";
-import { dateOnly, dateTime } from "../../../format";
-import { Icon, PageHeader, Panel } from "../../../kit";
+import { eq } from "drizzle-orm";
+import { ConfirmForm } from "@/components/admin/forms";
+import { Icon, PageHeader, Panel } from "@/components/admin/kit";
+import { dateTime } from "@/lib/format";
+import { requireModule } from "@/modules/registry";
+import { requirePermission } from "@/server/auth/session";
+import { db } from "@/server/db";
+import { inquiries, users } from "@/server/db/schema";
+import { INQUIRY_STATUS, assignableUsers, fieldLabel } from "@/server/content/inquiries";
+import { maskIp } from "@/server/lib/request";
+import { getSettings } from "@/server/settings";
+import { deleteInquiryAction, setInquiryStatusAction } from "../actions";
+import { InquiryForm } from "./client";
+import "../../../content.css";
 
 export const metadata = { title: "Anfrage" };
 
-const EVENT_LABELS: Record<string, string> = {
-  created: "Anfrage eingegangen",
-  status: "Status geändert",
-  note: "Notiz gespeichert",
-  email_sent: "Benachrichtigung zugestellt",
-  email_failed: "Benachrichtigung fehlgeschlagen",
-  email_skipped: "Kein E-Mail-Versand (SMTP nicht eingerichtet)",
-};
-
-function Facts({ rows }: { rows: [string, React.ReactNode][] }) {
-  const shown = rows.filter(([, v]) => v);
-  if (!shown.length) return null;
-  return (
-    <dl className="a-dl">
-      {shown.map(([k, v]) => (
-        <div key={k}>
-          <dt>{k}</dt>
-          <dd>{v}</dd>
-        </div>
-      ))}
-    </dl>
-  );
+function prettyJson(t: string) {
+  try {
+    return JSON.stringify(JSON.parse(t), null, 2);
+  } catch {
+    return null;
+  }
 }
 
-export default async function RequestDetail({ params }: { params: Promise<{ id: string }> }) {
-  await requireAdmin();
+/** JSON-ish values ("{…}", "[…]") are shown pretty-printed. */
+function FieldValue({ value }: { value: string }) {
+  const t = value.trim();
+  if ((t.startsWith("{") && t.endsWith("}")) || (t.startsWith("[") && t.endsWith("]"))) {
+    const pretty = prettyJson(t);
+    if (pretty) return <pre className="iq-json">{pretty}</pre>;
+  }
+  if (/^https?:\/\/\S+$/.test(t))
+    return (
+      <a href={t} target="_blank" rel="noopener noreferrer nofollow">
+        {t}
+      </a>
+    );
+  return <span className="iq-pre">{value || "–"}</span>;
+}
+
+export default async function InquiryPage({ params }: { params: Promise<{ id: string }> }) {
+  const user = await requirePermission("inquiries.view");
+  await requireModule("inquiries");
   const { id } = await params;
-  const r = await getRequest(id);
-  if (!r) notFound();
-  const mailto = `mailto:${r.email}?subject=${encodeURIComponent("Ihre Anfrage " + r.reference)}`;
-  const contact: [string, React.ReactNode][] = [
-    ["Name", r.name],
-    ["Firma", r.company],
-    ["E-Mail", <a key="e" href={mailto}>{r.email}</a>],
-    ["Telefon", r.phone && <a key="p" href={`tel:${r.phone.replace(/\s/g, "")}`}>{r.phone}</a>],
-    ["Bereits Kunde", r.existingClient === undefined ? undefined : r.existingClient ? "Ja" : "Nein"],
-    ["Website", r.website && <a key="w" href={/^https?:/.test(r.website) ? r.website : `https://${r.website}`} target="_blank" rel="noopener noreferrer">{r.website}</a>],
-  ];
-  const concern: [string, React.ReactNode][] = [
-    ["Art", TYPE_LABELS[r.type]],
-    ["Leistung", r.service && (SERVICE_OPTIONS[r.service] ?? r.service)],
-    ["Paket", r.packageInterest],
-    ["Wunschtermin", r.preferredDate && `${dateOnly(r.preferredDate)}${r.preferredTime ? ", " + (TIME_LABELS[r.preferredTime] ?? r.preferredTime) : ""}`],
-  ];
-  const meta: [string, React.ReactNode][] = [
-    ["Referenz", r.reference],
-    ["Quelle", r.source === "orion" ? "Chat (Orion)" : r.source],
-    ["Eingang", dateTime(r.createdAt)],
-    ["Einwilligung", dateTime(r.consentAt)],
-  ];
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
+  const [row] = await db.select().from(inquiries).where(eq(inquiries.id, id));
+  if (!row) notFound();
+  const canManage = user.permissions.has("inquiries.manage");
+  const [people, assignee, general] = await Promise.all([canManage ? assignableUsers() : [], row.assignedTo ? db.select({ name: users.name }).from(users).where(eq(users.id, row.assignedTo)) : [], getSettings("general")]);
+  const st = INQUIRY_STATUS[row.status];
+  const subject = `Re: ${row.subject || `Ihre Anfrage`} [${row.reference}]`;
+  const quoted = row.message ? `\n\n\n--- Ihre Nachricht vom ${dateTime(row.createdAt)} ---\n${row.message.slice(0, 1500)}` : "";
+  const greeting = row.name ? `Guten Tag ${row.name}\n\n` : "Guten Tag\n\n";
+  const mailto = `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(greeting + `Vielen Dank für Ihre Anfrage.` + `\n\nFreundliche Grüsse\n${user.name}\n${general.companyName || general.siteName}` + quoted)}`;
+  const extra = Object.entries(row.fields);
 
   return (
     <>
       <PageHeader
         crumb={{ href: "/admin/anfragen", label: "Anfragen" }}
-        title={r.name}
-        meta={<span className={`a-pill a-pill--${r.status} a-pill--lg`}>{STATUS_LABELS[r.status]}</span>}
-        description={`${TYPE_LABELS[r.type]}${r.company ? ` von ${r.company}` : ""}, eingegangen am ${dateTime(r.createdAt)} · ${r.reference}`}
+        title={row.subject || `Anfrage von ${row.name || row.email}`}
+        meta={<span className={`a-pill a-pill--lg a-pill--${st.pill}`}>{st.label}</span>}
+        description={
+          <>
+            <span className="a-mono-cell">{row.reference}</span> · Formular «{row.form}» · eingegangen {dateTime(row.createdAt)}
+          </>
+        }
         actions={
           <>
-            {r.phone && (
-              <a className="a-btn a-btn--ghost" href={`tel:${r.phone.replace(/\s/g, "")}`}>
-                Anrufen
-              </a>
-            )}
-            <a className="a-btn a-btn--primary" href={mailto}>
+            <a href={mailto} className="a-btn a-btn--primary">
               <Icon name="mail" size={16} />
               Per E-Mail antworten
             </a>
+            {canManage && row.status !== "done" && row.status !== "spam" && (
+              <form action={setInquiryStatusAction}>
+                <input type="hidden" name="id" value={row.id} />
+                <input type="hidden" name="status" value="done" />
+                <button type="submit" className="a-btn a-btn--ghost">
+                  <Icon name="check" size={16} />
+                  Als erledigt markieren
+                </button>
+              </form>
+            )}
           </>
         }
       />
-
-      <div className="a-grid2 a-grid2--wide">
+      <div className="a-split">
         <div className="a-stack">
-          <Panel title="Anliegen">
-            <Facts rows={concern} />
-            {r.message ? (
-              <div className="a-message-wrap">
-                <h3>Nachricht</h3>
-                <p className="a-message">{r.message}</p>
-              </div>
-            ) : (
-              <p className="a-muted a-small">Keine Nachricht hinterlassen.</p>
-            )}
+          <Panel title="Nachricht">
+            {row.message ? <p className="a-message">{row.message}</p> : <p className="a-muted">Keine Nachricht – nur Formularfelder.</p>}
           </Panel>
           <Panel title="Kontakt">
-            <Facts rows={contact} />
-          </Panel>
-          <Panel title="Interne Notizen" description="Nur für das Team sichtbar. Jede Änderung erscheint im Verlauf.">
-            <form action={saveRequestNotes.bind(null, r.id)} className="a-stack">
-              <label className="a-field">
-                <span className="sr-only">Notizen</span>
-                <textarea name="notes" rows={5} defaultValue={r.notes} placeholder="z. B. «Am Dienstag angerufen, Offerte folgt bis Freitag.»" />
-              </label>
+            <dl className="a-dl">
               <div>
-                <Submit>Notiz speichern</Submit>
+                <dt>Name</dt>
+                <dd>{row.name || "–"}</dd>
               </div>
-            </form>
+              <div>
+                <dt>E-Mail</dt>
+                <dd>
+                  <a href={`mailto:${row.email}`}>{row.email}</a>
+                </dd>
+              </div>
+              <div>
+                <dt>Telefon</dt>
+                <dd>{row.phone ? <a href={`tel:${row.phone.replace(/[^\d+]/g, "")}`}>{row.phone}</a> : "–"}</dd>
+              </div>
+              <div>
+                <dt>Firma</dt>
+                <dd>{row.company || "–"}</dd>
+              </div>
+            </dl>
+          </Panel>
+          {extra.length > 0 && (
+            <Panel title="Weitere Angaben" description="Zusätzliche Felder, die das Formular gesendet hat.">
+              <dl className="a-dl iq-fields">
+                {extra.map(([k, v]) => (
+                  <div key={k}>
+                    <dt>{fieldLabel(k)}</dt>
+                    <dd>
+                      <FieldValue value={v} />
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </Panel>
+          )}
+          <Panel title="Herkunft">
+            <dl className="a-dl">
+              <div>
+                <dt>Seite</dt>
+                <dd>
+                  {row.sourceUrl ? (
+                    <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer nofollow">
+                      {row.sourceUrl}
+                    </a>
+                  ) : (
+                    "–"
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>IP-Adresse</dt>
+                <dd>{row.ip ? maskIp(row.ip) : "–"}</dd>
+              </div>
+              <div>
+                <dt>Eingang</dt>
+                <dd>{dateTime(row.createdAt)}</dd>
+              </div>
+              <div>
+                <dt>Zuletzt geändert</dt>
+                <dd>{dateTime(row.updatedAt)}</dd>
+              </div>
+            </dl>
           </Panel>
         </div>
-
         <div className="a-stack">
-          <Panel title="Status" description="Hält fest, wie weit die Anfrage bearbeitet ist.">
-            <form action={setRequestStatus.bind(null, r.id)} className="a-inline">
-              <label className="a-field a-field--grow">
-                <span className="sr-only">Status</span>
-                <select name="status" defaultValue={r.status}>
-                  {(Object.keys(STATUS_LABELS) as RequestStatus[]).map((s) => (
-                    <option key={s} value={s}>
-                      {STATUS_LABELS[s]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <Submit>Ändern</Submit>
-            </form>
-          </Panel>
-          <Panel title="Benachrichtigung ans Team">
-            <p className={`a-state a-state--${r.emailStatus === "sent" ? "ok" : r.emailStatus === "failed" ? "bad" : "muted"}`}>
-              {r.emailStatus === "sent" && "Die E-Mail an das Team wurde zugestellt."}
-              {r.emailStatus === "failed" && `Zustellung fehlgeschlagen${r.emailError ? `: ${r.emailError}` : "."}`}
-              {r.emailStatus === "skipped" && "Nicht versendet – SMTP ist nicht eingerichtet."}
-              {r.emailStatus === "pending" && "Wird versendet …"}
-            </p>
-            <form action={resendRequestEmail.bind(null, r.id)} className="a-panel__foot">
-              <Submit variant="ghost" pending="Wird gesendet …">
-                Erneut senden
-              </Submit>
-            </form>
-          </Panel>
-          <Panel title="Verlauf">
-            <ol className="a-timeline">
-              {[...r.events].reverse().map((e, i) => (
-                <li key={i}>
-                  <span>{dateTime(e.at)}</span>
-                  {EVENT_LABELS[e.type] ?? e.type}
-                  {e.type === "status" && e.to && ` zu «${STATUS_LABELS[e.to as RequestStatus] ?? e.to}»`}
-                  {e.note && <small>{e.note}</small>}
-                </li>
-              ))}
-            </ol>
-          </Panel>
-          <Panel title="Details">
-            <Facts rows={meta} />
-            {r.sessionId && (
-              <div className="a-panel__foot">
-                <Link className="a-btn a-btn--ghost" href={`/admin/chats/${r.sessionId}`}>
-                  <Icon name="chat" size={16} />
-                  Zugehörigen Chat ansehen
-                </Link>
+          {canManage ? (
+            <Panel title="Bearbeitung">
+              <InquiryForm id={row.id} status={row.status} assignedTo={row.assignedTo ?? ""} notes={row.notes} users={people} />
+            </Panel>
+          ) : (
+            <Panel title="Bearbeitung">
+              <dl className="a-dl iq-readonly">
+                <div>
+                  <dt>Zuständig</dt>
+                  <dd>{assignee[0]?.name ?? "Niemand"}</dd>
+                </div>
+                <div>
+                  <dt>Interne Notiz</dt>
+                  <dd className="iq-pre">{row.notes || "–"}</dd>
+                </div>
+              </dl>
+            </Panel>
+          )}
+          {canManage && (
+            <div className="a-danger iq-danger">
+              <div>
+                <h2>{row.status === "spam" ? "Kein Spam?" : "Spam oder löschen"}</h2>
+                <p>{row.status === "spam" ? "Zurück in den Posteingang verschieben." : "Spam landet im Spam-Ordner, Löschen entfernt die Anfrage endgültig."}</p>
               </div>
-            )}
-          </Panel>
-          <section className="a-danger">
-            <div>
-              <h2>Anfrage löschen</h2>
-              <p>Entfernt die Anfrage samt Notizen endgültig.</p>
+              <div className="iq-danger__btns">
+                <form action={setInquiryStatusAction}>
+                  <input type="hidden" name="id" value={row.id} />
+                  <input type="hidden" name="status" value={row.status === "spam" ? "open" : "spam"} />
+                  <button type="submit" className="a-btn a-btn--ghost">
+                    {row.status === "spam" ? "Kein Spam" : "Als Spam markieren"}
+                  </button>
+                </form>
+                <ConfirmForm action={deleteInquiryAction} label="Löschen" question={`Anfrage ${row.reference} endgültig löschen?`}>
+                  <input type="hidden" name="id" value={row.id} />
+                </ConfirmForm>
+              </div>
             </div>
-            <ConfirmForm action={removeRequest.bind(null, r.id)} label="Löschen" question="Diese Anfrage endgültig löschen?" />
-          </section>
+          )}
         </div>
       </div>
     </>

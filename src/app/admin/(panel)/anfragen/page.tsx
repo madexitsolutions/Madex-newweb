@@ -1,154 +1,147 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/server/auth";
-import { listRequests, STATUS_LABELS, TYPE_LABELS, type InboxRequest, type RequestStatus, type RequestType } from "@/lib/server/requests";
-import { dateTime } from "../../format";
-import { Empty, Icon, PageHeader, Pager, Tabs, one, qs } from "../../kit";
+import { Empty, Icon, PageHeader, Pager, Tabs, one, qs } from "@/components/admin/kit";
+import { relative, dateTime } from "@/lib/format";
+import { requireModule } from "@/modules/registry";
+import { requirePermission } from "@/server/auth/session";
+import { INQUIRY_STATUS, inquiryCounts, inquiryForms, listInquiries } from "@/server/content/inquiries";
+import { STATUS_TABS, readFilters } from "./filters";
+import "../../content.css";
 
 export const metadata = { title: "Anfragen" };
 
-type Search = { q?: string; status?: string; type?: string; email?: string; p?: string };
 const PER_PAGE = 25;
 
-const EMAIL: Record<InboxRequest["emailStatus"], { label: string; cls: string }> = {
-  sent: { label: "Zugestellt", cls: "ok" },
-  failed: { label: "Fehlgeschlagen", cls: "bad" },
-  skipped: { label: "Kein SMTP", cls: "muted" },
-  pending: { label: "Ausstehend", cls: "muted" },
-};
-
-export default async function Requests({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  await requireAdmin();
-  const raw = await searchParams;
-  const sp: Search = { q: one(raw.q), status: one(raw.status), type: one(raw.type), email: one(raw.email), p: one(raw.p) };
-  const q = (sp.q ?? "").toLowerCase().trim();
-  const all = await listRequests();
-  const matchesRest = (r: InboxRequest) =>
-    (!sp.type || r.type === sp.type) && (!sp.email || r.emailStatus === sp.email) && (!q || [r.name, r.company, r.email, r.phone, r.reference, r.message, r.website].some((v) => v?.toLowerCase().includes(q)));
-  const base = all.filter(matchesRest);
-  const items = base.filter((r) => !sp.status || r.status === sp.status);
-  const pages = Math.max(1, Math.ceil(items.length / PER_PAGE));
-  const page = Math.min(pages, Math.max(1, Number(sp.p) || 1));
-  const shown = items.slice((page - 1) * PER_PAGE, page * PER_PAGE);
-  const keep = { q: sp.q, type: sp.type, email: sp.email };
-  const exportQs = qs({ q: sp.q, status: sp.status, type: sp.type, email: sp.email });
-  const filtered = Boolean(sp.q || sp.status || sp.type || sp.email);
+export default async function InquiriesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  await requirePermission("inquiries.view");
+  await requireModule("inquiries");
+  const sp = await searchParams;
+  const { tab, filter, params } = readFilters(sp);
+  const page = Math.max(1, Number(one(sp.seite)) || 1);
+  const [{ rows, total }, counts, forms] = await Promise.all([listInquiries(filter, page, PER_PAGE), inquiryCounts(filter), inquiryForms()]);
+  const pages = Math.max(1, Math.ceil(total / PER_PAGE));
+  const filtered = Boolean(filter.q || filter.form || filter.from || filter.to);
+  const now = new Date().getTime();
 
   return (
     <>
       <PageHeader
         title="Anfragen"
-        description="Alle Formulare der Website und Terminanfragen aus dem Chat – neueste zuerst."
+        description="Kontakt- und Offertanfragen aus den Formularen der Website."
         actions={
-          <a className="a-btn a-btn--ghost" href={`/admin/export${exportQs}`}>
+          <a href={`/admin/anfragen/export${qs(params)}`} className="a-btn a-btn--ghost" download>
             <Icon name="download" size={16} />
-            Als CSV exportieren
+            CSV exportieren
           </a>
         }
       />
-
+      {one(sp.geloescht) === "1" && (
+        <p className="a-alert a-alert--ok" role="status">
+          Anfrage gelöscht.
+        </p>
+      )}
       <div className="a-toolbar">
-        <Tabs
-          label="Status"
-          variant="segment"
-          active={sp.status || "all"}
-          items={[
-            { key: "all", label: "Alle", count: base.length, href: `/admin/anfragen${qs(keep)}` },
-            ...(Object.keys(STATUS_LABELS) as RequestStatus[]).map((s) => ({ key: s, label: STATUS_LABELS[s], count: base.filter((r) => r.status === s).length, href: `/admin/anfragen${qs({ ...keep, status: s })}` })),
-          ]}
-        />
-        <form className="a-filters" role="search">
-          {sp.status && <input type="hidden" name="status" value={sp.status} />}
-          {sp.email && <input type="hidden" name="email" value={sp.email} />}
+        <Tabs label="Status" active={tab.key} items={STATUS_TABS.map((t) => ({ key: t.key, label: t.label, count: counts[t.key], href: `/admin/anfragen${qs({ ...params, status: t.param || undefined })}` }))} />
+        <form className="iq-filters" role="search" action="/admin/anfragen">
+          {tab.param && <input type="hidden" name="status" value={tab.param} />}
           <label className="a-search">
             <Icon name="search" size={16} />
-            <span className="sr-only">Suchen</span>
-            <input name="q" type="search" defaultValue={sp.q} placeholder="Name, Firma, E-Mail, Referenz …" />
+            <span className="sr-only">Anfragen suchen</span>
+            <input type="search" name="q" defaultValue={filter.q} placeholder="Name, E-Mail, Firma, Text oder Referenz" />
           </label>
           <label className="a-field">
-            <span className="sr-only">Art</span>
-            <select name="type" defaultValue={sp.type ?? ""}>
-              <option value="">Alle Arten</option>
-              {(Object.keys(TYPE_LABELS) as RequestType[]).map((t) => (
-                <option key={t} value={t}>
-                  {TYPE_LABELS[t]}
+            <span className="sr-only">Formular</span>
+            <select name="formular" defaultValue={filter.form}>
+              <option value="">Alle Formulare</option>
+              {forms.map((f) => (
+                <option key={f} value={f}>
+                  {f}
                 </option>
               ))}
             </select>
           </label>
-          <button className="a-btn a-btn--primary" type="submit">
-            Suchen
+          <label className="a-field iq-date">
+            <span>Von</span>
+            <input type="date" name="von" defaultValue={filter.from} />
+          </label>
+          <label className="a-field iq-date">
+            <span>Bis</span>
+            <input type="date" name="bis" defaultValue={filter.to} />
+          </label>
+          <button type="submit" className="a-btn a-btn--ghost">
+            Filtern
           </button>
           {filtered && (
-            <Link href="/admin/anfragen" className="a-btn a-btn--quiet">
+            <Link href={`/admin/anfragen${qs({ status: tab.param || undefined })}`} className="a-btn a-btn--quiet">
               Zurücksetzen
             </Link>
           )}
         </form>
-        {sp.email && (
-          <p className="a-activefilter">
-            Gefiltert: E-Mail {EMAIL[sp.email as InboxRequest["emailStatus"]]?.label.toLowerCase() ?? sp.email}
-            <Link href={`/admin/anfragen${qs({ q: sp.q, type: sp.type, status: sp.status })}`} aria-label="Filter entfernen">
-              <Icon name="close" size={14} />
-            </Link>
-          </p>
-        )}
       </div>
-
       <section className="a-panel a-panel--flush">
-        {items.length === 0 ? (
-          all.length ? (
-            <Empty icon="search" title="Keine Anfrage entspricht diesen Filtern" action={<Link href="/admin/anfragen" className="a-btn a-btn--ghost">Alle Anfragen anzeigen</Link>}>
-              Passen Sie die Suche an oder setzen Sie die Filter zurück.
+        {rows.length === 0 ? (
+          filtered ? (
+            <Empty icon="search" title="Keine Anfragen gefunden">
+              Keine Anfrage passt zu den Filtern.{" "}
+              <Link href={`/admin/anfragen${qs({ status: tab.param || undefined })}`} className="a-link">
+                Filter zurücksetzen
+              </Link>
+            </Empty>
+          ) : tab.key === "new" ? (
+            <Empty icon="check" title="Keine neuen Anfragen">
+              Alles beantwortet. Neue Anfragen aus den Formularen der Website erscheinen hier – mit E-Mail-Hinweis an die Empfänger unter Einstellungen → E-Mail.
             </Empty>
           ) : (
-            <Empty title="Noch keine Anfragen eingegangen">Anfragen aus dem Kontaktformular, der kostenlosen Analyse und aus dem Chat erscheinen hier automatisch.</Empty>
+            <Empty icon="inbox" title={`Keine Anfragen mit Status «${tab.label}»`}>
+              {tab.key === "spam" ? "Der Spamfilter hat nichts aussortiert." : "Hier erscheinen Anfragen, sobald sie diesen Status haben."}
+            </Empty>
           )
         ) : (
-          <>
-            <div className="a-tablewrap">
-              <table className="a-table a-table--stack">
-                <thead>
-                  <tr>
-                    <th>Kontakt</th>
-                    <th>Art</th>
-                    <th>Anliegen</th>
-                    <th>Eingang</th>
-                    <th>E-Mail</th>
-                    <th>Status</th>
+          <div className="a-tablewrap">
+            <table className="a-table a-table--stack iq-table">
+              <thead>
+                <tr>
+                  <th scope="col">Von</th>
+                  <th scope="col">Betreff / Nachricht</th>
+                  <th scope="col">Formular</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Eingang</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id} className={r.status === "new" ? "is-new" : undefined}>
+                    <td>
+                      <Link href={`/admin/anfragen/${r.id}`} className="a-rowlink">
+                        {r.name || r.email}
+                      </Link>
+                      <small>
+                        {r.company ? `${r.company} · ` : ""}
+                        {r.name ? r.email : r.reference}
+                      </small>
+                    </td>
+                    <td className="iq-msg">
+                      <span className="iq-msg__subject">{r.subject || <span className="a-muted">Ohne Betreff</span>}</span>
+                      <small>{r.message.slice(0, 160)}</small>
+                    </td>
+                    <td data-label="Formular">
+                      <span className="a-tag">{r.form}</span>
+                    </td>
+                    <td data-label="Status">
+                      <span className={`a-pill a-pill--${INQUIRY_STATUS[r.status].pill}`}>{INQUIRY_STATUS[r.status].label}</span>
+                    </td>
+                    <td data-label="Eingang" className="a-nowrap">
+                      <time dateTime={r.createdAt.toISOString()} title={dateTime(r.createdAt)}>
+                        {relative(r.createdAt, now)}
+                      </time>
+                      <small className="a-mono-cell">{r.reference}</small>
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {shown.map((r) => (
-                    <tr key={r.id} className={r.status === "new" ? "is-new" : undefined}>
-                      <td>
-                        <Link href={`/admin/anfragen/${r.id}`} className="a-rowlink">
-                          {r.name}
-                        </Link>
-                        <small>{r.company || r.email}</small>
-                      </td>
-                      <td>
-                        {TYPE_LABELS[r.type]}
-                        <small>{r.source === "orion" ? "Chat" : r.source}</small>
-                      </td>
-                      <td className="a-clip">{r.service || r.packageInterest || r.message || "–"}</td>
-                      <td className="a-nowrap">
-                        {dateTime(r.createdAt)}
-                        <small>{r.reference}</small>
-                      </td>
-                      <td>
-                        <span className={`a-state a-state--${EMAIL[r.emailStatus].cls}`}>{EMAIL[r.emailStatus].label}</span>
-                      </td>
-                      <td>
-                        <span className={`a-pill a-pill--${r.status}`}>{STATUS_LABELS[r.status]}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <Pager page={page} pages={pages} total={items.length} from={(page - 1) * PER_PAGE + 1} to={Math.min(page * PER_PAGE, items.length)} href={(p) => `/admin/anfragen${qs({ ...keep, status: sp.status, p: p > 1 ? p : undefined })}`} />
-          </>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
+        <Pager page={page} pages={pages} total={total} from={total ? (page - 1) * PER_PAGE + 1 : 0} to={Math.min(total, page * PER_PAGE)} href={(p) => `/admin/anfragen${qs({ ...params, seite: p > 1 ? p : undefined })}`} />
       </section>
     </>
   );

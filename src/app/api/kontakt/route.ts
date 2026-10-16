@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 
 /**
  * Contact form, free analysis and the hero quick-form.
- * Every request is stored first (visible in /admin/anfragen) and then
+ * Every request is stored first (visible in /admin-alt/anfragen) and then
  * e-mailed; a failed e-mail never loses the request.
  */
 export async function POST(req: Request) {
