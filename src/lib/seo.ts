@@ -49,7 +49,7 @@ export function organizationJsonLd() {
     name: site.name,
     legalName: site.legalName,
     url: site.url,
-    logo: `${site.url}/media/brand/business-logo.webp`,
+    logo: `${site.url}/brand/logo.png`,
     image: `${site.url}/og.jpg`,
     email: site.contact.email,
     telephone: ["+41 52 589 67 59", "+41 76 507 33 32"],

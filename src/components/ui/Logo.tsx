@@ -3,7 +3,7 @@
  * so it stays crisp and can switch colour for dark backgrounds.
  */
 type Props = {
-  /** "color" = petrol/teal on light surfaces, "light" = white/bright teal on dark ones */
+  /** "color" = original petrol/teal on light surfaces, "light" = all white on dark ones */
   tone?: "color" | "light";
   className?: string;
   title?: string;
@@ -40,7 +40,7 @@ export const MARK_TEAL = "m556.65,2.98h-77.38c-5.3,0-10.39,2.09-14.16,5.82l-53.7
 
 const TONES = {
   color: { ink: "#025159", accent: "#028D86" },
-  light: { ink: "#ffffff", accent: "#2ec4b9" },
+  light: { ink: "#ffffff", accent: "#ffffff" },
 };
 
 export function Logo({ tone = "color", className, title = "Madex IT Solutions" }: Props) {
