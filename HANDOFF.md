@@ -34,7 +34,7 @@ Next.js 16 Website von Madex IT Solutions (Deutsch/Schweiz, kein «ß»). Erst `
 - Das bisherige Admin liegt jetzt unter `/admin-alt` (Orion, Chats, Pakete, alte Anfragen) und bleibt, bis das neue Dashboard sie übernimmt.
   Das Kontaktformular speichert weiterhin im alten Speicher (`/api/kontakt` → `/admin-alt/anfragen`).
 - **Vor dem Merge nach `main`** (sonst startet der Server nicht): in Coolify PostgreSQL anlegen und `DATABASE_URL`, `APP_SECRET`, `APP_URL`
-  setzen; in der Vorlage `npm run db:generate` ausführen (Ordner `drizzle/`, wird beim Start migriert) und hierher übernehmen.
+  setzen. Die Migrationen liegen in `drizzle/` (aus der Vorlage) und werden beim Start angewendet.
 - Updates der Vorlage: die Kern-Ordner aus `predashboard` hierher kopieren (Website-Ordner nicht anfassen), dann `npm test`.
 - Danach: Kontaktformulare auf `createInquiry()` umstellen, Orion als Modul «KI-Assistent» in die Vorlage, SEO aus dem Dashboard lesen, `/admin-alt` entfernen.
 
