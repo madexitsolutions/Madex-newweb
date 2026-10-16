@@ -27,14 +27,14 @@ Next.js 16 Website von Madex IT Solutions (Deutsch/Schweiz, kein «ß»). Erst `
 - **Kontaktseite, Formular, Kostenlose Prüfung:** überarbeitet; Typografie langer Texte über `src/app/prose.css`.
 - **Admin-Dashboard** (eigenes `/admin` dieser Website) neu organisiert: SEO-Tabelle mit Filtern, gruppierte Navigation.
 
-## Dashboard aus der Vorlage (Branch `claude/admiring-wozniak-762nkb`, noch nicht in `main`)
+## Dashboard aus der Vorlage (in `main`)
 - Der Kern von `madexitsolutions/predashboard` ist eingebaut: `/admin` (neu), `src/server`, `src/components/admin`, `src/modules`,
   `src/lib/{format,catalog,…}.ts`, `src/app/api/{v1,payments,cron}`, `src/app/uploads`, `src/instrumentation.ts`, `tests/dashboard`,
   `scripts/db-*.ts`, `drizzle.config.ts`. Die Website (`src/app/(site)`) ist unverändert.
 - Das bisherige Admin liegt jetzt unter `/admin-alt` (Orion, Chats, Pakete, alte Anfragen) und bleibt, bis das neue Dashboard sie übernimmt.
   Das Kontaktformular speichert weiterhin im alten Speicher (`/api/kontakt` → `/admin-alt/anfragen`).
-- **Vor dem Merge nach `main`** (sonst startet der Server nicht): in Coolify PostgreSQL anlegen und `DATABASE_URL`, `APP_SECRET`, `APP_URL`
-  setzen. Die Migrationen liegen in `drizzle/` (aus der Vorlage) und werden beim Start angewendet.
+- **Coolify braucht** (sonst startet der Server nicht): PostgreSQL-Datenbank und die Variablen `DATABASE_URL`, `APP_SECRET`, `APP_URL`,
+  dazu `CRON_SECRET` und ein Volume auf `DATA_DIR`. Die Migrationen liegen in `drizzle/` (aus der Vorlage) und werden beim Start angewendet.
 - Updates der Vorlage: die Kern-Ordner aus `predashboard` hierher kopieren (Website-Ordner nicht anfassen), dann `npm test`.
 - Danach: Kontaktformulare auf `createInquiry()` umstellen, Orion als Modul «KI-Assistent» in die Vorlage, SEO aus dem Dashboard lesen, `/admin-alt` entfernen.
 
