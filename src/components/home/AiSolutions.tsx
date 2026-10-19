@@ -146,7 +146,7 @@ export function AiUseCases() {
 
   return (
     <div className="aiu">
-      <div className="aiu__tabs" role="tablist" aria-label="Einsatzbereiche">
+      <div className="aiu__tabs" role="tablist" aria-label="Einsatzbereiche" aria-orientation="vertical">
         {CASES.map((cs, i) => (
           <button
             key={cs.key}
@@ -164,12 +164,18 @@ export function AiUseCases() {
             onKeyDown={onKey}
           >
             <span className="aiu__tab-ic">{cs.icon}</span>
-            {cs.tab}
+            <span className="aiu__tab-txt">
+              <span className="aiu__tab-label">{cs.tab}</span>
+              <span className="aiu__tab-sub">{cs.example.replace(/^Beispiel:\s*/, "")}</span>
+            </span>
           </button>
         ))}
       </div>
       <div className="aiu__panel" role="tabpanel" id={`${id}-p`} aria-labelledby={`${id}-t${active}`}>
-        <p className="aiu__example">{c.example}</p>
+        <div className="aiu__head">
+          <p className="aiu__title">{c.tab}</p>
+          <p className="aiu__example">{c.example}</p>
+        </div>
         <AnimatePresence mode="wait" initial={false}>
           <motion.ol key={c.key} className="aiu__flow" exit={{ opacity: 0, transition: { duration: 0.15 } }}>
             <Node kind="in" {...c.input} delay={0} />
@@ -179,30 +185,38 @@ export function AiUseCases() {
         </AnimatePresence>
       </div>
       <style>{`
-        .aiu{background:#fff;color:var(--ink);border-radius:22px;padding:8px;box-shadow:0 30px 70px -36px rgba(0,0,0,.55),0 2px 6px rgba(1,54,59,.08)}
-        .aiu__tabs{display:flex;flex-wrap:wrap;gap:4px;padding:6px;background:var(--paper);border-radius:16px}
-        .aiu__tab{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border-radius:12px;font:600 14px/1.2 var(--font-body);color:var(--ink-soft);transition:background .25s,color .25s,box-shadow .25s}
-        .aiu__tab:hover{color:var(--petrol);background:rgba(255,255,255,.7)}
-        .aiu__tab[aria-selected="true"]{background:#fff;color:var(--petrol);box-shadow:0 1px 2px rgba(1,54,59,.12),0 6px 16px -10px rgba(1,54,59,.35)}
-        .aiu__tab:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
-        .aiu__tab-ic{display:grid;place-items:center;color:var(--teal-ink)}
+        .aiu{position:relative;display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);color:#e4f1f0;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02)) ,#022b2f;border:1px solid rgba(255,255,255,.1);border-radius:24px;overflow:hidden;box-shadow:0 50px 100px -60px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08)}
+        .aiu::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(127,227,217,.55),transparent);pointer-events:none}
+        .aiu__tabs{display:grid;align-content:start;gap:4px;padding:14px;border-right:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.14)}
+        .aiu__tab{display:flex;align-items:flex-start;gap:12px;width:100%;min-height:56px;padding:12px 14px;border-radius:14px;text-align:left;color:rgba(228,241,240,.72);transition:background .25s,color .25s}
+        .aiu__tab:hover{background:rgba(255,255,255,.05);color:#fff}
+        .aiu__tab[aria-selected="true"]{background:rgba(255,255,255,.09);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+        .aiu__tab:focus-visible{outline:2px solid #7fe3d9;outline-offset:2px}
+        .aiu__tab-ic{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:rgba(127,227,217,.1);color:#7fe3d9;transition:background .25s,color .25s}
+        .aiu__tab[aria-selected="true"] .aiu__tab-ic{background:#7fe3d9;color:var(--deep)}
         .aiu__tab-ic svg{width:18px;height:18px}
-        .aiu__panel{padding:22px clamp(14px,2.4vw,26px) clamp(18px,2.4vw,26px)}
-        .aiu__example{margin:0 0 18px;font-size:14px;color:var(--ink-soft)}
-        .aiu__flow{list-style:none;margin:0;padding:0;display:grid;gap:14px;position:relative}
-        .aiu__node{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:14px;align-items:start;padding:16px 18px;border-radius:16px;background:var(--paper);border:1px solid var(--line-soft)}
-        .aiu__node + .aiu__node::before{content:"";position:absolute;left:37px;top:-15px;width:2px;height:16px;background:linear-gradient(var(--teal),rgba(2,141,134,.25))}
-        .aiu__badge{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:#fff;color:var(--teal-ink);border:1px solid var(--line-soft)}
-        .aiu__step{display:block;font-size:12.5px;font-weight:600;color:var(--teal-ink);margin-bottom:3px}
-        .aiu__node strong{display:block;font:600 16.5px/1.3 var(--font-display);color:var(--deep);letter-spacing:-.005em}
-        .aiu__node p{margin:5px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink-soft);max-width:52ch}
-        .aiu__node--ai{background:var(--deep);border-color:var(--deep);box-shadow:0 18px 36px -22px rgba(1,54,59,.9)}
+        .aiu__tab-txt{display:grid;gap:2px;min-width:0}
+        .aiu__tab-label{font:600 14.5px/1.3 var(--font-body)}
+        .aiu__tab-sub{font-size:12.5px;line-height:1.4;color:rgba(228,241,240,.55)}
+        .aiu__panel{padding:clamp(22px,3vw,36px);display:grid;align-content:start;gap:24px;min-width:0}
+        .aiu__head{display:grid;gap:4px}
+        .aiu__title{margin:0;font:600 clamp(19px,1.6vw,22px)/1.25 var(--font-display);color:#fff;letter-spacing:-.01em}
+        .aiu__example{margin:0;font-size:14px;color:rgba(228,241,240,.62)}
+        .aiu__flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;position:relative}
+        .aiu__node{position:relative;display:grid;align-content:start;gap:14px;padding:18px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09)}
+        .aiu__node + .aiu__node::before{content:"";position:absolute;left:-28px;top:38px;width:28px;height:1px;background:linear-gradient(90deg,rgba(127,227,217,.15),rgba(127,227,217,.7))}
+        .aiu__node + .aiu__node::after{content:"";position:absolute;left:-7px;top:35px;border:3.5px solid transparent;border-left:5px solid rgba(127,227,217,.8)}
+        .aiu__badge{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(255,255,255,.07);color:#7fe3d9;border:1px solid rgba(255,255,255,.1)}
+        .aiu__step{display:block;font-size:12px;font-weight:600;letter-spacing:.02em;color:#7fe3d9;margin-bottom:4px}
+        .aiu__node strong{display:block;font:600 16px/1.3 var(--font-display);color:#fff;letter-spacing:-.005em}
+        .aiu__node p{margin:6px 0 0;font-size:14px;line-height:1.55;color:rgba(228,241,240,.72)}
+        .aiu__node--ai{background:radial-gradient(120% 90% at 50% 0%,rgba(255,190,17,.16),rgba(255,190,17,0) 60%),rgba(255,255,255,.06);border-color:rgba(255,190,17,.38);box-shadow:0 24px 50px -30px rgba(255,190,17,.45)}
         .aiu__node--ai .aiu__badge{background:var(--sun);border-color:var(--sun);color:var(--deep)}
-        .aiu__node--ai .aiu__step{color:#7fe3d9}
-        .aiu__node--ai strong{color:#fff}
-        .aiu__node--ai p{color:rgba(228,241,240,.82)}
-        .aiu__node--out .aiu__badge{background:var(--teal);border-color:var(--teal);color:#fff}
-        @media (max-width:520px){.aiu__tab{padding:0 11px;font-size:13.5px}.aiu__node{grid-template-columns:34px minmax(0,1fr);gap:12px;padding:14px}.aiu__badge{width:34px;height:34px;border-radius:10px}.aiu__node + .aiu__node::before{left:30px}}
+        .aiu__node--ai .aiu__step{color:#ffd76a}
+        .aiu__node--out .aiu__badge{background:#7fe3d9;border-color:#7fe3d9;color:var(--deep)}
+        @media (max-width:1100px){.aiu{grid-template-columns:minmax(0,1fr)}.aiu__tabs{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}}
+        @media (max-width:860px){.aiu__flow{grid-template-columns:minmax(0,1fr);gap:22px}.aiu__node{grid-template-columns:40px minmax(0,1fr);gap:14px}.aiu__node + .aiu__node::before{left:38px;top:-22px;width:1px;height:22px;background:linear-gradient(rgba(127,227,217,.15),rgba(127,227,217,.7))}.aiu__node + .aiu__node::after{display:none}}
+        @media (max-width:560px){.aiu__tabs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px;gap:6px;scrollbar-width:none}.aiu__tabs::-webkit-scrollbar{display:none}.aiu__tab{flex:none;width:auto;min-height:44px;padding:10px 14px;align-items:center;scroll-snap-align:start}.aiu__tab-sub{display:none}.aiu__tab-ic{width:28px;height:28px}.aiu__panel{padding:20px 16px}}
       `}</style>
     </div>
   );

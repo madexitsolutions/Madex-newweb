@@ -31,7 +31,7 @@ export function PageHero({
 }) {
   const trail = crumbs ? [{ name: "Home", path: "/" }, ...crumbs] : null;
   return (
-    <section className={`ph dark${compact ? " ph--compact" : ""}`}>
+    <section className={`ph dark${compact ? " ph--compact" : ""}${title.length > 40 ? " ph--long" : ""}`}>
       <BackdropCanvas className="ph__canvas" withMark={mark} scene={scene} sceneProps={sceneProps} />
       <div className="ph__shade" />
       <div className="container ph__inner">
@@ -73,6 +73,9 @@ export function PageHero({
         .ph__inner{position:relative}
         .ph__copy{max-width:min(620px,52%)}
         .ph__title{margin-bottom:22px;text-wrap:balance}
+        /* long headlines: a calmer size and a wider column so they settle into 2–3 balanced lines */
+        .ph--long .ph__copy{max-width:min(760px,60%)}
+        .ph--long .ph__title{font-size:clamp(30px,3.1vw,48px);line-height:1.08;letter-spacing:-.025em}
         .ph__lead{color:var(--on-dark-soft);max-width:48ch;margin:0}
         .ph__extra{margin-top:32px;display:flex;flex-wrap:wrap;gap:12px}
         .ph-in{animation:phIn .8s cubic-bezier(.16,1,.3,1) both}
@@ -82,7 +85,7 @@ export function PageHero({
         .ph__crumbs a{transition:color .3s;display:inline-flex;align-items:center;min-height:44px}
         .ph__crumbs a:hover{color:#fff}
         .ph__crumbs [aria-current]{color:var(--on-dark);max-width:32ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:bottom}
-        @media(max-width:900px){.ph__copy{max-width:none}.ph{align-items:flex-start;padding-top:calc(var(--header-h) + 40px);min-height:auto;padding-bottom:min(118vw,480px)}.ph__shade{background:linear-gradient(180deg,rgba(1,46,50,.75),rgba(1,46,50,.1))}}
+        @media(max-width:900px){.ph__copy,.ph--long .ph__copy{max-width:none}.ph{align-items:flex-start;padding-top:calc(var(--header-h) + 40px);min-height:auto;padding-bottom:min(118vw,480px)}.ph__shade{background:linear-gradient(180deg,rgba(1,46,50,.75),rgba(1,46,50,.1))}}
       `}</style>
     </section>
   );

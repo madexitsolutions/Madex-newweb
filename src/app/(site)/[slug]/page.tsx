@@ -6,14 +6,12 @@ import { ProjectCard } from "@/components/sections/ProjectCard";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
-import { Reveal, ScrollZoom, StaggerGroup, StaggerItem, Tilt } from "@/components/ui/motion";
+import { Reveal, ScrollZoom, StaggerGroup, StaggerItem } from "@/components/ui/motion";
 import { Link } from "@/components/layout/Transition";
 import { getPost, posts, projects, type Block } from "@/content/posts";
 import { media } from "@/lib/media";
 import { withSeo } from "@/lib/seo";
 import { site } from "@/content/site";
-import { DeviceStage } from "./DeviceStage";
-import { screenImage } from "@/components/sections/screenImage";
 
 export const dynamicParams = false;
 
@@ -108,8 +106,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <div className="pp-hero">
-      <PageHero mark={false}
+      <PageHero
+        scene="devices"
         title={post.client}
         lead={post.title}
         crumbs={[
@@ -124,20 +122,12 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </Button>
         )}
       </PageHero>
-        <div className="pp-hero__devices">
-          <DeviceStage image={screenImage(post)} alt={`${post.client} – Website auf Laptop, Tablet und Smartphone`} />
-        </div>
-      </div>
 
       <section className="pp__cover-wrap light">
         <div className="container">
-          <Reveal y={60}>
-            <Tilt max={4}>
-              <div className="pp__cover">
-                <Image src={media(post.cover)} alt={`${post.client} – Projektvorschau`} width={2000} height={1400} sizes="(max-width: 1400px) 100vw, 1300px" priority style={{ width: "100%", height: "auto" }} />
-              </div>
-            </Tilt>
-          </Reveal>
+          <div className="pp__cover">
+            <Image src={media(post.cover)} alt={`${post.client} – Projektvorschau`} width={2000} height={1400} sizes="(max-width: 1400px) 100vw, 1300px" priority style={{ width: "100%", height: "auto" }} />
+          </div>
         </div>
       </section>
 
@@ -183,13 +173,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <style>{`
-        .pp-hero{position:relative}
-        .pp-hero__devices{position:absolute;z-index:1;pointer-events:none;right:max(var(--gutter),calc((100vw - var(--maxw)) / 2));top:50%;width:min(42vw,640px);transform:translateY(-38%)}
-        @media(max-width:1180px){.pp-hero__devices{width:38vw}}
-        @media(max-width:900px){.pp-hero__devices{left:50%;right:auto;top:auto;bottom:calc(min(118vw,480px) / 2 - min(38vw,230px));width:min(84vw,560px);transform:translateX(-45%)}}
         .pp__cover-wrap{padding-top:0;position:relative}
         .pp__cover-wrap::before{content:"";position:absolute;left:0;right:0;top:0;height:50%;background:var(--night)}
-        .pp__cover{position:relative;border-radius:var(--radius-l);overflow:hidden;box-shadow:0 60px 120px -50px rgba(1,27,30,.8);background:#fff}
+        .pp__cover{position:relative;border-radius:var(--radius-l);overflow:hidden;background:#fff;box-shadow:0 1px 2px rgba(1,27,30,.08),0 18px 40px -24px rgba(1,27,30,.35)}
         .pp__article{padding-top:clamp(50px,6vw,90px)}
         .pp__cta{max-width:860px;margin:70px auto 0;padding:clamp(28px,4vw,50px);border-radius:var(--radius-l);background:#fff}
         .pp__cta-row{display:flex;flex-wrap:wrap;gap:12px}

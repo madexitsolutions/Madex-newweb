@@ -20,6 +20,9 @@ export function Header() {
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState<string | null>(null);
   const [mobile, setMobile] = useState(false);
+  // open sub-list in the mobile menu (starts with the section of the current page)
+  const [group, setGroup] = useState<string | null>(null);
+  const currentGroup = mainNav.find((n) => n.children?.some((c) => pathname === c.href || pathname.startsWith(c.href + "/")))?.label ?? null;
   const closeTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
@@ -45,6 +48,7 @@ export function Header() {
     if (mobile) lenis?.stop();
     else lenis?.start();
     document.body.style.overflow = mobile ? "hidden" : "";
+    document.documentElement.classList.toggle("menu-open", mobile);
   }, [mobile, lenis]);
 
   useEffect(() => {
@@ -165,7 +169,10 @@ export function Header() {
             <Link href="/kostenlose-prufung" className="btn btn--sm hd__cta">
               Gratis-Analyse anfordern
             </Link>
-            <button className={`hd__burger${mobile ? " is-open" : ""}`} aria-label={mobile ? "Menü schliessen" : "Menü öffnen"} aria-expanded={mobile} aria-controls="mobile-menu" onClick={() => setMobile(!mobile)}>
+            <button className={`hd__burger${mobile ? " is-open" : ""}`} aria-label={mobile ? "Menü schliessen" : "Menü öffnen"} aria-expanded={mobile} aria-controls="mobile-menu" onClick={() => {
+                if (!mobile) setGroup(currentGroup);
+                setMobile(!mobile);
+              }}>
               <span />
               <span />
             </button>
@@ -184,35 +191,63 @@ export function Header() {
             transition={{ duration: 0.8, ease: [0.83, 0, 0.17, 1] }}
           >
             <nav aria-label="Mobile Navigation" className="mm__nav" data-lenis-prevent>
-              <ul>
+              <ul className="mm__list">
                 <li>
-                  <Link href="/" className="mm__link">
+                  <Link href="/" className={`mm__row${pathname === "/" ? " is-current" : ""}`}>
                     Home
                   </Link>
                 </li>
-                {mainNav.map((item, i) => (
-                  <motion.li key={item.label} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 + i * 0.06, duration: 0.7, ease }}>
-                    <Link href={item.href} className="mm__link">
-                      {item.label}
-                    </Link>
-                    {item.children && (
-                      <ul className="mm__sub">
-                        {item.children.map((c) => (
-                          <li key={c.href}>
-                            <Link href={c.href}>{c.label}</Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </motion.li>
-                ))}
+                {mainNav.map((item, i) => {
+                  const current = pathname === item.href || pathname.startsWith(item.href + "/") || Boolean(item.children?.some((c) => pathname === c.href));
+                  const expanded = group === item.label;
+                  return (
+                    <motion.li key={item.label} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.05, duration: 0.6, ease }}>
+                      {item.children ? (
+                        <>
+                          <button type="button" className={`mm__row${current ? " is-current" : ""}`} aria-expanded={expanded} aria-controls={`mm-${i}`} onClick={() => setGroup(expanded ? null : item.label)}>
+                            {item.label}
+                            <svg className="mm__chev" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                              <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          </button>
+                          <div id={`mm-${i}`} className="mm__panel" hidden={!expanded}>
+                            <ul className="mm__sub">
+                              <li>
+                                <Link href={item.href} className="mm__subl mm__subl--all">
+                                  Übersicht {item.label}
+                                </Link>
+                              </li>
+                              {item.children.map((c) => (
+                                <li key={c.href}>
+                                  <Link href={c.href} className={`mm__subl${pathname === c.href ? " is-current" : ""}`} aria-current={pathname === c.href ? "page" : undefined}>
+                                    {c.label}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </>
+                      ) : (
+                        <Link href={item.href} className={`mm__row${current ? " is-current" : ""}`} aria-current={pathname === item.href ? "page" : undefined}>
+                          {item.label}
+                        </Link>
+                      )}
+                    </motion.li>
+                  );
+                })}
               </ul>
               <div className="mm__foot">
-                <a href={site.contact.phonePrimary.href}>{site.contact.phonePrimary.label}</a>
-                <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>
-                <Link href="/kostenlose-prufung" className="btn">
+                <Link href="/kostenlose-prufung" className="btn mm__cta">
                   Gratis-Analyse anfordern
                 </Link>
+                <a href={site.contact.phonePrimary.href} className="mm__contact">
+                  <Icon name="phone" size={18} />
+                  {site.contact.phonePrimary.label}
+                </a>
+                <a href={`mailto:${site.contact.email}`} className="mm__contact">
+                  <Icon name="mail" size={18} />
+                  {site.contact.email}
+                </a>
               </div>
             </nav>
           </motion.div>
@@ -273,12 +308,22 @@ export function Header() {
         @media(max-width:1280px){.hd__phone{display:none}}
         @media(max-width:1100px){.hd__nav,.hd__cta{display:none}.hd__burger{display:block}.hd__actions{margin-left:auto}}
         .mm{position:fixed;inset:0;z-index:790;background:radial-gradient(120% 80% at 100% 0%,var(--petrol),var(--night) 60%);color:#fff;overflow:hidden}
-        .mm__nav{height:100%;overflow-y:auto;padding:110px var(--gutter) 40px;display:flex;flex-direction:column}
-        .mm__nav>ul{list-style:none;margin:0;padding:0}
-        .mm__link{display:block;font:700 clamp(30px,8vw,52px)/1.1 var(--font-display);padding:8px 0;letter-spacing:-.02em}
-        .mm__sub{list-style:none;margin:0 0 14px;padding:0 0 0 4px;display:flex;flex-wrap:wrap;gap:8px 18px}
-        .mm__sub a{font-size:15px;opacity:.7}
-        .mm__foot{margin-top:auto;padding-top:36px;display:grid;gap:12px;justify-items:start;font-size:16px}
+        html.menu-open madex-chatbot,html.menu-open .mcta{visibility:hidden!important}
+        .mm__nav{height:100%;overflow-y:auto;padding:104px var(--gutter) 32px;display:flex;flex-direction:column}
+        .mm__list{list-style:none;margin:0;padding:0;border-top:1px solid rgba(255,255,255,.1)}
+        .mm__list>li{border-bottom:1px solid rgba(255,255,255,.1)}
+        .mm__row{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:60px;padding:0 2px;background:none;border:0;color:#fff;font:600 21px/1.2 var(--font-display);letter-spacing:-.01em;text-align:left;cursor:pointer}
+        .mm__row.is-current{color:var(--teal-glow)}
+        .mm__chev{flex:none;opacity:.7;transition:transform .35s var(--ease-out)}
+        .mm__row[aria-expanded="true"] .mm__chev{transform:rotate(180deg)}
+        .mm__panel{padding:0 0 12px}
+        .mm__sub{list-style:none;margin:0;padding:0 0 0 2px;display:grid}
+        .mm__subl{display:flex;align-items:center;min-height:44px;font-size:16px;color:rgba(233,244,243,.78)}
+        .mm__subl.is-current{color:var(--teal-glow);font-weight:600}
+        .mm__subl--all{color:#fff;font-weight:600}
+        .mm__foot{margin-top:auto;padding-top:28px;display:grid;gap:4px}
+        .mm__cta{justify-content:center;width:100%;margin-bottom:12px}
+        .mm__contact{display:flex;align-items:center;gap:10px;min-height:44px;font-size:16px;color:rgba(233,244,243,.85)}
       `}</style>
     </>
   );

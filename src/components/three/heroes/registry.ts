@@ -17,6 +17,7 @@ export const heroScenes = {
   team: dynamic(() => import("./team"), { ssr: false }),
   career: dynamic(() => import("./career"), { ssr: false }),
   portfolio: dynamic(() => import("./portfolio"), { ssr: false }),
+  devices: dynamic(() => import("./devices"), { ssr: false }),
   partners: dynamic(() => import("./partners"), { ssr: false }),
   contact: dynamic(() => import("./contact"), { ssr: false }),
   check: dynamic(() => import("./check"), { ssr: false }),

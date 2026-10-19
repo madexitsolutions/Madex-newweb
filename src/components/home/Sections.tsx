@@ -24,6 +24,41 @@ function Check() {
 }
 
 /* --------------------------------------------------------------- Offer */
+/** The offer as a 55-second clip. Nothing is downloaded until the visitor presses play (it has sound). */
+function OfferVideo() {
+  const [playing, setPlaying] = useState(false);
+  const [src, setSrc] = useState("");
+  const start = () => {
+    setSrc(window.matchMedia("(max-width: 900px)").matches ? "/media/video/madex-angebot-720.mp4" : "/media/video/madex-angebot-1080.mp4");
+    setPlaying(true);
+  };
+  return (
+    <figure className="ovid">
+      <div className="ovid__frame">
+        {playing ? (
+          <video className="ovid__media" src={src} poster="/media/video/madex-angebot-poster.webp" controls autoPlay playsInline preload="auto">
+            Ihr Browser kann dieses Video nicht abspielen.
+          </video>
+        ) : (
+          <button type="button" className="ovid__start" onClick={start} aria-label="Video abspielen: Ihre neue Website ist inklusive (55 Sekunden, mit Ton)">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="ovid__media" src="/media/video/madex-angebot-poster.webp" alt="" width={1600} height={900} loading="lazy" decoding="async" />
+            <span className="ovid__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24">
+                <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+              </svg>
+            </span>
+          </button>
+        )}
+      </div>
+      <figcaption className="ovid__cap">
+        <strong>Das Angebot in 55 Sekunden</strong>
+        <span>Website, Hosting, Domain, Wartung und Änderungen – alles in einem Paket.</span>
+      </figcaption>
+    </figure>
+  );
+}
+
 export function Offer() {
   return (
     <section id="angebot" className="offer" aria-labelledby="offer-title">
@@ -111,6 +146,9 @@ export function Offer() {
           <figcaption>Mindestlaufzeit 12 Monate, Kündigungsfrist 3 Monate. Die Website gehört Ihnen – auch nach Vertragsende.</figcaption>
         </figure>
       </div>
+      <div className="container">
+        <OfferVideo />
+      </div>
     </section>
   );
 }
@@ -143,35 +181,40 @@ export const AiDemo = AiUseCases;
 export function AiSection() {
   return (
     <section className="ai" aria-labelledby="ai-title">
-      <div className="container ai__grid">
-        <div className="ai__copy">
-          <h2 id="ai-title" className="sec-title">
+      <div className="container">
+        <div className="ai__head">
+          <h2 id="ai-title" className="ai__title">
             KI-Lösungen, die in Ihrem Betrieb mitarbeiten.
           </h2>
-          <p className="sec-lead">
-            Wir entwickeln KI nach Mass für Schweizer KMU: Sie übernimmt wiederkehrende Aufgaben, wertet Dokumente aus, beantwortet Fragen mit Ihrem Wissen und arbeitet in der Software, die Sie schon nutzen.
-          </p>
-          <ul className="ai__list">
-            <li>
-              <strong>Erst verstehen, dann bauen.</strong> Wir suchen mit Ihnen die Aufgaben, bei denen KI am meisten Zeit spart.
-            </li>
-            <li>
-              <strong>Die KI bereitet vor, Ihr Team entscheidet.</strong> Wichtige Ergebnisse werden geprüft und freigegeben.
-            </li>
-            <li>
-              <strong>Ihre Daten bleiben bei Ihnen.</strong> Wir legen gemeinsam fest, was die KI verwenden darf.
-            </li>
-          </ul>
-          <div className="offer__cta">
-            <Link href="/marketing-solutions/ki-integration" className="b b--light">
-              KI-Lösungen entdecken
-            </Link>
-            <button type="button" className="b b--quiet-dark" onClick={openOrion}>
-              Unseren KI-Assistenten testen
-            </button>
+          <div className="ai__intro">
+            <p>
+              Wir entwickeln KI nach Mass für Schweizer KMU: Sie übernimmt wiederkehrende Aufgaben, wertet Dokumente aus, beantwortet Fragen mit Ihrem Wissen und arbeitet in der Software, die Sie schon nutzen.
+            </p>
+            <div className="offer__cta">
+              <Link href="/marketing-solutions/ki-integration" className="b b--light">
+                KI-Lösungen entdecken
+              </Link>
+              <button type="button" className="b b--quiet-dark" onClick={openOrion}>
+                Unseren KI-Assistenten testen
+              </button>
+            </div>
           </div>
         </div>
         <AiUseCases />
+        <ul className="ai__principles">
+          <li>
+            <strong>Erst verstehen, dann bauen.</strong>
+            <span>Wir suchen mit Ihnen die Aufgaben, bei denen KI am meisten Zeit spart.</span>
+          </li>
+          <li>
+            <strong>Die KI bereitet vor, Ihr Team entscheidet.</strong>
+            <span>Wichtige Ergebnisse werden geprüft und freigegeben.</span>
+          </li>
+          <li>
+            <strong>Ihre Daten bleiben bei Ihnen.</strong>
+            <span>Wir legen gemeinsam fest, was die KI verwenden darf.</span>
+          </li>
+        </ul>
       </div>
     </section>
   );
