@@ -1,21 +1,59 @@
 /** Encryption of stored secrets (API keys of payment providers, TOTP secrets) and token helpers. */
 import { createCipheriv, createDecipheriv, createHash, randomBytes, scrypt as scryptCb, timingSafeEqual } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { promisify } from "node:util";
 
 const scrypt = promisify(scryptCb) as (password: string, salt: Buffer, keylen: number, options: { N: number; r: number; p: number; maxmem: number }) => Promise<Buffer>;
 
 let cachedKey: Buffer | null = null;
 
+/**
+ * Encryption key. APP_SECRET (min. 32 characters) when set; otherwise a random
+ * secret is generated once and kept in DATA_DIR/.app-secret next to the data it protects.
+ */
 function key(): Buffer {
   if (cachedKey) return cachedKey;
   const secret = process.env.APP_SECRET;
-  if (!secret || secret.length < 32) {
-    if (process.env.NODE_ENV === "production") throw new Error("APP_SECRET fehlt oder ist zu kurz (mind. 32 Zeichen).");
-    cachedKey = createHash("sha256").update("predashboard-dev-only-secret").digest();
+  if (secret && secret.length >= 32) {
+    cachedKey = createHash("sha256").update(secret).digest();
     return cachedKey;
   }
-  cachedKey = createHash("sha256").update(secret).digest();
+  if (process.env.NODE_ENV === "test") {
+    cachedKey = createHash("sha256").update("predashboard-test-secret").digest();
+    return cachedKey;
+  }
+  cachedKey = createHash("sha256").update(storedSecret()).digest();
   return cachedKey;
+}
+
+/** Makes sure the encryption key exists (called at server start). */
+export function ensureSecret() {
+  key();
+}
+
+export function secretFile() {
+  return path.resolve(process.env.DATA_DIR || ".data", ".app-secret");
+}
+
+/** Where the encryption secret comes from (for the status page). */
+export function secretSource(): "env" | "file" | "missing" {
+  const s = process.env.APP_SECRET;
+  if (s && s.length >= 32) return "env";
+  return existsSync(secretFile()) ? "file" : "missing";
+}
+
+function storedSecret() {
+  const file = secretFile();
+  if (existsSync(file)) {
+    const v = readFileSync(file, "utf8").trim();
+    if (v.length >= 32) return v;
+  }
+  const v = randomBytes(48).toString("base64url");
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, v + "\n", { mode: 0o600 });
+  console.log(`[setup] Neuer Verschlüsselungsschlüssel in ${file} angelegt (APP_SECRET nicht gesetzt). Diese Datei mit den Daten sichern.`);
+  return v;
 }
 
 /** AES-256-GCM, output "v1.<iv>.<tag>.<data>" (base64url). */

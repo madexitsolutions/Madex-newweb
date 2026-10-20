@@ -5,7 +5,10 @@ export async function requestInfo() {
   const h = await headers();
   const forwarded = process.env.TRUST_PROXY !== "false" ? h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") : null;
   const ip = forwarded || "unknown";
-  return { ip, userAgent: (h.get("user-agent") || "").slice(0, 200), https: (h.get("x-forwarded-proto") || "").includes("https") };
+  // behind a proxy the scheme comes from X-Forwarded-Proto; without it, from the browser's own Origin/Referer
+  const proto = h.get("x-forwarded-proto");
+  const https = proto ? proto.includes("https") : (h.get("origin") || h.get("referer") || "").startsWith("https:");
+  return { ip, userAgent: (h.get("user-agent") || "").slice(0, 200), https };
 }
 
 export function ipFromRequest(req: Request) {

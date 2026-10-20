@@ -37,7 +37,9 @@ export type CurrentUser = {
 
 async function cookieOptions(maxAgeSeconds: number) {
   const { https } = await requestInfo();
-  const secure = process.env.NODE_ENV === "production" ? https || process.env.COOKIE_SECURE !== "false" : false;
+  // "Secure" only when the visitor is on https – a secure cookie on plain http is silently dropped
+  // by the browser and the login would just start over. COOKIE_SECURE=true forces it.
+  const secure = process.env.COOKIE_SECURE === "true" || (process.env.NODE_ENV === "production" && https && process.env.COOKIE_SECURE !== "false");
   return { httpOnly: true, sameSite: "lax" as const, secure, path: "/", maxAge: maxAgeSeconds };
 }
 

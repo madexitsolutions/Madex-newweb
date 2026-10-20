@@ -48,9 +48,18 @@ angelegt. Es braucht zusätzlich `DATABASE_URL`, `APP_SECRET` und `APP_URL` (sie
 ## Anmeldung im Dashboard (`/admin`)
 
 Anmeldung mit **E-Mail-Adresse** und Passwort, danach Zwei-Faktor-Code (Authenticator-App). Das erste Konto entsteht
-entweder über die Ersteinrichtung unter `/admin` oder automatisch aus `ADMIN_EMAIL` + `ADMIN_PASSWORD`
-(nur solange noch kein Benutzer existiert). Kontakt-, Analyse- und Chat-Terminanfragen landen unter `/admin/anfragen`;
-Empfänger der Benachrichtigung unter Einstellungen → E-Mail (bis dahin `CONTACT_TO_EMAIL`).
+über die Ersteinrichtung unter `/admin` oder automatisch aus `ADMIN_EMAIL` + `ADMIN_PASSWORD` (solange noch kein Benutzer existiert).
+
+- **Status:** `/admin/status` zeigt ohne Anmeldung Datenbank, Datenordner, Schlüssel, Konto und HTTPS.
+- **Notfallzugang:** `ADMIN_RESET=true` setzen und neu starten (Konto `ADMIN_EMAIL` bekommt `ADMIN_PASSWORD`, 2FA wird neu eingerichtet),
+  danach entfernen. Oder im Terminal bei gestoppter App: `npm run admin:reset -- name@firma.ch`.
+- **Datenbank:** ohne `DATABASE_URL` läuft die eingebaute PostgreSQL-Datenbank (PGlite) in `DATA_DIR/pglite` – auch in Produktion,
+  z. B. auf Hostinger ohne eigenen Datenbank-Server. Die App darf dann nur einmal laufen. Mit `DATABASE_URL` wird ein externer
+  PostgreSQL-Server verwendet (Coolify, Neon, Supabase).
+- **Sicherung:** Sicherheit → Datensicherung lädt die Datenbank herunter; Wiederherstellen bei gestoppter App mit
+  `npm run db:restore -- datei.tar.gz`. Den Ordner `DATA_DIR` (Uploads, `.app-secret`) zusätzlich sichern.
+
+Kontakt-, Analyse- und Chat-Terminanfragen landen unter `/admin/anfragen`; Empfänger unter Einstellungen → E-Mail (bis dahin `CONTACT_TO_EMAIL`).
 
 ## KI-Chatbot «Orion»
 

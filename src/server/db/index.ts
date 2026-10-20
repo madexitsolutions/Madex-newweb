@@ -1,7 +1,10 @@
 /**
- * Database access. With DATABASE_URL a real PostgreSQL server is used (production).
- * Without it, an embedded PostgreSQL (PGlite) stores its data in .data/pglite –
- * zero setup for development, demos and tests ("memory://" keeps it in RAM).
+ * Database access.
+ * - With DATABASE_URL: an external PostgreSQL server (Coolify service, Neon, Supabase …).
+ * - Without it: the built-in PostgreSQL (PGlite) keeps its data in DATA_DIR/pglite – no
+ *   database server needed (also in production, e.g. on simple Node.js hosting).
+ *   It runs inside the app process, so start exactly one instance and keep DATA_DIR on
+ *   persistent storage. "memory://" keeps it in RAM (tests).
  */
 import { mkdirSync } from "node:fs";
 import path from "node:path";
@@ -16,6 +19,8 @@ export type Tx = Parameters<Parameters<DB["transaction"]>[0]>[0];
 
 const g = globalThis as unknown as { __predashDb?: DB; __predashPglite?: PGlite };
 
+export const usesEmbeddedDb = () => !process.env.DATABASE_URL;
+
 export function embeddedDir() {
   return process.env.PGLITE_DIR || path.join(process.env.DATA_DIR || ".data", "pglite");
 }
@@ -25,9 +30,6 @@ function create(): DB {
   if (url) {
     const client = postgres(url, { max: Number(process.env.DATABASE_POOL || 10), prepare: false });
     return drizzlePostgres(client, { schema }) as unknown as DB;
-  }
-  if (process.env.NODE_ENV === "production" && process.env.ALLOW_EMBEDDED_DB !== "true") {
-    throw new Error("DATABASE_URL fehlt. In Produktion wird PostgreSQL benötigt (oder ALLOW_EMBEDDED_DB=true für Demos).");
   }
   const dir = embeddedDir();
   if (!dir.startsWith("memory://")) mkdirSync(path.dirname(path.resolve(dir)), { recursive: true });
@@ -48,6 +50,12 @@ export const db: DB = new Proxy({} as DB, {
     return typeof value === "function" ? value.bind(real) : value;
   },
 });
+
+/** The PGlite instance behind the built-in database (null with an external server). */
+export function embeddedClient(): PGlite | null {
+  getDb();
+  return g.__predashPglite ?? null;
+}
 
 /** For tests and scripts: swap in a database instance. */
 export function setDb(instance: DB) {

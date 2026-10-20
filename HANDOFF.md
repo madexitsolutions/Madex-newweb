@@ -33,11 +33,16 @@ Next.js 16 Website von Madex IT Solutions (Deutsch/Schweiz, kein «ß»). Erst `
   `scripts/db-*.ts`, `drizzle.config.ts`. Die Website (`src/app/(site)`) ist unverändert.
 - Das alte Admin (`/admin-alt`) ist entfernt. Kontakt-, Analyse- und Chat-Terminanfragen gehen über `createInquiry()` in
   `/admin/anfragen`; SEO-Overrides kommen aus `/admin/seo`, die GA4-ID aus Integrationen → Google Analytics.
-- Erstes Konto: Ersteinrichtung unter `/admin` oder `ADMIN_EMAIL`/`ADMIN_PASSWORD` (siehe `ownerFromEnv` in `src/server/db/bootstrap.ts`).
+- Erstes Konto: Ersteinrichtung unter `/admin` oder `ADMIN_EMAIL`/`ADMIN_PASSWORD`; Notfall `ADMIN_RESET=true` oder `npm run admin:reset`
+  (siehe `ownerFromEnv`/`resetOwner` in `src/server/db/bootstrap.ts`). `/admin/status` zeigt ohne Login, was fehlt.
+- Ohne `DATABASE_URL` läuft in Produktion die eingebaute Datenbank (PGlite, `DATA_DIR/pglite`); `APP_SECRET` optional (sonst
+  `DATA_DIR/.app-secret`). Sicherung unter Sicherheit → Datensicherung, Wiederherstellen mit `npm run db:restore`.
+- Diese Kern-Änderungen (db/index, crypto, session-Cookie, request, bootstrap, instrumentation, admin/status, Datensicherung,
+  scripts/admin-reset + db-restore) noch in die Vorlage `predashboard` übernehmen.
 - Orion läuft weiter mit seinen Standardeinstellungen (`src/lib/server/settings.ts`, Speicher in `DATA_DIR`); eine Oberfläche
   für Chatbot, Wissen, Pakete und Chat-Verläufe fehlt, bis das Modul «KI-Assistent» in der Vorlage gebaut ist.
-- **Coolify braucht** (sonst startet der Server nicht): PostgreSQL-Datenbank und die Variablen `DATABASE_URL`, `APP_SECRET`, `APP_URL`,
-  dazu `CRON_SECRET` und ein Volume auf `DATA_DIR`. Die Migrationen liegen in `drizzle/` (aus der Vorlage) und werden beim Start angewendet.
+- **Betrieb:** nur `DATA_DIR` (dauerhafter Ordner/Volume) ist Pflicht; `DATABASE_URL` nur für einen externen PostgreSQL-Server,
+  `APP_URL` für Links, `CRON_SECRET` für /api/cron. Die Migrationen liegen in `drizzle/` (aus der Vorlage) und werden beim Start angewendet.
 - Updates der Vorlage: die Kern-Ordner aus `predashboard` hierher kopieren (Website-Ordner nicht anfassen), dann `npm test`.
 - Danach: Orion als Modul «KI-Assistent» in die Vorlage (Einstellungen, Wissen, Pakete, Chat-Verläufe).
 

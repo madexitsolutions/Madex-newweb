@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { SYSTEM_ROLES } from "@/server/auth/permissions";
 import type { DB } from "./index";
 import { hashPassword } from "@/server/lib/crypto";
-import { roles, shippingMethods, shippingZones, taxClasses, users } from "./schema";
+import { roles, sessions, shippingMethods, shippingZones, taxClasses, users } from "./schema";
 
 export async function bootstrap(db: DB) {
   for (const r of SYSTEM_ROLES) {
@@ -40,22 +40,51 @@ export async function bootstrap(db: DB) {
 }
 
 /**
- * Optional: create the owner account from the environment on a fresh database
- * (ADMIN_EMAIL – or ADMIN_USERNAME when it is an e-mail address – and ADMIN_PASSWORD,
- * at least 12 characters). Does nothing once any user exists; 2FA is set up at the first login.
+ * Creates the owner account – or, if the e-mail already exists, resets it: new password,
+ * owner role, active, lockout cleared, 2FA switched off (set up again at the next login),
+ * all sessions signed out. Used by ADMIN_RESET=true and `npm run admin:reset`.
+ */
+export async function resetOwner(db: DB, emailRaw: string, password: string, name?: string) {
+  const email = emailRaw.trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error("Bitte eine gültige E-Mail-Adresse angeben.");
+  if (password.length < 12) throw new Error("Das Passwort muss mindestens 12 Zeichen lang sein.");
+  const [owner] = await db.select({ id: roles.id }).from(roles).where(eq(roles.key, "owner"));
+  if (!owner) throw new Error("Die Rollen fehlen – die Datenbank ist nicht eingerichtet.");
+  const passwordHash = await hashPassword(password);
+  const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.email, email));
+  if (existing) {
+    await db
+      .update(users)
+      .set({ passwordHash, roleId: owner.id, status: "active", failedLogins: 0, lockedUntil: null, totpEnabled: false, totpSecret: null, recoveryCodes: [], passwordChangedAt: new Date(), updatedAt: new Date() })
+      .where(eq(users.id, existing.id));
+    await db.delete(sessions).where(eq(sessions.userId, existing.id));
+    return "reset" as const;
+  }
+  await db.insert(users).values({ email, name: name?.trim() || "Inhaber", passwordHash, roleId: owner.id, passwordChangedAt: new Date() });
+  return "created" as const;
+}
+
+/**
+ * Owner account from the environment:
+ * - ADMIN_EMAIL (or an e-mail in ADMIN_USERNAME) + ADMIN_PASSWORD (min. 12 characters) create the
+ *   owner on an empty database;
+ * - with ADMIN_RESET=true the account is reset on every start (remove the variable afterwards!).
  */
 export async function ownerFromEnv(db: DB) {
   const email = (process.env.ADMIN_EMAIL || (process.env.ADMIN_USERNAME?.includes("@") ? process.env.ADMIN_USERNAME : "") || "").trim().toLowerCase();
   const password = process.env.ADMIN_PASSWORD || "";
   if (!email || !password) return;
-  const [anyUser] = await db.select({ id: users.id }).from(users).limit(1);
-  if (anyUser) return;
   if (password.length < 12) {
-    console.warn("[setup] ADMIN_PASSWORD ist kürzer als 12 Zeichen – Inhaber-Konto wurde nicht angelegt. Bitte unter /admin/einrichtung erstellen.");
+    console.warn("[setup] ADMIN_PASSWORD ist kürzer als 12 Zeichen – das Inhaber-Konto wurde nicht angelegt.");
     return;
   }
-  const [owner] = await db.select({ id: roles.id }).from(roles).where(eq(roles.key, "owner"));
-  if (!owner) return;
-  await db.insert(users).values({ email, name: process.env.ADMIN_NAME?.trim() || "Inhaber", passwordHash: await hashPassword(password), roleId: owner.id, passwordChangedAt: new Date() });
+  if (process.env.ADMIN_RESET === "true") {
+    const r = await resetOwner(db, email, password, process.env.ADMIN_NAME);
+    console.warn(`[setup] ADMIN_RESET: Konto ${email} ${r === "reset" ? "zurückgesetzt" : "angelegt"}. Entfernen Sie ADMIN_RESET jetzt wieder.`);
+    return;
+  }
+  const [anyUser] = await db.select({ id: users.id }).from(users).limit(1);
+  if (anyUser) return;
+  await resetOwner(db, email, password, process.env.ADMIN_NAME);
   console.log(`[setup] Inhaber-Konto ${email} aus den Umgebungsvariablen angelegt.`);
 }

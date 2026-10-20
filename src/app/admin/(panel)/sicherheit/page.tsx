@@ -1,3 +1,5 @@
+import path from "node:path";
+import { usesEmbeddedDb } from "@/server/db";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ActionButton } from "@/components/admin/action-button";
@@ -24,6 +26,7 @@ const ALL_TABS: (TabItem & { perm: "security.manage" | "audit.view" })[] = [
   { key: "anmeldungen", label: "Anmeldungen", href: `${BASE}?tab=anmeldungen`, icon: "user", perm: "audit.view" },
   { key: "sperren", label: "Sperren", href: `${BASE}?tab=sperren`, icon: "lock", perm: "security.manage" },
   { key: "emails", label: "E-Mail-Protokoll", href: `${BASE}?tab=emails`, icon: "mail", perm: "audit.view" },
+  { key: "sicherung", label: "Datensicherung", href: `${BASE}?tab=sicherung`, icon: "download", perm: "security.manage" },
 ];
 
 export default async function SecurityPage({ searchParams }: { searchParams: Promise<SP> }) {
@@ -41,6 +44,7 @@ export default async function SecurityPage({ searchParams }: { searchParams: Pro
       {tab === "anmeldungen" && <LoginsTab sp={sp} />}
       {tab === "sperren" && <BlocksTab />}
       {tab === "emails" && <EmailsTab sp={sp} />}
+      {tab === "sicherung" && <BackupTab />}
     </>
   );
 }
@@ -549,5 +553,37 @@ async function EmailsTab({ sp }: { sp: SP }) {
         )}
       </Panel>
     </>
+  );
+}
+
+/* ------------------------------------------------------------ Datensicherung */
+
+function BackupTab() {
+  const embedded = usesEmbeddedDb();
+  const dataDir = path.resolve(process.env.DATA_DIR || ".data");
+  return (
+    <Panel title="Datensicherung" description={embedded ? "Die Daten liegen in der eingebauten Datenbank dieser Installation." : "Die Daten liegen auf einem externen PostgreSQL-Server (DATABASE_URL)."}>
+      {embedded ? (
+        <div className="a-stack">
+          <p className="a-small0">
+            Laden Sie regelmässig eine Sicherung herunter, zum Beispiel einmal pro Woche und vor grösseren Änderungen. Die Datei enthält alle Bestellungen, Kunden, Produkte, Anfragen, Benutzer und Einstellungen.
+          </p>
+          <div>
+            <a href="/admin/sicherheit/backup" className="a-btn a-btn--primary" download>
+              Datenbank herunterladen (.tar.gz)
+            </a>
+          </div>
+          <p className="a-small a-muted">
+            Bilder und Dateien der Mediathek liegen separat im Ordner <code>{path.join(dataDir, "uploads")}</code>, der Verschlüsselungsschlüssel in <code>{path.join(dataDir, ".app-secret")}</code> (falls
+            APP_SECRET nicht gesetzt ist). Sichern Sie beides über den Dateimanager Ihres Hostings mit.
+          </p>
+          <p className="a-small a-muted">
+            Wiederherstellen: App stoppen, im Terminal <code>npm run db:restore -- datenbank-….tar.gz</code> ausführen, App starten.
+          </p>
+        </div>
+      ) : (
+        <p className="a-small0">Sicherungen übernimmt der Datenbank-Anbieter (z. B. Coolify-Backups, Neon oder Supabase). Prüfen Sie dort, dass automatische Sicherungen aktiv sind.</p>
+      )}
+    </Panel>
   );
 }
