@@ -147,7 +147,9 @@ async function announce(row: Inquiry) {
   const href = `/admin/anfragen/${row.id}`;
   const who = row.name || row.email;
   await notify({ type: "inquiry", title: `Neue Anfrage von ${who}`, body: row.subject || row.message.slice(0, 140), href, permission: "inquiries.view" });
-  const { notifyInquiry } = await getSettings("email");
+  const configured = (await getSettings("email")).notifyInquiry;
+  // until recipients are set in the dashboard, fall back to CONTACT_TO_EMAIL from the environment
+  const notifyInquiry = configured.length ? configured : (process.env.CONTACT_TO_EMAIL || "").split(",").map((s) => s.trim()).filter(Boolean);
   if (notifyInquiry.length) {
     const rows: [string, string][] = [
       ["Referenz", row.reference],

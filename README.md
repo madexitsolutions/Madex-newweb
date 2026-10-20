@@ -23,7 +23,7 @@ Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablag
 |---|---|
 | `NEXT_PUBLIC_SITE_URL` | Basis-URL für Canonicals, Sitemap, Open Graph, Links in E-Mails |
 | `DATABASE_URL`, `APP_SECRET`, `APP_URL` | Neues Dashboard `/admin` (PostgreSQL, Verschlüsselung, öffentliche Adresse) |
-| `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` | Altes Dashboard `/admin-alt` |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Optional: Inhaber-Konto für `/admin` bei leerer Datenbank anlegen (sonst Ersteinrichtung unter `/admin`) |
 | `DATA_DIR`, `DATA_ENCRYPTION_KEY` | Ablage und Verschlüsselung von Anfragen, Chats, Einstellungen |
 | `SMTP_*`, `MAIL_FROM`, `CONTACT_TO_EMAIL` | E-Mail-Benachrichtigung bei neuen Anfragen |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | KI-Chatbot «Orion» |
@@ -45,21 +45,12 @@ angelegt. Es braucht zusätzlich `DATABASE_URL`, `APP_SECRET` und `APP_URL` (sie
 (eingebettete Datenbank). Der Kern liegt in `src/app/admin`, `src/server`, `src/components/admin`, `src/modules`,
 `src/app/api/{v1,payments,cron}`, `src/app/uploads` und `tests/dashboard` – Änderungen daran zuerst in der Vorlage machen.
 
-## Altes Admin-Dashboard (`/admin-alt`)
+## Anmeldung im Dashboard (`/admin`)
 
-Bleibt erreichbar, bis das neue Dashboard die Funktionen übernommen hat (vor allem Chatbot Orion und Chat-Verläufe).
-
-Anmeldung mit Benutzername/Passwort aus der `.env` und verpflichtender Zwei-Faktor-Anmeldung (Authenticator-App, QR-Code beim ersten Login, 8 Wiederherstellungscodes). Sperre nach Fehlversuchen, automatische Abmeldung nach Inaktivität, Protokoll aller Anmeldungen.
-
-- **Übersicht** – neue Anfragen, Chats, Einrichtungsstatus (SMTP, OpenAI, Analytics)
-- **Anfragen** – alle Formulare (Kontakt, kostenlose Analyse, Hero-Formular) und Terminanfragen aus dem Chat; Status, Notizen, Verlauf, E-Mail erneut senden, CSV-Export
-- **Chat-Verläufe** – Gespräche mit Orion (pseudonym), Löschung nach Aufbewahrungsfrist
-- **SEO** – Titel, Beschreibung, Vorschaubild und noindex pro Seite mit Google-Vorschau; wirkt sofort, auch auf die Sitemap
-- **Google Analytics** – Mess-ID/Tag-Manager-ID, Zustimmungs-Banner, Berichte der letzten 28 Tage
-- **Chatbot & Wissen** – Name, Begrüssung, Hinweis-Blase, Modell, Firmenprofil, Wissensdatenbank, Verbindungstest
-- **Pakete** – Pakete für den Paket-Finder im Chat
-- **Sicherheit** – Limits, Spam-Schutz, IP-Sperren, Ereignisprotokoll
-- **Konto** – 2FA zurücksetzen, Sitzungen beenden, Protokoll
+Anmeldung mit **E-Mail-Adresse** und Passwort, danach Zwei-Faktor-Code (Authenticator-App). Das erste Konto entsteht
+entweder über die Ersteinrichtung unter `/admin` oder automatisch aus `ADMIN_EMAIL` + `ADMIN_PASSWORD`
+(nur solange noch kein Benutzer existiert). Kontakt-, Analyse- und Chat-Terminanfragen landen unter `/admin/anfragen`;
+Empfänger der Benachrichtigung unter Einstellungen → E-Mail (bis dahin `CONTACT_TO_EMAIL`).
 
 ## KI-Chatbot «Orion»
 

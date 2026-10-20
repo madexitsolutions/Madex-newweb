@@ -8,14 +8,15 @@ import { NextResponse } from "next/server";
 import { appendMessages, createSession, getSession, touchSession, type ChatMessage } from "@/lib/server/chats";
 import { extractActions, nextActions, respond, UNCONFIRMED } from "@/lib/server/orion";
 import { recommend, SERVICE_OPTIONS } from "@/lib/server/packages";
-import { createRequest, TIME_LABELS } from "@/lib/server/requests";
-import { sendRequestNotification } from "@/lib/server/mailer";
+import { createInquiry } from "@/server/content/inquiries";
 import { checkMessage, checkNewSession, clientIp, ipBlocked, logSecurity } from "@/lib/server/security";
 import { getSettings } from "@/lib/server/settings";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+const TIME_LABELS: Record<string, string> = { morning: "Vormittag (08:00–12:00)", midday: "Mittag (12:00–14:00)", afternoon: "Nachmittag (14:00–18:00)", flexible: "Flexibel" };
 
 const ok = (data: unknown) => NextResponse.json({ success: true, data });
 const fail = (message: string, status = 400, code?: string) => NextResponse.json({ success: false, data: { message, code } }, { status });
@@ -169,29 +170,32 @@ export async function POST(req: Request) {
       const phone = str("phone").slice(0, 40);
       if (phone && !/^[+()\d\s/-]*$/.test(phone)) return fail("Bitte geben Sie eine gültige Telefonnummer ein.", 400, "invalid_phone");
 
-      const { item, replay } = await createRequest({
-        type: service === "analyse" ? "analyse" : "termin",
-        source: "orion",
-        name,
-        company: str("company").slice(0, 191),
-        email,
-        phone,
-        existingClient: existing === "yes",
-        service: SERVICE_OPTIONS[service] ?? "",
-        packageInterest: str("package_interest").slice(0, 191),
-        preferredDate: date,
-        preferredTime: time,
-        message: str("message").slice(0, 5000),
-        sessionId: session.id,
-        idempotencyKey: key,
-      });
-      if (!replay) {
-        await touchSession(session.id, { requestRef: item.reference, customerType: existing === "yes" ? "client" : "prospect", ...(service ? { topic: service } : {}) });
-        await sendRequestNotification(item);
+      let reference = session.requestKey === key ? session.requestRef : undefined;
+      if (!reference) {
+        const fields: Record<string, string> = { Quelle: "Chat-Assistent Orion", "Bereits Kunde": existing === "yes" ? "Ja" : "Nein", Wunschdatum: date, Zeitfenster: TIME_LABELS[time] };
+        if (SERVICE_OPTIONS[service]) fields["Leistung"] = SERVICE_OPTIONS[service];
+        const pkg = str("package_interest").slice(0, 191);
+        if (pkg) fields["Paket"] = pkg;
+        const r = await createInquiry(
+          {
+            form: service === "analyse" ? "Kostenlose Analyse" : "Terminanfrage",
+            name,
+            company: str("company").slice(0, 191),
+            email,
+            phone,
+            subject: service === "analyse" ? "Kostenlose Analyse (Chat)" : "Terminanfrage (Chat)",
+            message: str("message").slice(0, 5000),
+            fields,
+          },
+          { ip },
+        );
+        if (!r.ok) return fail(r.message, r.code === "rate_limited" ? 429 : 400, r.code);
+        reference = r.reference;
+        await touchSession(session.id, { requestRef: reference, requestKey: key, customerType: existing === "yes" ? "client" : "prospect", ...(service ? { topic: service } : {}) });
       }
       const first = name.split(/\s+/)[0];
       return ok({
-        reference: item.reference,
+        reference,
         preferred_date: date,
         preferred_time: TIME_LABELS[time],
         message: `Vielen Dank, ${first || "für Ihre Anfrage"}. Ihr Wunschtermin ist noch nicht verbindlich – das Madex-Team bestätigt ihn innerhalb eines Werktags per E-Mail.`,

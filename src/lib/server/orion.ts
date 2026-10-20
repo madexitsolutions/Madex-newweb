@@ -5,7 +5,9 @@
  * lookup and next-step buttons.
  */
 import { listPackages } from "./packages";
-import { getRequest, STATUS_LABELS, TYPE_LABELS } from "./requests";
+import { eq } from "drizzle-orm";
+import { db } from "@/server/db";
+import { inquiries } from "@/server/db/schema";
 import { companyProfile, type ChatbotSettings } from "./settings";
 import { read } from "./store";
 
@@ -92,14 +94,17 @@ export function nextActions(msg: string, reply: string, suggested: Action[]): Ac
   return [...new Set([...topicActions(msg), ...suggested])].slice(0, 3);
 }
 
-/** Status of an MDX request without personal data. */
+const STATUS_TEXT: Record<string, string> = { new: "eingegangen, noch nicht bearbeitet", open: "in Bearbeitung", done: "erledigt", spam: "eingegangen" };
+
+/** Status of a request by its reference (e.g. A-2026-00042), without personal data. */
 export async function referenceReply(msg: string) {
-  const m = msg.match(/MDX-[A-F0-9]{12}/i);
+  const m = msg.match(/A-\d{4}-\d{5}/i);
   if (!m) return null;
-  const r = await getRequest(m[0].toUpperCase());
-  if (!r) return `Zur Referenz ${m[0].toUpperCase()} finde ich keine Anfrage. Bitte prüfen Sie die Nummer oder kontaktieren Sie uns direkt.\n[[kontakt]]`;
-  const date = new Date(r.createdAt).toLocaleDateString("de-CH");
-  return `Ihre ${TYPE_LABELS[r.type]} ${r.reference} ist am ${date} bei uns eingegangen. Aktueller Stand: ${STATUS_LABELS[r.status]}. Für Details meldet sich unser Team gerne persönlich.\n[[kontakt]]`;
+  const ref = m[0].toUpperCase();
+  const [r] = await db.select({ reference: inquiries.reference, form: inquiries.form, status: inquiries.status, createdAt: inquiries.createdAt }).from(inquiries).where(eq(inquiries.reference, ref));
+  if (!r) return `Zur Referenz ${ref} finde ich keine Anfrage. Bitte prüfen Sie die Nummer oder kontaktieren Sie uns direkt.\n[[kontakt]]`;
+  const date = r.createdAt.toLocaleDateString("de-CH", { timeZone: "Europe/Zurich" });
+  return `Ihre Anfrage ${r.reference} (${r.form}) ist am ${date} bei uns eingegangen. Aktueller Stand: ${STATUS_TEXT[r.status] ?? "in Bearbeitung"}. Für Details meldet sich unser Team gerne persönlich.\n[[kontakt]]`;
 }
 
 async function approvedContext(s: ChatbotSettings) {

@@ -2,7 +2,8 @@
 import { eq } from "drizzle-orm";
 import { SYSTEM_ROLES } from "@/server/auth/permissions";
 import type { DB } from "./index";
-import { roles, shippingMethods, shippingZones, taxClasses } from "./schema";
+import { hashPassword } from "@/server/lib/crypto";
+import { roles, shippingMethods, shippingZones, taxClasses, users } from "./schema";
 
 export async function bootstrap(db: DB) {
   for (const r of SYSTEM_ROLES) {
@@ -34,4 +35,27 @@ export async function bootstrap(db: DB) {
       { zoneId: ch.id, name: "Abholung", description: "Nach Vereinbarung im Geschäft", type: "pickup", price: 0, sort: 2 },
     ]);
   }
+
+  await ownerFromEnv(db);
+}
+
+/**
+ * Optional: create the owner account from the environment on a fresh database
+ * (ADMIN_EMAIL – or ADMIN_USERNAME when it is an e-mail address – and ADMIN_PASSWORD,
+ * at least 12 characters). Does nothing once any user exists; 2FA is set up at the first login.
+ */
+export async function ownerFromEnv(db: DB) {
+  const email = (process.env.ADMIN_EMAIL || (process.env.ADMIN_USERNAME?.includes("@") ? process.env.ADMIN_USERNAME : "") || "").trim().toLowerCase();
+  const password = process.env.ADMIN_PASSWORD || "";
+  if (!email || !password) return;
+  const [anyUser] = await db.select({ id: users.id }).from(users).limit(1);
+  if (anyUser) return;
+  if (password.length < 12) {
+    console.warn("[setup] ADMIN_PASSWORD ist kürzer als 12 Zeichen – Inhaber-Konto wurde nicht angelegt. Bitte unter /admin/einrichtung erstellen.");
+    return;
+  }
+  const [owner] = await db.select({ id: roles.id }).from(roles).where(eq(roles.key, "owner"));
+  if (!owner) return;
+  await db.insert(users).values({ email, name: process.env.ADMIN_NAME?.trim() || "Inhaber", passwordHash: await hashPassword(password), roleId: owner.id, passwordChangedAt: new Date() });
+  console.log(`[setup] Inhaber-Konto ${email} aus den Umgebungsvariablen angelegt.`);
 }

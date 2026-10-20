@@ -1,24 +1,15 @@
 import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/contact-schema";
-import { rateLimit } from "@/lib/rate-limit";
-import { sendRequestNotification } from "@/lib/server/mailer";
-import { createRequest } from "@/lib/server/requests";
-import { clientIp, logSecurity } from "@/lib/server/security";
+import { createInquiry } from "@/server/content/inquiries";
+import { ipFromRequest } from "@/server/lib/request";
 
 export const runtime = "nodejs";
 
 /**
- * Contact form, free analysis and the hero quick-form.
- * Every request is stored first (visible in /admin-alt/anfragen) and then
- * e-mailed; a failed e-mail never loses the request.
+ * Contact form and free analysis. Each request lands in the dashboard inbox
+ * (/admin/anfragen) and is e-mailed to the configured recipients.
  */
 export async function POST(req: Request) {
-  const ip = clientIp(req);
-  if (!rateLimit("form:" + ip, 6, 10 * 60 * 1000)) {
-    await logSecurity("rate_form", ip);
-    return NextResponse.json({ ok: false, error: "Zu viele Anfragen. Bitte versuchen Sie es in einigen Minuten erneut." }, { status: 429 });
-  }
-
   let body: unknown;
   try {
     body = await req.json();
@@ -36,19 +27,26 @@ export async function POST(req: Request) {
   if (d.fax) return NextResponse.json({ ok: true });
 
   const isAnalysis = d.source === "kostenlose-prufung" || d.source === "hero" || d.service === "Kostenlose Analyse";
-  const { item } = await createRequest({
-    type: isAnalysis ? "analyse" : "kontakt",
-    source: d.source || "kontakt",
-    name: d.name,
-    company: d.company || undefined,
-    email: d.email,
-    phone: d.phone || undefined,
-    service: d.service || undefined,
-    website: d.website || undefined,
-    preferredDate: d.date || undefined,
-    preferredTime: d.slot || undefined,
-    message: d.message,
-  });
-  await sendRequestNotification(item);
-  return NextResponse.json({ ok: true, reference: item.reference });
+  const fields: Record<string, string> = {};
+  if (d.service) fields["Leistung"] = d.service;
+  if (d.website) fields["Website"] = d.website;
+  if (d.date) fields["Wunschdatum"] = d.date;
+  if (d.slot) fields["Zeitfenster"] = d.slot;
+
+  const r = await createInquiry(
+    {
+      form: isAnalysis ? "Kostenlose Analyse" : "Kontakt",
+      name: d.name,
+      company: d.company || "",
+      email: d.email,
+      phone: d.phone || "",
+      subject: isAnalysis ? "Kostenlose Website- und Marketing-Analyse" : d.service ? `Anfrage: ${d.service}` : "Kontaktanfrage",
+      message: d.message,
+      fields,
+      sourceUrl: req.headers.get("referer") ?? "",
+    },
+    { ip: ipFromRequest(req) },
+  );
+  if (!r.ok) return NextResponse.json({ ok: false, error: r.message, fieldErrors: r.fieldErrors }, { status: r.code === "rate_limited" ? 429 : 422 });
+  return NextResponse.json({ ok: true, reference: r.reference });
 }

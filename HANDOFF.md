@@ -31,12 +31,15 @@ Next.js 16 Website von Madex IT Solutions (Deutsch/Schweiz, kein «ß»). Erst `
 - Der Kern von `madexitsolutions/predashboard` ist eingebaut: `/admin` (neu), `src/server`, `src/components/admin`, `src/modules`,
   `src/lib/{format,catalog,…}.ts`, `src/app/api/{v1,payments,cron}`, `src/app/uploads`, `src/instrumentation.ts`, `tests/dashboard`,
   `scripts/db-*.ts`, `drizzle.config.ts`. Die Website (`src/app/(site)`) ist unverändert.
-- Das bisherige Admin liegt jetzt unter `/admin-alt` (Orion, Chats, Pakete, alte Anfragen) und bleibt, bis das neue Dashboard sie übernimmt.
-  Das Kontaktformular speichert weiterhin im alten Speicher (`/api/kontakt` → `/admin-alt/anfragen`).
+- Das alte Admin (`/admin-alt`) ist entfernt. Kontakt-, Analyse- und Chat-Terminanfragen gehen über `createInquiry()` in
+  `/admin/anfragen`; SEO-Overrides kommen aus `/admin/seo`, die GA4-ID aus Integrationen → Google Analytics.
+- Erstes Konto: Ersteinrichtung unter `/admin` oder `ADMIN_EMAIL`/`ADMIN_PASSWORD` (siehe `ownerFromEnv` in `src/server/db/bootstrap.ts`).
+- Orion läuft weiter mit seinen Standardeinstellungen (`src/lib/server/settings.ts`, Speicher in `DATA_DIR`); eine Oberfläche
+  für Chatbot, Wissen, Pakete und Chat-Verläufe fehlt, bis das Modul «KI-Assistent» in der Vorlage gebaut ist.
 - **Coolify braucht** (sonst startet der Server nicht): PostgreSQL-Datenbank und die Variablen `DATABASE_URL`, `APP_SECRET`, `APP_URL`,
   dazu `CRON_SECRET` und ein Volume auf `DATA_DIR`. Die Migrationen liegen in `drizzle/` (aus der Vorlage) und werden beim Start angewendet.
 - Updates der Vorlage: die Kern-Ordner aus `predashboard` hierher kopieren (Website-Ordner nicht anfassen), dann `npm test`.
-- Danach: Kontaktformulare auf `createInquiry()` umstellen, Orion als Modul «KI-Assistent» in die Vorlage, SEO aus dem Dashboard lesen, `/admin-alt` entfernen.
+- Danach: Orion als Modul «KI-Assistent» in die Vorlage (Einstellungen, Wissen, Pakete, Chat-Verläufe).
 
 ## Offen
 - **Videotitel:** Die Kacheln zeigen «Werbevideo N». `VideoGrid` nimmt eine Map `titles` (YouTube-ID → Titel) entgegen; die Titel liefert der Inhaber.

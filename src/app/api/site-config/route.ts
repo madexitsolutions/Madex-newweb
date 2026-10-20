@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { analyticsIds, getSettings } from "@/lib/server/settings";
+import { getSettings as getDashboardSettings } from "@/server/settings";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -7,6 +8,9 @@ export const dynamic = "force-dynamic";
 /** Public, non-secret runtime config for the chat widget and the analytics loader. */
 export async function GET() {
   const s = await getSettings();
+  // the GA4 measurement ID is managed in the dashboard (Integrationen → Google Analytics)
+  const ga4 = (await getDashboardSettings("analytics").catch(() => null))?.ga4MeasurementId?.trim();
+  const ids = analyticsIds(s.analytics);
   const c = s.chatbot;
   return NextResponse.json(
     {
@@ -19,7 +23,7 @@ export async function GET() {
         teaserDelay: c.teaserDelay,
         teaserMobile: c.teaserMobile,
       },
-      analytics: { ...analyticsIds(s.analytics), requireConsent: s.analytics.requireConsent },
+      analytics: { ...ids, ga4Id: ga4 || ids.ga4Id, requireConsent: s.analytics.requireConsent },
     },
     { headers: { "Cache-Control": "public, max-age=60" } },
   );

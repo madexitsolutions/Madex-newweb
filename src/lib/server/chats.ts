@@ -11,6 +11,8 @@ export type ChatSession = {
   page?: string;
   customerType?: "client" | "prospect";
   requestRef?: string;
+  /** idempotency key of the appointment request, so a resent form returns the same reference */
+  requestKey?: string;
   topic?: string;
   closedAt?: string;
   lastSeen?: string;

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { site } from "@/content/site";
 import { services } from "@/content/services";
-import { getSettings } from "@/lib/server/settings";
+import { seoOverride } from "@/server/content/seo-public";
 export { staticSeo } from "@/content/seo-pages";
 
 export function pageMeta({ title, description, path, image }: { title: string; description: string; path: string; image?: string }): Metadata {
@@ -22,22 +22,18 @@ export function pageMeta({ title, description, path, image }: { title: string; d
   };
 }
 
-/** pageMeta + the overrides saved in the admin (title, description, image, noindex). */
+/** pageMeta + the overrides from the dashboard's SEO module (title, description, image, noindex, canonical). */
 export async function withSeo(defaults: { title: string; description: string; path: string; image?: string }): Promise<Metadata> {
-  let o: Awaited<ReturnType<typeof getSettings>>["seo"][string] | undefined;
-  try {
-    o = (await getSettings()).seo[defaults.path];
-  } catch {
-    o = undefined;
-  }
+  const o = await seoOverride(defaults.path);
   const meta = pageMeta({
     path: defaults.path,
     title: o?.title?.trim() || defaults.title,
     description: o?.description?.trim() || defaults.description,
-    image: o?.image?.trim() || defaults.image,
+    image: o?.ogImage?.trim() || defaults.image,
   });
   if (defaults.path === "/") meta.title = { absolute: String(meta.title) };
   if (o?.noindex) meta.robots = { index: false, follow: true };
+  if (o?.canonical?.trim()) meta.alternates = { ...meta.alternates, canonical: o.canonical.trim() };
   return meta;
 }
 
