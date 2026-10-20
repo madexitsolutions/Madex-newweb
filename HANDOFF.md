@@ -37,8 +37,8 @@ Next.js 16 Website von Madex IT Solutions (Deutsch/Schweiz, kein «ß»). Erst `
   (siehe `ownerFromEnv`/`resetOwner` in `src/server/db/bootstrap.ts`). `/admin/status` zeigt ohne Login, was fehlt.
 - Ohne `DATABASE_URL` läuft in Produktion die eingebaute Datenbank (PGlite, `DATA_DIR/pglite`); `APP_SECRET` optional (sonst
   `DATA_DIR/.app-secret`). Sicherung unter Sicherheit → Datensicherung, Wiederherstellen mit `npm run db:restore`.
-- Diese Kern-Änderungen (db/index, crypto, session-Cookie, request, bootstrap, instrumentation, admin/status, Datensicherung,
-  scripts/admin-reset + db-restore) noch in die Vorlage `predashboard` übernehmen.
+- Diese Kern-Änderungen (eingebaute DB, Schlüssel, Cookie, Status-Seite, Datensicherung, admin:reset, db:restore) sind auch in der
+  Vorlage `predashboard` (main) – Kern und Vorlage sind wieder gleich.
 - Orion läuft weiter mit seinen Standardeinstellungen (`src/lib/server/settings.ts`, Speicher in `DATA_DIR`); eine Oberfläche
   für Chatbot, Wissen, Pakete und Chat-Verläufe fehlt, bis das Modul «KI-Assistent» in der Vorlage gebaut ist.
 - **Betrieb:** nur `DATA_DIR` (dauerhafter Ordner/Volume) ist Pflicht; `DATABASE_URL` nur für einen externen PostgreSQL-Server,
