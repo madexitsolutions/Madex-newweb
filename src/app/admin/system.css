@@ -130,15 +130,6 @@
 .s-file input[type="file"] { padding: 6px; font-size: 13.5px; }
 
 /* modules */
-.s-modules { display: grid; gap: 10px; }
-.s-module { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; padding: 14px 16px; border: 1px solid var(--a-line); border-radius: 10px; background: #fff; cursor: pointer; }
-.s-module:has(input:checked) { border-color: #b9e0dc; background: #f8fdfc; }
-.s-module input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--a-teal); grid-row: span 3; }
-.s-module strong { font-size: 14.5px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.s-module p { margin: 0; color: var(--a-soft); font-size: 13.5px; }
-.s-module small { font-size: 12.5px; color: var(--a-soft); }
-.s-module small b { font-weight: 600; color: var(--a-ink); }
-.s-module.is-blocked { opacity: 0.75; }
 
 /* sessions */
 .s-sessions { list-style: none; margin: 0; padding: 0; display: grid; }

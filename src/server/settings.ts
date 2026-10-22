@@ -37,13 +37,19 @@ export const SCHEMAS = {
     logoDarkUrl: str(""),
     faviconUrl: str(""),
   }),
+  /** Plugins (Dashboard → Plugins). All off on a new installation; `storefront` is an option of the shop. */
   modules: z.object({
-    shop: bool(true),
+    shop: bool(false),
     storefront: bool(true),
-    blog: bool(true),
-    inquiries: bool(true),
-    analytics: bool(true),
-    seo: bool(true),
+    blog: bool(false),
+    inquiries: bool(false),
+    analytics: bool(false),
+    seo: bool(false),
+    cookies: bool(false),
+    maintenance: bool(false),
+    redirects: bool(false),
+    announcement: bool(false),
+    customCode: bool(false),
   }),
   shop: z.object({
     pricesIncludeTax: bool(true),
@@ -111,6 +117,53 @@ export const SCHEMAS = {
   api: z.object({
     corsOrigins: list(),
   }),
+  seoSite: z.object({
+    titleTemplate: str("%s · {site}"),
+    defaultDescription: str(""),
+    ogImage: str(""),
+    googleVerification: str(""),
+    bingVerification: str(""),
+    noindexSite: bool(false),
+  }),
+  cookies: z.object({
+    text: str("Wir verwenden Cookies, um die Nutzung der Website zu messen und sie zu verbessern. Sie entscheiden, ob Sie dem zustimmen."),
+    acceptLabel: str("Akzeptieren"),
+    declineLabel: str("Nur notwendige"),
+    privacyUrl: str("/datenschutz"),
+  }),
+  announcement: z.object({
+    text: str(""),
+    linkLabel: str(""),
+    linkUrl: str(""),
+    startsAt: str(""),
+    endsAt: str(""),
+    tone: z.enum(["brand", "accent", "dark"]).default("brand"),
+    dismissible: bool(true),
+  }),
+  maintenance: z.object({
+    title: str("Wir sind bald zurück"),
+    text: str("Wir arbeiten gerade an unserer Website. Bitte schauen Sie in Kürze wieder vorbei."),
+    showContact: bool(true),
+  }),
+  customCode: z.object({
+    head: z.string().max(20_000).default(""),
+    bodyEnd: z.string().max(20_000).default(""),
+    needsConsent: bool(true),
+  }),
+  /** Texts and images of the website, keys from src/site/fields.ts (Website → Texte & Bilder). */
+  siteContent: z.record(z.string(), z.string().max(50_000)).default({}),
+  /** Menus of the website; an empty header menu is built automatically. */
+  menus: z.object({
+    header: z.array(z.object({ label: z.string().trim().min(1).max(60), url: z.string().trim().min(1).max(500) })).max(12).default([]),
+    footer: z.array(z.object({ label: z.string().trim().min(1).max(60), url: z.string().trim().min(1).max(500) })).max(12).default([]),
+  }),
+  contactForm: z.object({
+    title: str("Kontakt"),
+    intro: str("Schreiben Sie uns – wir melden uns in der Regel innert eines Arbeitstages."),
+    successMessage: str("Danke für Ihre Nachricht. Wir melden uns so bald wie möglich."),
+    askPhone: bool(true),
+    askCompany: bool(false),
+  }),
 };
 
 export type SettingsKey = keyof typeof SCHEMAS;
@@ -154,10 +207,11 @@ export async function getSettings<K extends SettingsKey>(key: K): Promise<Settin
  * Merges `patch` into the stored group. Secret fields that arrive empty keep
  * their stored value (forms never receive secrets, so empty means "unchanged").
  */
-export async function saveSettings<K extends SettingsKey>(key: K, patch: Partial<Settings[K]>, userId?: string): Promise<Settings[K]> {
+export async function saveSettings<K extends SettingsKey>(key: K, patch: Partial<Settings[K]>, userId?: string, opts: { replace?: boolean } = {}): Promise<Settings[K]> {
   const current = await getSettings(key);
   const secrets = (SECRET_FIELDS[key] ?? []) as string[];
-  const merged: Record<string, unknown> = { ...current, ...patch };
+  // replace: write the value as given (to remove keys of a record group)
+  const merged: Record<string, unknown> = opts.replace ? { ...patch } : { ...current, ...patch };
   for (const f of secrets) if (patch[f as keyof Settings[K]] === "" || patch[f as keyof Settings[K]] === undefined) merged[f] = (current as Record<string, unknown>)[f];
   const value = SCHEMAS[key].parse(merged) as Settings[K];
   const stored: Record<string, unknown> = { ...value };

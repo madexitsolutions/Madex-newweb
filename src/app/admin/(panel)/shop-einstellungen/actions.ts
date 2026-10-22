@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { saveSettings } from "@/server/settings";
 import { redirect } from "next/navigation";
 import { fail, formBool, formList, formString, type FormState } from "@/lib/form-state";
 import { parseMoney } from "@/lib/format";
@@ -57,6 +58,7 @@ export async function saveShopGeneralAction(_: FormState, f: FormData): Promise<
       },
       user,
     );
+    await saveSettings("modules", { storefront: formBool(f, "storefront") }, user.id);
   } catch (e) {
     return toFormState(e);
   }

@@ -4,26 +4,21 @@ import { Empty, Icon, PageHeader, Panel, type IconName } from "@/components/admi
 import { fullName, money, number, orderNumber, relative } from "@/lib/format";
 import { enabledModules } from "@/modules/registry";
 import { requirePermission } from "@/server/auth/session";
-import { latestInquiries, latestOrders, newInquiryCount, openOrderCount, revenueKpis, setupChecks, shopTodos, userNotifications, type Todo } from "@/server/analytics/overview";
+import { atAGlance, latestInquiries, latestOrders, newInquiryCount, openOrderCount, recentActivity, revenueKpis, setupChecks, shopTodos, userNotifications, type Todo } from "@/server/analytics/overview";
+import { MADEX, MadexMark } from "@/components/admin/madex";
+import { AVAILABLE_PLUGINS, websiteEditing } from "@/modules/registry";
+import { QuickDraft } from "./quick-draft";
 import { change } from "@/server/analytics/sales";
 import { bucketLabel } from "@/server/analytics/range";
 import { ga4Visitors } from "@/server/analytics/ga4";
 import { INQUIRY_STATUS } from "@/server/content/inquiries";
 import { getSettings } from "@/server/settings";
 import { markReadAction } from "./overview-actions";
+import { ORDER_STATUS, type OrderStatus } from "@/lib/orders";
 import "../content.css";
 
 export const metadata = { title: "Übersicht" };
 
-const ORDER_STATUS: Record<string, { label: string; pill: string }> = {
-  pending: { label: "Ausstehend", pill: "muted" },
-  processing: { label: "In Bearbeitung", pill: "warn" },
-  on_hold: { label: "Zurückgestellt", pill: "warn" },
-  completed: { label: "Abgeschlossen", pill: "ok" },
-  cancelled: { label: "Storniert", pill: "muted" },
-  refunded: { label: "Rückerstattet", pill: "muted" },
-  failed: { label: "Fehlgeschlagen", pill: "bad" },
-};
 
 function greeting(now: Date) {
   const h = Number(now.toLocaleString("en-GB", { hour: "2-digit", hour12: false, timeZone: "Europe/Zurich" }));
@@ -69,11 +64,25 @@ export default async function Overview() {
     showInquiries ? latestInquiries(6) : [],
     userNotifications(user, 8),
   ]);
+  const [glance, activity] = await Promise.all([atAGlance(modules), can("audit.view") ? recentActivity(6) : []]);
+  const activePlugins = AVAILABLE_PLUGINS.filter((p) => modules[p.key]).length;
 
   const allTodos: Todo[] = [...todos];
   if (showInquiries && newInq) allTodos.push({ key: "inq", tone: "info", icon: "inbox", title: `${newInq} neue Anfrage${newInq === 1 ? "" : "n"}`, text: "Noch nicht bearbeitet – zeitnah antworten.", href: "/admin/anfragen", action: "Anfragen" });
   const openChecks = checks.filter((c) => !c.ok);
   const firstName = user.name.split(" ")[0];
+  const showWelcome = isAdmin && (activePlugins === 0 || openChecks.length > 0);
+  type Glance = { label: string; n: number; href: string; icon: IconName };
+  const glanceItems = ([
+    websiteEditing && { label: "Seiten", n: glance.pages, href: "/admin/seiten", icon: "pages" as const },
+    glance.posts !== null && { label: "Beiträge", n: glance.posts, href: "/admin/beitraege", icon: "file" as const },
+    glance.products !== null && { label: "Produkte", n: glance.products, href: "/admin/produkte", icon: "box" as const },
+    glance.orders !== null && { label: "Bestellungen", n: glance.orders, href: "/admin/bestellungen?tab=alle", icon: "cart" as const },
+    glance.inquiries !== null && { label: "Anfragen", n: glance.inquiries, href: "/admin/anfragen?status=alle", icon: "inbox" as const },
+    { label: "Bilder & Dateien", n: glance.media, href: "/admin/medien", icon: "image" as const },
+    { label: "Benutzer", n: glance.users, href: "/admin/benutzer", icon: "users" as const },
+    { label: "Aktive Plugins", n: activePlugins, href: "/admin/plugins", icon: "plug" as const },
+  ] as (Glance | false)[]).filter((x): x is Glance => Boolean(x));
 
   return (
     <>
@@ -89,6 +98,66 @@ export default async function Overview() {
           ) : undefined
         }
       />
+
+      {showWelcome && (
+        <section className="ov-welcome" aria-labelledby="ov-welcome-title">
+          <div className="ov-welcome__intro">
+            <h2 id="ov-welcome-title">Willkommen in Ihrem Dashboard</h2>
+            <p>Hier steuern Sie Ihre Website ohne Programmieren: Texte und Bilder ändern, Seiten anlegen und Funktionen wie Shop oder Google Analytics per Plugin dazuschalten.</p>
+            <a href={general.siteUrl || "/"} target="_blank" rel="noopener" className="a-btn a-btn--primary">
+              <Icon name="external" size={16} />
+              Website ansehen
+            </a>
+          </div>
+          <div className="ov-welcome__col">
+            <h3>Erste Schritte</h3>
+            <Link href="/admin/einstellungen">
+              <Icon name="building" size={16} />
+              Firmendaten eintragen
+            </Link>
+            <Link href="/admin/einstellungen?tab=branding">
+              <Icon name="palette" size={16} />
+              Logo und Farben festlegen
+            </Link>
+            <Link href="/admin/einstellungen?tab=email">
+              <Icon name="mail" size={16} />
+              E-Mail-Versand einrichten
+            </Link>
+          </div>
+          {websiteEditing && (
+            <div className="ov-welcome__col">
+              <h3>Website gestalten</h3>
+              <Link href="/admin/texte">
+                <Icon name="type" size={16} />
+                Texte und Bilder ändern
+              </Link>
+              <Link href="/admin/seiten">
+                <Icon name="pages" size={16} />
+                Seiten bearbeiten
+              </Link>
+              <Link href="/admin/menues">
+                <Icon name="menuedit" size={16} />
+                Menüs anpassen
+              </Link>
+            </div>
+          )}
+          <div className="ov-welcome__col">
+            <h3>Mehr Funktionen</h3>
+            <Link href="/admin/plugins">
+              <Icon name="plug" size={16} />
+              Plugins aktivieren
+            </Link>
+            <Link href="/admin/benutzer">
+              <Icon name="users" size={16} />
+              Team einladen
+            </Link>
+            <a href={`mailto:${MADEX.email}`}>
+              <Icon name="chat" size={16} />
+              Hilfe von Madex
+            </a>
+          </div>
+        </section>
+      )}
 
       {(sales || showInquiries || visitors) && (
         <div className="a-kpis ov-kpis">
@@ -198,7 +267,7 @@ export default async function Overview() {
                             <small>{fullName(o.billing) || o.email}</small>
                           </td>
                           <td data-label="Status">
-                            <span className={`a-pill a-pill--${ORDER_STATUS[o.status]?.pill ?? "muted"}`}>{ORDER_STATUS[o.status]?.label ?? o.status}</span>
+                            <span className={`a-pill a-pill--${ORDER_STATUS[o.status as OrderStatus]?.tone ?? "muted"}`}>{ORDER_STATUS[o.status as OrderStatus]?.label ?? o.status}</span>
                           </td>
                           <td className="a-num" data-label="Betrag">
                             {money(o.total)}
@@ -214,9 +283,51 @@ export default async function Overview() {
               )}
             </Panel>
           )}
+          {activity.length > 0 && (
+            <Panel
+              title="Letzte Änderungen"
+              action={
+                <Link href="/admin/sicherheit?tab=protokoll" className="a-link">
+                  Protokoll <Icon name="arrow" size={14} />
+                </Link>
+              }
+            >
+              <ul className="ov-list">
+                {activity.map((a) => (
+                  <li key={a.id}>
+                    <div>
+                      <span>{a.summary}</span>
+                      <small>{a.name || a.email || "System"}</small>
+                    </div>
+                    <div className="ov-list__meta">
+                      <small>{relative(a.createdAt, now.getTime())}</small>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          )}
         </div>
 
         <div className="a-stack">
+          <Panel title="Auf einen Blick">
+            <ul className="ov-glance">
+              {glanceItems.map((g) => (
+                <li key={g.label}>
+                  <Link href={g.href}>
+                    <Icon name={g.icon} size={16} />
+                    <strong>{number(g.n)}</strong>
+                    <span>{g.label}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </Panel>
+          {modules.blog && can("content.manage") && (
+            <Panel title="Schnellentwurf" description="Idee festhalten, später fertig schreiben.">
+              <QuickDraft />
+            </Panel>
+          )}
           <Panel
             title={
               <>
@@ -321,6 +432,12 @@ export default async function Overview() {
               </ul>
             </Panel>
           )}
+          <section className="ov-madex" aria-label="Hilfe von Madex">
+            <MadexMark size={16} />
+            <p>
+              <strong>Hilfe von {MADEX.name}</strong> Fragen, Änderungswünsche oder neue Funktionen? <a href={`mailto:${MADEX.email}`}>{MADEX.email}</a> · <a href={MADEX.phoneHref}>{MADEX.phone}</a>
+            </p>
+          </section>
         </div>
       </div>
     </>

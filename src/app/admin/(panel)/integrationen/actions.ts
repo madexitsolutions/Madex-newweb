@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { fail, formBool, formList, formString, ok, zodFieldErrors, type FormState } from "@/lib/form-state";
+import { fail, formBool, formList, ok, zodFieldErrors, type FormState } from "@/lib/form-state";
 import { audit } from "@/server/audit";
 import { checkPermission } from "@/server/auth/session";
 import {
@@ -17,9 +17,8 @@ import {
   setWebhookActive,
   testWebhook,
   updateWebhook,
-  validateGa,
 } from "@/server/integrations";
-import { clearSecret, saveSettings } from "@/server/settings";
+import { saveSettings } from "@/server/settings";
 
 const PATH = "/admin/integrationen";
 const NO_ACCESS = "Keine Berechtigung. Diese Aktion braucht das Recht «API-Schlüssel, Webhooks und Verbindungen».";
@@ -138,20 +137,3 @@ export async function saveCorsAction(_: FormState, f: FormData): Promise<FormSta
   return ok(`Gespeichert (${parsed.origins.length} ${parsed.origins.length === 1 ? "Herkunft" : "Herkünfte"}).`);
 }
 
-export async function saveAnalyticsAction(_: FormState, f: FormData): Promise<FormState> {
-  const user = await checkPermission("integrations.manage");
-  if (!user) return fail(NO_ACCESS);
-  const input = {
-    ga4MeasurementId: formString(f, "ga4MeasurementId"),
-    ga4PropertyId: formString(f, "ga4PropertyId"),
-    serviceAccountEmail: formString(f, "serviceAccountEmail"),
-    serviceAccountKey: String(f.get("serviceAccountKey") ?? ""),
-  };
-  const v = validateGa(input);
-  if ("error" in v) return fail(v.error, { [v.field]: v.error });
-  await saveSettings("analytics", v.value, user.id);
-  if (!v.value.serviceAccountKey && formBool(f, "remove_serviceAccountKey")) await clearSecret("analytics", "serviceAccountKey", user.id);
-  await audit(user, "settings.updated", { entityType: "settings", entityId: "analytics", summary: "Google Analytics gespeichert", data: { ga4MeasurementId: v.value.ga4MeasurementId, ga4PropertyId: v.value.ga4PropertyId, keyChanged: Boolean(v.value.serviceAccountKey) } });
-  revalidatePath(PATH);
-  return ok("Gespeichert.");
-}

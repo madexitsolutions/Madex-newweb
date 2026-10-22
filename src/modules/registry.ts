@@ -1,32 +1,154 @@
 /**
- * Modules that can be switched on/off per installation (Einstellungen → Module)
- * and the admin navigation built from them. Pages of a disabled module call
- * requireModule() and are hidden from the navigation.
+ * Plugins that can be activated per installation (Dashboard → Plugins) and the
+ * admin navigation built from them. A new installation starts with every plugin
+ * off. Pages of an inactive plugin call requireModule() and are hidden from the
+ * navigation; their data stays in the database.
  */
 import { notFound } from "next/navigation";
 import type { IconName } from "@/components/admin/kit";
 import type { Permission } from "@/server/auth/permissions";
 import { getSettings, type Settings } from "@/server/settings";
+import { PROJECT } from "@/site/project";
 
 export type ModuleKey = keyof Settings["modules"];
+/** Plugins shown on the plugins page (`storefront` is an option inside the shop). */
+export type PluginKey = Exclude<ModuleKey, "storefront">;
 
-export const MODULES: { key: ModuleKey; name: string; description: string; requires?: ModuleKey }[] = [
-  { key: "shop", name: "Shop", description: "Produkte, Bestellungen, Kunden, Gutscheine, Versand, Steuern und Zahlungsarten." },
-  { key: "storefront", name: "Shop-Seiten", description: "Eingebaute Shop-Seiten (Übersicht, Produkt, Warenkorb, Kasse, Kundenkonto). Aus, wenn die Kunden-Webapp eigene Seiten über die API baut.", requires: "shop" },
-  { key: "blog", name: "Beiträge", description: "News und Blog-Beiträge mit Entwürfen, Planung und SEO." },
-  { key: "inquiries", name: "Anfragen", description: "Kontakt- und Offertanfragen aus den Formularen der Website." },
-  { key: "analytics", name: "Statistiken", description: "Umsatzauswertungen und Besucherzahlen aus Google Analytics." },
-  { key: "seo", name: "SEO", description: "Titel, Beschreibungen und Indexierung je Seite der verbundenen Website." },
+export type PluginCategory = "Verkaufen" | "Inhalte" | "Marketing" | "Website";
+
+export type Plugin = {
+  key: PluginKey;
+  name: string;
+  category: PluginCategory;
+  icon: IconName;
+  description: string;
+  /** What appears after activating: dashboard pages and pages on the website. */
+  dashboard: string[];
+  website: string[];
+  /** Where the plugin is set up after activation. */
+  setup?: { href: string; label: string };
+};
+
+export const PLUGIN_CATEGORIES: PluginCategory[] = ["Verkaufen", "Inhalte", "Marketing", "Website"];
+
+export const PLUGINS: Plugin[] = [
+  {
+    key: "shop",
+    name: "Shop",
+    category: "Verkaufen",
+    icon: "cart",
+    description: "Online-Shop mit Produkten, Varianten, Lager, Bestellungen, Kunden, Gutscheinen, Versand, Steuern und Zahlungsarten (Stripe, Payrexx, Rechnung mit QR, Vorauskasse).",
+    dashboard: ["Bestellungen", "Produkte", "Kategorien", "Kunden", "Gutscheine", "Shop-Einstellungen", "Umsatz-Statistiken"],
+    website: ["/shop", "/produkt/…", "/warenkorb", "/kasse", "/bestellung/…"],
+    setup: { href: "/admin/shop-einstellungen", label: "Shop einrichten" },
+  },
+  {
+    key: "blog",
+    name: "Beiträge",
+    category: "Inhalte",
+    icon: "file",
+    description: "News und Blog mit Entwürfen, geplanter Veröffentlichung, Titelbild und SEO je Beitrag.",
+    dashboard: ["Beiträge"],
+    website: ["/beitraege", "/beitraege/…"],
+    setup: { href: "/admin/beitraege", label: "Ersten Beitrag schreiben" },
+  },
+  {
+    key: "inquiries",
+    name: "Kontaktformular",
+    category: "Inhalte",
+    icon: "inbox",
+    description: "Kontaktformular auf der Website. Anfragen landen im Dashboard und per E-Mail bei Ihnen, mit Status und Notizen.",
+    dashboard: ["Anfragen"],
+    website: ["/kontakt"],
+    setup: { href: "/admin/plugins/inquiries", label: "Formular einrichten" },
+  },
+  {
+    key: "seo",
+    name: "SEO",
+    category: "Marketing",
+    icon: "search",
+    description: "Titel und Beschreibung je Seite, Vorschau in Google, sitemap.xml und robots.txt, Bestätigung für die Google Search Console.",
+    dashboard: ["SEO"],
+    website: ["/sitemap.xml", "/robots.txt"],
+    setup: { href: "/admin/plugins/seo", label: "SEO einrichten" },
+  },
+  {
+    key: "analytics",
+    name: "Google Analytics",
+    category: "Marketing",
+    icon: "chart",
+    description: "Misst Besucher auf der Website (GA4) und zeigt Besucher, Seitenaufrufe, Quellen und Geräte direkt im Dashboard.",
+    dashboard: ["Statistiken", "Besucher auf der Übersicht"],
+    website: ["Messcode auf allen Seiten"],
+    setup: { href: "/admin/plugins/analytics", label: "Google Analytics verbinden" },
+  },
+  {
+    key: "cookies",
+    name: "Cookie-Hinweis",
+    category: "Marketing",
+    icon: "cookie",
+    description: "Fragt Besucher nach ihrer Einwilligung (revDSG/DSGVO). Google Analytics und eigener Code mit Einwilligungspflicht laden erst nach Zustimmung.",
+    dashboard: [],
+    website: ["Hinweis unten auf allen Seiten"],
+    setup: { href: "/admin/plugins/cookies", label: "Texte anpassen" },
+  },
+  {
+    key: "redirects",
+    name: "Weiterleitungen",
+    category: "Website",
+    icon: "shuffle",
+    description: "Leitet alte Adressen auf neue weiter (301/302) und zeigt, welche Seiten Besucher nicht gefunden haben (404).",
+    dashboard: ["Weiterleitungen"],
+    website: [],
+    setup: { href: "/admin/weiterleitungen", label: "Weiterleitungen verwalten" },
+  },
+  {
+    key: "announcement",
+    name: "Hinweisleiste",
+    category: "Website",
+    icon: "megaphone",
+    description: "Schmale Leiste über der Website für Aktionen, Ferien oder Neuigkeiten – mit Link und Zeitraum.",
+    dashboard: [],
+    website: ["Leiste oben auf allen Seiten"],
+    setup: { href: "/admin/plugins/announcement", label: "Text festlegen" },
+  },
+  {
+    key: "maintenance",
+    name: "Wartungsmodus",
+    category: "Website",
+    icon: "wrench",
+    description: "Zeigt Besuchern eine «Bald zurück»-Seite. Angemeldete Benutzer sehen die Website weiterhin normal.",
+    dashboard: [],
+    website: ["Wartungsseite statt Website"],
+    setup: { href: "/admin/plugins/maintenance", label: "Wartungsseite anpassen" },
+  },
+  {
+    key: "customCode",
+    name: "Eigener Code",
+    category: "Website",
+    icon: "code",
+    description: "Code von Drittanbietern einbinden (z. B. Meta-Pixel, Chat-Widget, Bestätigungs-Tags) – im <head> oder am Ende der Seite.",
+    dashboard: [],
+    website: ["Code auf allen Seiten"],
+    setup: { href: "/admin/plugins/customCode", label: "Code einfügen" },
+  },
 ];
 
-export type NavItem = { href: string; label: string; icon: IconName; permission: Permission; module?: ModuleKey; badge?: "orders" | "inquiries" };
+/** Plugins this project's website supports (src/site/project.ts). */
+export const AVAILABLE_PLUGINS = PROJECT.plugins === "all" ? PLUGINS : PLUGINS.filter((p) => (PROJECT.plugins as PluginKey[]).includes(p.key));
+export const isPluginAvailable = (key: string) => AVAILABLE_PLUGINS.some((p) => p.key === key);
+export const websiteEditing = PROJECT.websiteEditing;
+
+export const pluginByKey = (key: string) => AVAILABLE_PLUGINS.find((p) => p.key === key);
+
+export type NavItem = { href: string; label: string; icon: IconName; permission: Permission; module?: ModuleKey | ModuleKey[]; badge?: "orders" | "inquiries"; website?: true };
 
 export const NAV: { group: string; items: NavItem[] }[] = [
   {
     group: "Übersicht",
     items: [
       { href: "/admin", label: "Übersicht", icon: "home", permission: "dashboard.view" },
-      { href: "/admin/statistiken", label: "Statistiken", icon: "chart", permission: "analytics.view", module: "analytics" },
+      { href: "/admin/statistiken", label: "Statistiken", icon: "chart", permission: "analytics.view", module: ["shop", "analytics"] },
     ],
   },
   {
@@ -41,19 +163,30 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     ],
   },
   {
-    group: "Inhalte",
+    group: "Website",
     items: [
+      { website: true, href: "/admin/seiten", label: "Seiten", icon: "pages", permission: "website.manage" },
+      { website: true, href: "/admin/texte", label: "Texte & Bilder", icon: "type", permission: "website.manage" },
+      { website: true, href: "/admin/menues", label: "Menüs", icon: "menuedit", permission: "website.manage" },
       { href: "/admin/beitraege", label: "Beiträge", icon: "file", permission: "content.view", module: "blog" },
-      { href: "/admin/seo", label: "SEO", icon: "search", permission: "seo.manage", module: "seo" },
       { href: "/admin/medien", label: "Mediathek", icon: "image", permission: "media.manage" },
       { href: "/admin/anfragen", label: "Anfragen", icon: "inbox", permission: "inquiries.view", module: "inquiries", badge: "inquiries" },
     ],
   },
   {
+    group: "Marketing",
+    items: [
+      { href: "/admin/seo", label: "SEO", icon: "search", permission: "seo.manage", module: "seo" },
+      { href: "/admin/plugins/analytics", label: "Google Analytics", icon: "chart", permission: "settings.manage", module: "analytics" },
+      { href: "/admin/weiterleitungen", label: "Weiterleitungen", icon: "shuffle", permission: "seo.manage", module: "redirects" },
+    ],
+  },
+  {
     group: "System",
     items: [
+      { href: "/admin/plugins", label: "Plugins", icon: "plug", permission: "settings.manage" },
       { href: "/admin/benutzer", label: "Benutzer & Rollen", icon: "users", permission: "users.view" },
-      { href: "/admin/integrationen", label: "Integrationen", icon: "plug", permission: "integrations.manage" },
+      { href: "/admin/integrationen", label: "Integrationen", icon: "key", permission: "integrations.manage" },
       { href: "/admin/einstellungen", label: "Einstellungen", icon: "gear", permission: "settings.manage" },
       { href: "/admin/sicherheit", label: "Sicherheit & Protokoll", icon: "shield", permission: "audit.view" },
     ],
@@ -61,8 +194,10 @@ export const NAV: { group: string; items: NavItem[] }[] = [
 ];
 
 export async function enabledModules(): Promise<Settings["modules"]> {
-  const m = await getSettings("modules");
-  // a module whose prerequisite is off is off too
+  const m = { ...(await getSettings("modules")) };
+  // plugins the website of this project doesn't support are always off
+  for (const p of PLUGINS) if (!isPluginAvailable(p.key)) m[p.key] = false;
+  // the built-in shop pages are an option of the shop
   return { ...m, storefront: m.shop && m.storefront };
 }
 
@@ -70,7 +205,14 @@ export async function isModuleEnabled(key: ModuleKey) {
   return (await enabledModules())[key];
 }
 
-/** Use at the top of pages, actions and API routes that belong to a module. */
-export async function requireModule(key: ModuleKey) {
-  if (!(await isModuleEnabled(key))) notFound();
+export function navItemVisible(item: NavItem, modules: Settings["modules"]) {
+  if (item.website && !websiteEditing) return false;
+  if (!item.module) return true;
+  return (Array.isArray(item.module) ? item.module : [item.module]).some((k) => modules[k]);
+}
+
+/** Use at the top of pages, actions and API routes that belong to a plugin. Several keys = any of them. */
+export async function requireModule(...keys: ModuleKey[]) {
+  const m = await enabledModules();
+  if (!keys.some((k) => m[k])) notFound();
 }

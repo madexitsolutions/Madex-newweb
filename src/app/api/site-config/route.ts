@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 /** Public, non-secret runtime config for the chat widget and the analytics loader. */
 export async function GET() {
   const s = await getSettings();
-  // the GA4 measurement ID is managed in the dashboard (Integrationen → Google Analytics)
+  // the GA4 measurement ID is managed in the dashboard (Plugins → Google Analytics)
   const ga4 = (await getDashboardSettings("analytics").catch(() => null))?.ga4MeasurementId?.trim();
   const ids = analyticsIds(s.analytics);
   const c = s.chatbot;

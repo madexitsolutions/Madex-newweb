@@ -17,7 +17,7 @@ import { getSettings } from "@/server/settings";
 async function guard() {
   const user = await checkPermission("seo.manage");
   if (!user) return { error: fail("Keine Berechtigung für SEO.") };
-  if (!(await isModuleEnabled("seo"))) return { error: fail("Das Modul SEO ist ausgeschaltet.") };
+  if (!(await isModuleEnabled("seo"))) return { error: fail("Das Plugin «SEO» ist nicht aktiv. Aktivieren Sie es unter Plugins.") };
   return { user };
 }
 

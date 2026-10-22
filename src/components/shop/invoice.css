@@ -1,0 +1,41 @@
+/* Printable A4 invoice / delivery note */
+.inv { --inv-ink: #14272b; --inv-soft: #5a6c70; --inv-line: #d9e2e3; width: min(210mm, 100%); margin: 0 auto; background: #fff; color: var(--inv-ink); font-size: 10.5pt; line-height: 1.45; padding: 16mm 16mm 0; box-sizing: border-box; font-family: "Schibsted Grotesk Variable", system-ui, sans-serif; }
+.inv *, .inv *::before, .inv *::after { box-sizing: border-box; }
+.inv__head { display: flex; justify-content: space-between; gap: 20px; align-items: flex-start; }
+.inv__logo { max-height: 16mm; max-width: 60mm; width: auto; }
+.inv__name { font-size: 14pt; }
+.inv__sender { display: grid; text-align: right; font-size: 9pt; color: var(--inv-soft); }
+.inv__addr { display: grid; margin: 14mm 0 10mm; min-height: 30mm; font-size: 11pt; }
+.inv__back { margin: 0 0 2mm; font-size: 7.5pt; color: var(--inv-soft); }
+.inv__title { font-size: 16pt; margin: 0 0 4mm; letter-spacing: -0.01em; }
+.inv__meta { display: flex; flex-wrap: wrap; gap: 4mm 10mm; margin: 0 0 6mm; font-size: 9.5pt; }
+.inv__meta dt { color: var(--inv-soft); }
+.inv__meta dd { margin: 0; font-weight: 600; }
+.inv__table { width: 100%; border-collapse: collapse; }
+.inv__table th { text-align: left; font-size: 8.5pt; color: var(--inv-soft); font-weight: 600; border-bottom: 1px solid var(--inv-ink); padding: 2mm 0; }
+.inv__table td { padding: 2.5mm 0; border-bottom: 1px solid var(--inv-line); vertical-align: top; }
+.inv__table small { display: block; color: var(--inv-soft); font-size: 8.5pt; }
+.inv__num { text-align: right !important; white-space: nowrap; padding-left: 4mm !important; }
+.inv__totals { margin: 4mm 0 0 auto; width: min(90mm, 100%); display: grid; gap: 1mm; }
+.inv__totals div { display: flex; justify-content: space-between; gap: 6mm; }
+.inv__totals dd { margin: 0; }
+.inv__total { border-top: 1px solid var(--inv-ink); padding-top: 2mm; margin-top: 1mm; font-weight: 700; font-size: 11.5pt; }
+.inv__tax { color: var(--inv-soft); font-size: 9pt; }
+.inv__paid { margin: 8mm 0 0; font-weight: 700; color: #1d6b3f; }
+.inv__foot { margin: 8mm 0 0; font-size: 9pt; color: var(--inv-soft); white-space: pre-line; }
+.inv__qr { margin: 12mm -16mm 0; border-top: 1px dashed var(--inv-ink); height: 105mm; break-inside: avoid; }
+.inv__qrgrid { display: grid; grid-template-columns: 62mm 1fr; height: 100%; }
+.inv__receipt, .inv__payment { padding: 5mm; font-size: 8pt; }
+.inv__receipt { border-right: 1px dashed var(--inv-ink); }
+.inv__qr h2 { font-size: 11pt; margin: 0 0 4mm; }
+.inv__qr p { display: grid; margin: 0 0 3mm; }
+.inv__qr b { font-size: 6pt; }
+.inv__payment { display: grid; grid-template-columns: 51mm 1fr; column-gap: 5mm; align-content: start; }
+.inv__payment h2 { grid-column: 1 / -1; }
+.inv__code { grid-row: span 5; }
+.inv__code svg { width: 46mm; height: 46mm; display: block; }
+.inv__qrerr { padding: 5mm 16mm; color: #8f1d14; }
+@media print {
+  @page { size: A4; margin: 0; }
+  .inv { width: 210mm; padding-top: 14mm; }
+}

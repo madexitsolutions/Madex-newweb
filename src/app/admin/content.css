@@ -239,3 +239,30 @@
 .st-ga { display: grid; gap: 16px; margin-top: 12px; padding-top: 24px; border-top: 1px solid var(--a-line); }
 .st-ga__head h2 { font-size: 1.1875rem; }
 .st-ga__head p { margin: 2px 0 0; font-size: 14px; }
+/* start page: welcome, at a glance, quick draft, Madex */
+.ov-welcome { display: grid; grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 24px 32px; padding: 24px 26px; border-radius: 14px; background: linear-gradient(135deg, var(--a-petrol), var(--a-petrol-2)); color: #d9ebe9; }
+.ov-welcome h2 { color: #fff; font-size: 1.25rem; margin: 0 0 8px; }
+.ov-welcome p { margin: 0 0 16px; font-size: 14px; max-width: 46ch; }
+.ov-welcome .a-btn--primary { background: #fff; color: var(--a-petrol); }
+.ov-welcome .a-btn--primary:hover { background: var(--a-mint); }
+.ov-welcome__col { display: grid; align-content: start; gap: 4px; }
+.adm .ov-welcome__col h3 { color: #fff; font-size: 13px; margin: 0 0 6px; }
+.ov-welcome__col a { display: flex; align-items: center; gap: 9px; min-height: 36px; color: #e6f3f2; text-decoration: none; font-size: 14px; font-weight: 500; border-radius: 6px; }
+.ov-welcome__col a .a-ico { color: #7fd6cf; }
+.ov-welcome__col a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 1100px) { .ov-welcome { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ov-welcome__intro { grid-column: 1 / -1; } }
+@media (max-width: 640px) { .ov-welcome { grid-template-columns: minmax(0, 1fr); padding: 20px; } .ov-welcome__col a { min-height: 44px; } }
+.ov-glance { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.ov-glance a { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 8px; align-items: center; padding: 8px 10px; border-radius: 8px; text-decoration: none; font-size: 13.5px; color: var(--a-soft); min-height: 40px; }
+.ov-glance a:hover { background: var(--a-subtle); color: var(--a-petrol); }
+.ov-glance a .a-ico { color: var(--a-teal); }
+.ov-glance strong { color: var(--a-ink); font-size: 15px; }
+.ov-draft { display: grid; gap: 10px; }
+.ov-draft > .a-alert { margin: 0; }
+.ov-draft__row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.ov-madex { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 12px; border: 1px dashed var(--a-field); font-size: 13.5px; color: var(--a-soft); }
+.ov-madex p { margin: 0; }
+.ov-madex strong { display: block; color: var(--a-ink); }
+.ov-madex a { color: var(--a-teal-ink); font-weight: 600; }
+.ov-madex svg { flex: none; margin-top: 3px; }
+@media (min-width: 1500px) { .ov-madex { display: none; } }

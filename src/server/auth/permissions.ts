@@ -16,6 +16,7 @@ export const PERMISSIONS = {
   "discounts.manage": { group: "Shop", label: "Gutscheine verwalten" },
   "shop.settings": { group: "Shop", label: "Shop-Einstellungen, Versand, Steuern, Zahlungsarten" },
 
+  "website.manage": { group: "Inhalte", label: "Website: Seiten, Menüs, Texte und Bilder bearbeiten" },
   "content.view": { group: "Inhalte", label: "Beiträge ansehen" },
   "content.manage": { group: "Inhalte", label: "Beiträge erstellen und veröffentlichen" },
   "media.manage": { group: "Inhalte", label: "Mediathek verwalten" },
@@ -27,7 +28,7 @@ export const PERMISSIONS = {
   "users.view": { group: "System", label: "Benutzer ansehen" },
   "users.manage": { group: "System", label: "Benutzer einladen, ändern, sperren" },
   "roles.manage": { group: "System", label: "Rollen und Berechtigungen ändern" },
-  "settings.manage": { group: "System", label: "Allgemeine Einstellungen und Module" },
+  "settings.manage": { group: "System", label: "Allgemeine Einstellungen und Plugins" },
   "integrations.manage": { group: "System", label: "API-Schlüssel, Webhooks und Verbindungen" },
   "security.manage": { group: "System", label: "Sicherheitsrichtlinien und Sperren" },
   "audit.view": { group: "System", label: "Protokoll ansehen" },
@@ -64,8 +65,8 @@ export const SYSTEM_ROLES: { key: string; name: string; description: string; per
   {
     key: "editor",
     name: "Redaktion",
-    description: "Beiträge, Mediathek, SEO und Anfragen.",
-    permissions: ["dashboard.view", "content.view", "content.manage", "media.manage", "seo.manage", "inquiries.view", "inquiries.manage", "products.view"],
+    description: "Website-Inhalte, Beiträge, Mediathek, SEO und Anfragen.",
+    permissions: ["dashboard.view", "website.manage", "content.view", "content.manage", "media.manage", "seo.manage", "inquiries.view", "inquiries.manage", "products.view"],
   },
   {
     key: "support",

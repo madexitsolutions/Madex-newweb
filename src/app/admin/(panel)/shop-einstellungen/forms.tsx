@@ -31,11 +31,20 @@ const invalid = (state: FormState, name: string) => Boolean(state?.fieldErrors?.
 
 /* ================================================================ general */
 
-export function GeneralForm({ shop, nextNumber }: { shop: Shop; nextNumber: number }) {
+export function GeneralForm({ shop, nextNumber, storefront }: { shop: Shop; nextNumber: number; storefront: boolean }) {
   return (
     <ActionForm action={saveShopGeneralAction} className="a-form">
       {(state) => (
         <>
+          <FormSection title="Shop-Seiten der Website" help="Die eingebauten Seiten /shop, /produkt/…, /warenkorb und /kasse. Ausschalten, wenn eine eigene App (z. B. Mobile-App) den Shop über die API nutzt.">
+            <label className="a-check a-check--box">
+              <input type="checkbox" name="storefront" defaultChecked={storefront} />
+              <span>
+                Eingebaute Shop-Seiten verwenden
+                <small>Ohne Haken bleibt nur der Verkauf über die API und das Dashboard.</small>
+              </span>
+            </label>
+          </FormSection>
           <FormSection title="Bestellnummern" help="Bestellnummern sind fortlaufend und lückenlos. Sie können sie nur erhöhen, nie zurücksetzen.">
             <div className="a-fields2">
               <label className="a-field">

@@ -1,0 +1,12 @@
+/* Website area: pages, texts, menus, redirects */
+.ws-noindex { margin-top: 14px; }
+.adm .ws-sidetitle { font-size: 14px; margin: 0 0 4px; }
+.ws-tokens { margin: 12px 0 0; display: grid; gap: 6px; font-size: 13px; }
+.ws-tokens div { display: flex; justify-content: space-between; gap: 10px; }
+.ws-tokens dd { margin: 0; color: var(--a-soft); text-align: right; }
+.ws-path { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: var(--a-soft); }
+.ws-title { font-weight: 600; text-decoration: none; color: var(--a-petrol); }
+.ws-title:hover { text-decoration: underline; }
+.ws-redirectform { display: grid; gap: 14px; }
+.ws-formfoot { display: flex; gap: 8px; flex-wrap: wrap; }
+.ws-pad { padding: 0 22px 20px; }

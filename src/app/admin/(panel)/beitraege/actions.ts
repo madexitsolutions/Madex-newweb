@@ -14,7 +14,7 @@ const STATUS_LABEL: Record<PostStatus, string> = { draft: "Entwurf", scheduled: 
 export async function savePostAction(_: FormState, f: FormData): Promise<FormState> {
   const user = await checkPermission("content.manage");
   if (!user) return fail("Keine Berechtigung. Beiträge bearbeiten darf nur, wer die Berechtigung «Beiträge erstellen und veröffentlichen» hat.");
-  if (!(await isModuleEnabled("blog"))) return fail("Das Modul Beiträge ist ausgeschaltet.");
+  if (!(await isModuleEnabled("blog"))) return fail("Das Plugin «Beiträge» ist nicht aktiv. Aktivieren Sie es unter Plugins.");
   const id = formString(f, "id") || null;
   const rawStatus = formString(f, "status");
   let status: PostStatus = rawStatus === "published" || rawStatus === "scheduled" ? rawStatus : "draft";

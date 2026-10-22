@@ -480,7 +480,7 @@ export async function listProducts(p: ProductListParams) {
   const base = listConditions(p, lowStockThreshold, catIds);
   const where = and(...base, p.status ? eq(products.status, p.status) : undefined);
 
-  const stockSum = sql<number>`(select coalesce(sum(v.stock), 0) from product_variants v where v.product_id = ${products.id} and v.track_inventory)`;
+  const stockSum = sql<number>`(select coalesce(sum(v.stock), 0) from product_variants v where v.product_id = "products"."id" and v.track_inventory)`;
   const order =
     p.sort === "name"
       ? [asc(products.name)]

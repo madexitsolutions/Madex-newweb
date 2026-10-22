@@ -3,7 +3,8 @@ import { eq } from "drizzle-orm";
 import { SYSTEM_ROLES } from "@/server/auth/permissions";
 import type { DB } from "./index";
 import { hashPassword } from "@/server/lib/crypto";
-import { roles, sessions, shippingMethods, shippingZones, taxClasses, users } from "./schema";
+import { pages, roles, sessions, settings, shippingMethods, shippingZones, taxClasses, users } from "./schema";
+import { STARTER_PAGES } from "@/server/site/pages";
 
 export async function bootstrap(db: DB) {
   for (const r of SYSTEM_ROLES) {
@@ -15,6 +16,9 @@ export async function bootstrap(db: DB) {
       await db.insert(roles).values({ key: r.key, name: r.name, description: r.description, permissions: r.permissions, isSystem: true });
     }
   }
+
+  const [anyPage] = await db.select({ id: pages.id }).from(pages).limit(1);
+  if (!anyPage) await db.insert(pages).values(STARTER_PAGES.map((p) => ({ ...p, status: "published" as const })));
 
   const [anyTax] = await db.select({ id: taxClasses.id }).from(taxClasses).limit(1);
   if (!anyTax) {
@@ -36,6 +40,7 @@ export async function bootstrap(db: DB) {
     ]);
   }
 
+  await pluginDefaults(db);
   await ownerFromEnv(db);
 }
 
@@ -87,4 +92,16 @@ export async function ownerFromEnv(db: DB) {
   if (anyUser) return;
   await resetOwner(db, email, password, process.env.ADMIN_NAME);
   console.log(`[setup] Inhaber-Konto ${email} aus den Umgebungsvariablen angelegt.`);
+}
+
+/**
+ * Plugins are off on a new installation. Installations from before the plugins
+ * (users exist, no stored choice yet) keep what was switched on by default then.
+ */
+async function pluginDefaults(db: DB) {
+  const [stored] = await db.select({ key: settings.key }).from(settings).where(eq(settings.key, "modules"));
+  if (stored) return;
+  const [anyUser] = await db.select({ id: users.id }).from(users).limit(1);
+  const value = anyUser ? { shop: true, storefront: true, blog: true, inquiries: true, analytics: true, seo: true } : {};
+  await db.insert(settings).values({ key: "modules", value }).onConflictDoNothing();
 }

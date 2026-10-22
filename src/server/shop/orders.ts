@@ -135,7 +135,8 @@ export async function listOrders(f: OrderFilter = {}) {
   const rows = await db
     .select({
       o: orders,
-      itemCount: sql<number>`(select coalesce(sum(${orderItems.quantity}),0)::int from ${orderItems} where ${orderItems.orderId} = ${orders.id})`,
+      // qualified by hand: inside select fields drizzle leaves columns unqualified
+      itemCount: sql<number>`(select coalesce(sum(oi.quantity),0)::int from ${orderItems} oi where oi.order_id = "orders"."id")`,
     })
     .from(orders)
     .where(where)

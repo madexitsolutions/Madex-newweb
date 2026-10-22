@@ -37,8 +37,13 @@ Next.js 16 Website von Madex IT Solutions (Deutsch/Schweiz, kein «ß»). Erst `
   (siehe `ownerFromEnv`/`resetOwner` in `src/server/db/bootstrap.ts`). `/admin/status` zeigt ohne Login, was fehlt.
 - Ohne `DATABASE_URL` läuft in Produktion die eingebaute Datenbank (PGlite, `DATA_DIR/pglite`); `APP_SECRET` optional (sonst
   `DATA_DIR/.app-secret`). Sicherung unter Sicherheit → Datensicherung, Wiederherstellen mit `npm run db:restore`.
-- Diese Kern-Änderungen (eingebaute DB, Schlüssel, Cookie, Status-Seite, Datensicherung, admin:reset, db:restore) sind auch in der
-  Vorlage `predashboard` (main) – Kern und Vorlage sind wieder gleich.
+- Kern auf dem Stand der Vorlage `predashboard` (22.10.2026): Plugins statt Module, Bestellungen, Dashboard-Startseite, Madex-Hinweise,
+  rechte Spalte, Website-Bereich, Migration `drizzle/0001_website_pages_redirects.sql`.
+- `src/site/project.ts` (Projektcode): Die Madex-Website ist eigener Code, deshalb sind nur die Plugins Kontaktformular, SEO und
+  Google Analytics freigegeben und der Bereich «Website» (Seiten, Texte & Bilder, Menüs) ist ausgeblendet. Die Mess-ID aus
+  Plugins → Google Analytics nutzt die Website über `/api/site-config`.
+- Bestehende Datenbank: beim ersten Start bleiben Shop, Beiträge, Anfragen, Statistiken und SEO an (wie vorher), Shop/Beiträge
+  sind wegen project.ts aber ausgeblendet.
 - Orion läuft weiter mit seinen Standardeinstellungen (`src/lib/server/settings.ts`, Speicher in `DATA_DIR`); eine Oberfläche
   für Chatbot, Wissen, Pakete und Chat-Verläufe fehlt, bis das Modul «KI-Assistent» in der Vorlage gebaut ist.
 - **Betrieb:** nur `DATA_DIR` (dauerhafter Ordner/Volume) ist Pflicht; `DATABASE_URL` nur für einen externen PostgreSQL-Server,

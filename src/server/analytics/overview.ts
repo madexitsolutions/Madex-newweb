@@ -1,10 +1,11 @@
 /** Data for the dashboard start page: KPIs, to-dos, setup checklist, latest activity, notifications. */
 import { and, count, desc, eq, gte, inArray, isNull, lt, lte, ne, or, sql } from "drizzle-orm";
 import { db } from "@/server/db";
-import { apiKeys, inquiries, notifications, orders, productVariants, products, users } from "@/server/db/schema";
+import { apiKeys, auditLog, inquiries, media, notifications, orders, pages, posts, productVariants, products, users } from "@/server/db/schema";
 import type { CurrentUser } from "@/server/auth/session";
 import { smtpConfig } from "@/server/mail/mailer";
 import { getSettings } from "@/server/settings";
+import { websiteEditing } from "@/modules/registry";
 import { addDays, dayStart, zurichDay } from "@/lib/tz";
 import { loadSales, seriesOf, totalsOf } from "./sales";
 
@@ -94,6 +95,10 @@ export async function setupChecks(modules: { shop: boolean; storefront: boolean 
     const anyPay = pay.stripeEnabled || pay.payrexxEnabled || pay.invoiceEnabled || pay.bankTransferEnabled || pay.pickupPaymentEnabled;
     checks.push({ key: "payment", ok: anyPay, title: "Zahlungsart aktiviert", text: anyPay ? "Kundinnen und Kunden können bezahlen." : "Aktivieren Sie mindestens eine Zahlungsart.", href: "/admin/shop-einstellungen?tab=zahlung" });
   }
+  const [general, legal] = await Promise.all([getSettings("general"), db.select({ slug: pages.slug }).from(pages).where(and(inArray(pages.slug, ["impressum", "datenschutz"]), eq(pages.status, "published")))]);
+  const company = Boolean(general.companyName && general.email && general.city);
+  checks.unshift({ key: "company", ok: company, title: "Firmendaten erfasst", text: company ? "Erscheinen in Fusszeile, Impressum, E-Mails und Rechnungen." : "Name, Adresse und E-Mail für Fusszeile, Impressum und Rechnungen.", href: "/admin/einstellungen" });
+  if (websiteEditing) checks.push({ key: "legal", ok: legal.length === 2, title: "Impressum und Datenschutz veröffentlicht", text: legal.length === 2 ? "Beide Seiten sind online – bitte Texte prüfen." : "Gesetzlich nötig. Vorlagen liegen unter Website → Seiten.", href: "/admin/seiten" });
   checks.push({ key: "logo", ok: Boolean(brand.logoUrl), title: "Logo hinterlegt", text: brand.logoUrl ? "Erscheint im Dashboard und in E-Mails." : "Für Dashboard, E-Mails und Rechnungen.", href: "/admin/einstellungen?tab=branding" });
   checks.push({
     key: "2fa",
@@ -146,4 +151,30 @@ export async function markNotificationsRead(user: CurrentUser, id?: string) {
     .update(notifications)
     .set({ readBy: sql`${notifications.readBy} || ${JSON.stringify([user.id])}::jsonb` })
     .where(where);
+}
+
+/** Counts for "Auf einen Blick" (only what the active plugins bring). */
+export async function atAGlance(modules: { shop: boolean; blog: boolean; inquiries: boolean }) {
+  const n = async (q: Promise<{ n: number }[]>) => (await q)[0].n;
+  const [pagesN, mediaN, usersN, postsN, productsN, ordersN, inquiriesN] = await Promise.all([
+    n(db.select({ n: count() }).from(pages).where(eq(pages.status, "published"))),
+    n(db.select({ n: count() }).from(media)),
+    n(db.select({ n: count() }).from(users).where(eq(users.status, "active"))),
+    modules.blog ? n(db.select({ n: count() }).from(posts)) : Promise.resolve(null),
+    modules.shop ? n(db.select({ n: count() }).from(products).where(eq(products.status, "active"))) : Promise.resolve(null),
+    modules.shop ? n(db.select({ n: count() }).from(orders)) : Promise.resolve(null),
+    modules.inquiries ? n(db.select({ n: count() }).from(inquiries)) : Promise.resolve(null),
+  ]);
+  return { pages: pagesN, media: mediaN, users: usersN, posts: postsN, products: productsN, orders: ordersN, inquiries: inquiriesN };
+}
+
+/** Latest changes from the audit log (who changed what). */
+export async function recentActivity(limit = 6) {
+  return db
+    .select({ id: auditLog.id, summary: auditLog.summary, action: auditLog.action, createdAt: auditLog.createdAt, name: users.name, email: auditLog.userEmail })
+    .from(auditLog)
+    .leftJoin(users, eq(users.id, auditLog.userId))
+    .where(and(ne(auditLog.summary, ""), sql`${auditLog.action} not like 'auth.%' and ${auditLog.action} not like 'login%'`))
+    .orderBy(desc(auditLog.createdAt))
+    .limit(limit);
 }

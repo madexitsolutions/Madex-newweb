@@ -11,7 +11,7 @@ const chf = (c: number) => (c / 100).toFixed(2);
 export async function GET(req: Request) {
   const user = await checkPermission("analytics.view");
   if (!user) return new Response("Keine Berechtigung", { status: 403 });
-  if (!(await isModuleEnabled("analytics"))) return new Response("Nicht gefunden", { status: 404 });
+  if (!(await isModuleEnabled("shop"))) return new Response("Nicht gefunden", { status: 404 });
   const sp = new URL(req.url).searchParams;
   const range = resolveRange(sp.get("zeitraum") ?? undefined, sp.get("von") ?? undefined, sp.get("bis") ?? undefined);
   const rows = dailyReport(await loadSales(range.from, range.to), range.fromDay, range.toDay);

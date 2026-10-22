@@ -1,13 +1,12 @@
 import { ActionButton } from "@/components/admin/action-button";
 import { ActionForm, Submit } from "@/components/admin/forms";
 import { FormSection, Icon, PageHeader, Panel, Tabs, one } from "@/components/admin/kit";
-import { MODULES, NAV } from "@/modules/registry";
+import { redirect } from "next/navigation";
 import { requirePermission } from "@/server/auth/session";
 import { smtpConfig } from "@/server/mail/mailer";
 import { getSettings, getSettingsForForm } from "@/server/settings";
-import { saveBrandingAction, saveEmailAction, saveGeneralAction, saveModulesAction, testEmailAction } from "./actions";
+import { saveBrandingAction, saveEmailAction, saveGeneralAction, testEmailAction } from "./actions";
 import { BrandingFields } from "./branding-fields";
-import { ModuleToggles } from "./module-toggles";
 import "../../system.css";
 
 export const metadata = { title: "Einstellungen" };
@@ -16,21 +15,20 @@ const BASE = "/admin/einstellungen";
 const TABS = [
   { key: "allgemein", label: "Allgemein", href: BASE, icon: "building" as const },
   { key: "branding", label: "Branding", href: `${BASE}?tab=branding`, icon: "palette" as const },
-  { key: "module", label: "Module", href: `${BASE}?tab=module`, icon: "layers" as const },
   { key: "email", label: "E-Mail", href: `${BASE}?tab=email`, icon: "mail" as const },
 ];
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   await requirePermission("settings.manage");
   const sp = await searchParams;
+  if (one(sp.tab) === "module") redirect("/admin/plugins");
   const tab = TABS.some((t) => t.key === one(sp.tab)) ? one(sp.tab) : "allgemein";
   return (
     <>
-      <PageHeader title="Einstellungen" description="Firmendaten, Erscheinungsbild, Module und E-Mail-Versand dieser Installation." />
+      <PageHeader title="Einstellungen" description="Firmendaten, Erscheinungsbild und E-Mail-Versand dieser Installation." />
       <Tabs items={TABS} active={tab} label="Einstellungen" />
       {tab === "allgemein" && <GeneralTab />}
       {tab === "branding" && <BrandingTab />}
-      {tab === "module" && <ModulesTab />}
       {tab === "email" && <EmailTab />}
     </>
   );
@@ -182,39 +180,6 @@ async function BrandingTab() {
         <div className="a-savebar">
           <Submit pending="Wird hochgeladen …">Speichern</Submit>
           <span className="a-small0 a-muted">Dateien werden in der Mediathek im Ordner «branding» abgelegt.</span>
-        </div>
-      </ActionForm>
-    </Panel>
-  );
-}
-
-async function ModulesTab() {
-  const m = await getSettings("modules");
-  const hidesFor = (key: string) => {
-    const items = NAV.flatMap((g) => g.items).filter((i) => i.module === key).map((i) => i.label);
-    return key === "storefront" ? ["eingebaute Shop-Seiten (Übersicht, Produkt, Warenkorb, Kasse, Kundenkonto)"] : items;
-  };
-  const mods = MODULES.map((x) => ({
-    key: x.key,
-    name: x.name,
-    description: x.description,
-    requires: x.requires,
-    requiresName: MODULES.find((y) => y.key === x.requires)?.name,
-    hides: hidesFor(x.key),
-    dependents: MODULES.filter((y) => y.requires === x.key).map((y) => y.name),
-  }));
-  return (
-    <Panel className="a-panel--form">
-      <ActionForm action={saveModulesAction} className="a-form">
-        <div className="a-form__intro">
-          <h2>Module</h2>
-          <p>Schalten Sie Bereiche aus, die diese Installation nicht braucht. Ausgeschaltete Module verschwinden aus Navigation, Dashboard und API – die Daten bleiben gespeichert und sind beim Wiedereinschalten zurück.</p>
-        </div>
-        <div style={{ padding: "16px 24px 24px" }}>
-          <ModuleToggles modules={mods} initial={m} />
-        </div>
-        <div className="a-savebar">
-          <Submit>Module speichern</Submit>
         </div>
       </ActionForm>
     </Panel>

@@ -97,3 +97,14 @@ export function addressLines(a: { firstName?: string; lastName?: string; company
     a.country && a.country.toUpperCase() !== home ? countryName(a.country) : "",
   ].filter((x): x is string => Boolean(x && x.trim()));
 }
+
+/** What the customer reads on the order status page. */
+export function customerOrderState(o: { status: string; paymentStatus: string; fulfillmentStatus: string }) {
+  if (o.status === "cancelled") return "Die Bestellung wurde storniert.";
+  if (o.status === "refunded") return "Die Bestellung wurde zurückerstattet.";
+  if (o.status === "failed") return "Die Zahlung ist fehlgeschlagen.";
+  if (o.fulfillmentStatus === "fulfilled") return "Ihre Bestellung ist unterwegs.";
+  if (o.paymentStatus === "paid") return "Zahlung erhalten – wir bereiten Ihre Bestellung vor.";
+  if (o.status === "pending") return "Wir warten auf Ihre Zahlung.";
+  return "Ihre Bestellung ist eingegangen.";
+}

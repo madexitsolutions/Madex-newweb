@@ -8,7 +8,7 @@ export const OPTIONS = preflight;
 export async function GET(req: Request, ctx: { params: Promise<{ slug: string }> }) {
   const auth = await apiAuth(req, "content:read");
   if (auth instanceof Response) return auth;
-  if (!(await isModuleEnabled("blog"))) return apiError(req, auth, 404, "module_disabled", "Das Modul Beiträge ist ausgeschaltet.");
+  if (!(await isModuleEnabled("blog"))) return apiError(req, auth, 404, "module_disabled", "Das Plugin «Beiträge» ist nicht aktiv. Aktivieren Sie es unter Plugins.");
   const { slug } = await ctx.params;
   const post = /^[a-z0-9-]{1,96}$/.test(slug) ? await publicPost(slug) : null;
   if (!post) return apiError(req, auth, 404, "not_found", "Beitrag nicht gefunden oder nicht veröffentlicht.");

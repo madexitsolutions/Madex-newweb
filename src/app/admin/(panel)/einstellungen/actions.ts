@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { contrast, formatRatio } from "@/lib/color";
 import { fail, formBool, formList, formString, ok, zodFieldErrors, type FormState } from "@/lib/form-state";
-import { MODULES } from "@/modules/registry";
 import { audit } from "@/server/audit";
 import { checkPermission } from "@/server/auth/session";
 import { sendMail, smtpConfig } from "@/server/mail/mailer";
@@ -12,7 +11,7 @@ import { mediaPath, saveUpload } from "@/server/media/store";
 import { clearSecret, getSettings, saveSettings, type Settings } from "@/server/settings";
 
 const PATH = "/admin/einstellungen";
-const NO_ACCESS = "Keine Berechtigung. Einstellungen ändern braucht das Recht «Allgemeine Einstellungen und Module».";
+const NO_ACCESS = "Keine Berechtigung. Einstellungen ändern braucht das Recht «Allgemeine Einstellungen und Plugins».";
 
 /** Normalises Swiss UID/VAT numbers ("che123456789 mwst" → "CHE-123.456.789 MWST"); other formats pass unchanged. */
 function normalizeVat(raw: string): string | null {
@@ -102,18 +101,6 @@ export async function saveBrandingAction(_: FormState, f: FormData): Promise<For
   await audit(user, "settings.updated", { entityType: "settings", entityId: "branding", summary: "Branding gespeichert", data: { ...patch, files: changed } });
   revalidatePath("/admin", "layout");
   return ok(contrast(colors.data.accentColor, "#ffffff") < 3 ? "Gespeichert. Hinweis: Die Akzentfarbe ist sehr hell und auf weissem Grund schlecht sichtbar." : "Gespeichert. Das Dashboard verwendet die neuen Farben ab sofort.");
-}
-
-export async function saveModulesAction(_: FormState, f: FormData): Promise<FormState> {
-  const user = await checkPermission("settings.manage");
-  if (!user) return fail(NO_ACCESS);
-  const before = await getSettings("modules");
-  const next = Object.fromEntries(MODULES.map((m) => [m.key, formBool(f, m.key)])) as Settings["modules"];
-  await saveSettings("modules", next, user.id);
-  const diff = MODULES.filter((m) => before[m.key] !== next[m.key]).map((m) => `${m.name} ${next[m.key] ? "an" : "aus"}`);
-  if (diff.length) await audit(user, "settings.modules", { entityType: "settings", entityId: "modules", summary: `Module: ${diff.join(", ")}`, data: next });
-  revalidatePath("/admin", "layout");
-  return ok(diff.length ? `Gespeichert (${diff.join(", ")}).` : "Keine Änderungen.");
 }
 
 export async function saveEmailAction(_: FormState, f: FormData): Promise<FormState> {

@@ -1,5 +1,5 @@
 /** Content tables: posts (news/blog), SEO overrides per path, form inquiries. */
-import { index, jsonb, pgTable, text, timestamp, uniqueIndex, uuid, boolean } from "drizzle-orm/pg-core";
+import { boolean, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
 import { media } from "./core";
 
 const ts = (name: string) => timestamp(name, { withTimezone: true, mode: "date" });
@@ -65,3 +65,47 @@ export const inquiries = pgTable(
   },
   (t) => [uniqueIndex("inquiries_ref_idx").on(t.reference), index("inquiries_created_idx").on(t.createdAt)],
 );
+
+/** Pages of the website edited in the dashboard (Website → Seiten), served at /<slug>. */
+export const pages = pgTable(
+  "pages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    slug: text("slug").notNull(),
+    title: text("title").notNull(),
+    /** sanitised HTML; {{firma}}, {{adresse}} … are replaced with the company data */
+    body: text("body").notNull().default(""),
+    status: text("status", { enum: ["draft", "published"] }).notNull().default("draft"),
+    coverId: uuid("cover_id").references(() => media.id, { onDelete: "set null" }),
+    showTitle: boolean("show_title").notNull().default(true),
+    seoTitle: text("seo_title"),
+    seoDescription: text("seo_description"),
+    noindex: boolean("noindex").notNull().default(false),
+    createdAt: created(),
+    updatedAt: updated(),
+  },
+  (t) => [uniqueIndex("pages_slug_idx").on(t.slug)],
+);
+
+/** Redirects (plugin "Weiterleitungen"): exact path → target */
+export const redirects = pgTable(
+  "redirects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    fromPath: text("from_path").notNull(),
+    toUrl: text("to_url").notNull(),
+    permanent: boolean("permanent").notNull().default(true),
+    hits: integer("hits").notNull().default(0),
+    lastHitAt: ts("last_hit_at"),
+    createdAt: created(),
+  },
+  (t) => [uniqueIndex("redirects_from_idx").on(t.fromPath)],
+);
+
+/** Paths visitors asked for that did not exist (plugin "Weiterleitungen") */
+export const notFoundHits = pgTable("not_found_hits", {
+  path: text("path").primaryKey(),
+  hits: integer("hits").notNull().default(1),
+  referrer: text("referrer").notNull().default(""),
+  lastAt: ts("last_at").notNull().defaultNow(),
+});

@@ -14,7 +14,7 @@ export const OPTIONS = preflight;
 export async function GET(req: Request) {
   const auth = await apiAuth(req, "content:read");
   if (auth instanceof Response) return auth;
-  if (!(await isModuleEnabled("seo"))) return apiError(req, auth, 404, "module_disabled", "Das Modul SEO ist ausgeschaltet.");
+  if (!(await isModuleEnabled("seo"))) return apiError(req, auth, 404, "module_disabled", "Das Plugin «SEO» ist nicht aktiv. Aktivieren Sie es unter Plugins.");
   const cache = { "cache-control": "public, max-age=60, stale-while-revalidate=300" };
   const path = new URL(req.url).searchParams.get("path");
   if (path !== null) {

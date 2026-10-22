@@ -8,7 +8,7 @@ export const OPTIONS = preflight;
 export async function GET(req: Request) {
   const auth = await apiAuth(req, "content:read");
   if (auth instanceof Response) return auth;
-  if (!(await isModuleEnabled("blog"))) return apiError(req, auth, 404, "module_disabled", "Das Modul Beiträge ist ausgeschaltet.");
+  if (!(await isModuleEnabled("blog"))) return apiError(req, auth, 404, "module_disabled", "Das Plugin «Beiträge» ist nicht aktiv. Aktivieren Sie es unter Plugins.");
   const sp = new URL(req.url).searchParams;
   const result = await publicPosts({
     category: sp.get("category")?.slice(0, 80) || undefined,

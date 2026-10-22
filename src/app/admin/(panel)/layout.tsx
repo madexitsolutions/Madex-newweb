@@ -1,7 +1,8 @@
 import { count, eq, inArray } from "drizzle-orm";
 import { Brand } from "@/components/admin/brand";
 import { AdminNav, type NavGroupView } from "@/components/admin/nav";
-import { NAV, enabledModules } from "@/modules/registry";
+import { Rail } from "@/components/admin/rail";
+import { NAV, enabledModules, navItemVisible } from "@/modules/registry";
 import { db } from "@/server/db";
 import { inquiries, orders } from "@/server/db/schema";
 import { requireUser } from "@/server/auth/session";
@@ -17,7 +18,7 @@ async function badgeCounts(show: { orders: boolean; inquiries: boolean }) {
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   const user = await requireUser();
   const [modules, general] = await Promise.all([enabledModules(), getSettings("general")]);
-  const visible = (i: (typeof NAV)[number]["items"][number]) => user.permissions.has(i.permission) && (!i.module || modules[i.module]);
+  const visible = (i: (typeof NAV)[number]["items"][number]) => user.permissions.has(i.permission) && navItemVisible(i, modules);
   const badges = await badgeCounts({
     orders: modules.shop && user.permissions.has("orders.view"),
     inquiries: modules.inquiries && user.permissions.has("inquiries.view"),
@@ -30,9 +31,12 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   return (
     <div className="a-shell">
       <AdminNav groups={groups} user={{ name: user.name, role: user.role.name }} brand={<Brand dark />} siteUrl={general.siteUrl || "/"} signOut={signOutAction} />
-      <main className="a-main" id="inhalt">
-        {children}
-      </main>
+      <div className="a-body">
+        <main className="a-main" id="inhalt">
+          {children}
+        </main>
+        <Rail user={user} modules={modules} siteUrl={general.siteUrl || "/"} />
+      </div>
     </div>
   );
 }

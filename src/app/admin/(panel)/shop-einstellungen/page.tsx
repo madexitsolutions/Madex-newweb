@@ -61,7 +61,7 @@ async function GeneralTab() {
   const [shop, next] = await Promise.all([getSettings("shop"), nextOrderNumberPreview()]);
   return (
     <Panel className="a-panel--form">
-      <GeneralForm shop={shop} nextNumber={next} />
+      <GeneralForm shop={shop} nextNumber={next} storefront={(await getSettings("modules")).storefront} />
     </Panel>
   );
 }

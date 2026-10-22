@@ -59,7 +59,7 @@ export async function listRoles() {
       permissions: roles.permissions,
       isSystem: roles.isSystem,
       createdAt: roles.createdAt,
-      userCount: sql<number>`(select count(*)::int from ${users} where ${users.roleId} = ${roles.id})`,
+      userCount: sql<number>`(select count(*)::int from ${users} u where u.role_id = "roles"."id")`,
     })
     .from(roles);
   const order = ["owner", "admin", "shop_manager", "editor", "support", "viewer"];

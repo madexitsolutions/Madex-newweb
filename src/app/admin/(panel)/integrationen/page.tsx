@@ -1,16 +1,17 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { ActionButton } from "@/components/admin/action-button";
 import { Drawer } from "@/components/admin/drawer";
 import { ActionForm, CopyButton, Submit } from "@/components/admin/forms";
-import { Empty, FormSection, Icon, PageHeader, Pager, Panel, Tabs, one, qs } from "@/components/admin/kit";
+import { Empty, Icon, PageHeader, Pager, Panel, Tabs, one, qs } from "@/components/admin/kit";
 import { dateTime, relative } from "@/lib/format";
 import { SCOPES } from "@/server/api/keys";
 import { requirePermission } from "@/server/auth/session";
 import { EVENTS } from "@/server/events";
 import { getWebhook, listApiKeys, listDeliveries, listWebhooks } from "@/server/integrations";
 import { appUrl } from "@/server/lib/app-url";
-import { getSettings, getSettingsForForm } from "@/server/settings";
-import { deleteWebhookAction, redeliverAction, revokeKeyAction, saveAnalyticsAction, saveCorsAction, testWebhookAction, toggleWebhookAction } from "./actions";
+import { getSettings } from "@/server/settings";
+import { deleteWebhookAction, redeliverAction, revokeKeyAction, saveCorsAction, testWebhookAction, toggleWebhookAction } from "./actions";
 import { KeyForm, RotateSecret, WebhookForm } from "./ui";
 import "../../system.css";
 
@@ -21,7 +22,6 @@ const TABS = [
   { key: "schluessel", label: "API-Schlüssel", href: BASE, icon: "key" as const },
   { key: "webhooks", label: "Webhooks", href: `${BASE}?tab=webhooks`, icon: "refresh" as const },
   { key: "verbindung", label: "Verbindung", href: `${BASE}?tab=verbindung`, icon: "plug" as const },
-  { key: "analytics", label: "Google Analytics", href: `${BASE}?tab=analytics`, icon: "chart" as const },
 ];
 
 type SP = Record<string, string | string[] | undefined>;
@@ -29,15 +29,15 @@ type SP = Record<string, string | string[] | undefined>;
 export default async function IntegrationsPage({ searchParams }: { searchParams: Promise<SP> }) {
   await requirePermission("integrations.manage");
   const sp = await searchParams;
+  if (one(sp.tab) === "analytics") redirect("/admin/plugins/analytics");
   const tab = TABS.some((t) => t.key === one(sp.tab)) ? one(sp.tab) : "schluessel";
   return (
     <>
-      <PageHeader title="Integrationen" description="Google Analytics und – falls nötig – externe Systeme wie eine Mobile-App, ein Kassensystem oder ein ERP über API und Webhooks. Die eigene Website braucht keinen API-Schlüssel." />
+      <PageHeader title="Integrationen" description="Nur falls nötig: externe Systeme wie eine Mobile-App, ein Kassensystem oder ein ERP über API und Webhooks. Die eigene Website braucht keinen API-Schlüssel." />
       <Tabs items={TABS} active={tab} label="Integrationen" />
       {tab === "schluessel" && <KeysTab sp={sp} />}
       {tab === "webhooks" && <WebhooksTab sp={sp} />}
       {tab === "verbindung" && <ConnectTab />}
-      {tab === "analytics" && <AnalyticsTab />}
     </>
   );
 }
@@ -451,65 +451,3 @@ export async function POST(req) {
   );
 }
 
-/* ------------------------------------------------------------ analytics */
-
-async function AnalyticsTab() {
-  const a = await getSettingsForForm("analytics");
-  const configured = Boolean(a.ga4PropertyId && a.serviceAccountEmail && a._secrets.serviceAccountKey);
-  return (
-    <div className="s-twocol">
-      <Panel className="a-panel--form">
-        <ActionForm action={saveAnalyticsAction} className="a-form">
-          <FormSection title="Messung" help="Die Mess-ID für die Einbindung von Google Analytics in die Website (gtag).">
-            <label className="a-field">
-              <span>Mess-ID</span>
-              <input name="ga4MeasurementId" defaultValue={a.ga4MeasurementId} placeholder="G-XXXXXXXXXX" spellCheck={false} />
-            </label>
-          </FormSection>
-          <FormSection title="Auswertung im Dashboard" help="Damit die Statistiken Besucherzahlen zeigen, liest das Dashboard die Daten über ein Google-Dienstkonto.">
-            <label className="a-field">
-              <span>Property-ID</span>
-              <input name="ga4PropertyId" defaultValue={a.ga4PropertyId} placeholder="412345678" inputMode="numeric" />
-            </label>
-            <label className="a-field">
-              <span>E-Mail des Dienstkontos</span>
-              <input name="serviceAccountEmail" defaultValue={a.serviceAccountEmail} placeholder="dashboard@projekt.iam.gserviceaccount.com" spellCheck={false} />
-              <small>Wird beim Einfügen der JSON-Datei automatisch übernommen.</small>
-            </label>
-            <div className="s-secretfield">
-              <label className="a-field">
-                <span>Schlüssel (JSON-Datei oder privater Schlüssel)</span>
-                <textarea name="serviceAccountKey" rows={4} className="a-mono" spellCheck={false} placeholder={a._secrets.serviceAccountKey ? `Gespeichert (${a._secrets.serviceAccountKey}) – leer lassen, um ihn zu behalten` : '{ "type": "service_account", … }'} />
-              </label>
-              {a._secrets.serviceAccountKey && (
-                <label className="a-check">
-                  <input type="checkbox" name="remove_serviceAccountKey" />
-                  <span>Gespeicherten Schlüssel entfernen</span>
-                </label>
-              )}
-              <small className="s-hint">Wird verschlüsselt gespeichert und nie wieder angezeigt.</small>
-            </div>
-          </FormSection>
-          <div className="a-savebar">
-            <Submit>Speichern</Submit>
-            {configured ? <span className="a-pill a-pill--ok">Verbunden</span> : <span className="a-pill a-pill--muted">Nicht vollständig</span>}
-          </div>
-        </ActionForm>
-      </Panel>
-      <Panel title="Dienstkonto einrichten" description="Einmalig, dauert etwa 10 Minuten.">
-        <ol className="s-steps">
-          <li>
-            In der <a className="a-link" href="https://console.cloud.google.com/" target="_blank" rel="noopener noreferrer">Google Cloud Console</a> ein Projekt wählen oder anlegen.
-          </li>
-          <li>Unter «APIs &amp; Dienste» die «Google Analytics Data API» aktivieren.</li>
-          <li>Unter «IAM &amp; Verwaltung → Dienstkonten» ein Dienstkonto erstellen (keine Rollen nötig).</li>
-          <li>Beim Dienstkonto unter «Schlüssel» einen neuen JSON-Schlüssel erstellen und die Datei herunterladen.</li>
-          <li>
-            In Google Analytics unter «Verwaltung → Property-Zugriffsverwaltung» die E-Mail des Dienstkontos mit der Rolle <strong>Betrachter</strong> hinzufügen.
-          </li>
-          <li>Die Property-ID (Verwaltung → Property-Details) und den Inhalt der JSON-Datei hier einfügen und speichern.</li>
-        </ol>
-      </Panel>
-    </div>
-  );
-}

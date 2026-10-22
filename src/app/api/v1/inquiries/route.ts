@@ -15,7 +15,7 @@ export const OPTIONS = preflight;
 export async function POST(req: Request) {
   const auth = await apiAuth(req, "inquiries:write");
   if (auth instanceof Response) return auth;
-  if (!(await isModuleEnabled("inquiries"))) return apiError(req, auth, 404, "module_disabled", "Das Modul Anfragen ist ausgeschaltet.");
+  if (!(await isModuleEnabled("inquiries"))) return apiError(req, auth, 404, "module_disabled", "Das Plugin «Anfragen» ist nicht aktiv. Aktivieren Sie es unter Plugins.");
   const body = await readJson<Record<string, unknown>>(req, auth);
   if (body instanceof Response) return body;
   if (!body || typeof body !== "object" || Array.isArray(body)) return apiError(req, auth, 400, "invalid_body", "Erwartet wird ein JSON-Objekt.");
@@ -34,7 +34,7 @@ export async function GET(req: Request) {
   const auth = await apiAuth(req, "inquiries:read");
   if (auth instanceof Response) return auth;
   if (auth.kind !== "secret") return apiError(req, auth, 403, "forbidden", "Anfragen dürfen nur mit einem geheimen Schlüssel gelesen werden.");
-  if (!(await isModuleEnabled("inquiries"))) return apiError(req, auth, 404, "module_disabled", "Das Modul Anfragen ist ausgeschaltet.");
+  if (!(await isModuleEnabled("inquiries"))) return apiError(req, auth, 404, "module_disabled", "Das Plugin «Anfragen» ist nicht aktiv. Aktivieren Sie es unter Plugins.");
   const url = new URL(req.url);
   const page = Math.max(1, Number(url.searchParams.get("page")) || 1);
   const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit")) || 25));

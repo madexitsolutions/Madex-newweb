@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "./kit";
+import { MadexCredit } from "./madex";
 
 export type NavGroupView = { group: string; items: { href: string; label: string; icon: IconName; badge?: number }[] };
 
@@ -75,6 +76,7 @@ export function AdminNav({ groups, user, brand, siteUrl, signOut }: { groups: Na
               Abmelden
             </button>
           </form>
+          <MadexCredit light className="a-side__madex" />
         </div>
       </div>
       {open && <button type="button" className="a-side__scrim" aria-label="Menü schliessen" tabIndex={-1} onClick={() => setOpenOn(null)} />}
