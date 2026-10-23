@@ -10,7 +10,6 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "content": "python3 -I scripts/extract_content.py && python3 -I scripts/prepare_media.py",
     "db:generate": "drizzle-kit generate",
     "db:push": "tsx scripts/db-push.ts",
     "db:reset": "tsx scripts/db-reset.ts",

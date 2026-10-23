@@ -1,6 +1,6 @@
 /**
  * Die Marketing-Lösungen mit den Inhalten der bestehenden Service-Seiten
- * (archive/pages/page/013–020). URLs bleiben identisch zu madex-it.ch.
+ * von madex-it.ch. URLs bleiben identisch zur bisherigen Website.
  */
 export type ServiceSection = { title: string; text: string; image?: string };
 export type Faq = { q: string; a: string };

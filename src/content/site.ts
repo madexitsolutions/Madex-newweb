@@ -1,6 +1,6 @@
 /**
- * Zentrale Geschäftsdaten. Quelle: data/business.json und die archivierten
- * Seiten von madex-it.ch (Stand 14.10.2026). Komponenten lesen Fakten nur hier.
+ * Zentrale Geschäftsdaten, übernommen von der bisherigen Website madex-it.ch
+ * (Stand 14.10.2026). Komponenten lesen Fakten nur hier.
  */
 export const site = {
   name: "Madex IT Solutions",
