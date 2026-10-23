@@ -23,6 +23,8 @@ export type Service = {
   gallery?: string[];
   sections: ServiceSection[];
   whyTitle?: string;
+  /** "why" is a sequence of steps written as "Titel: Text" (shown as a numbered process) */
+  whySteps?: boolean;
   why?: string[];
   faq: Faq[];
 };
@@ -633,6 +635,7 @@ export const services: Service[] = [
       },
     ],
     whyTitle: "So gehen wir vor",
+    whySteps: true,
     why: [
       "Erstgespräch: Wir schauen uns Ihre Abläufe an und finden die Aufgaben, bei denen KI am meisten Zeit spart",
       "Prototyp: Wir bauen eine erste Version mit Ihren echten Beispielen und testen sie mit Ihrem Team",

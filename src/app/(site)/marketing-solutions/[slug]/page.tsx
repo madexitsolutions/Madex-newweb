@@ -134,7 +134,29 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         </div>
       </section>
 
-      {s.why && (
+      {s.why && s.whySteps && (
+        <section className="section--tight light sv__process" aria-label={s.whyTitle ?? "So gehen wir vor"}>
+          <div className="container">
+            <SplitText as="h2" text={s.whyTitle ?? "So gehen wir vor"} className="h2 sv__process-h" />
+            <StaggerGroup as="ol" className="sv__steps">
+              {s.why.map((w, i) => {
+                const [title, ...rest] = w.split(": ");
+                return (
+                  <StaggerItem as="li" key={w} className="sv__step">
+                    <span className="sv__step-n" aria-hidden="true">
+                      {i + 1}
+                    </span>
+                    <h3 className="sv__step-t">{rest.length ? title : `Schritt ${i + 1}`}</h3>
+                    <p>{rest.length ? rest.join(": ") : w}</p>
+                  </StaggerItem>
+                );
+              })}
+            </StaggerGroup>
+          </div>
+        </section>
+      )}
+
+      {s.why && !s.whySteps && (
         <section className="section--tight light" aria-label={s.whyTitle ?? "Warum uns wählen?"}>
           <div className="container sv__why">
             <SplitText as="h2" text={s.whyTitle ?? "Warum uns wählen?"} className="h2 sv__why-h" />
@@ -198,6 +220,15 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         .sv__sections--grid .sv__sec-copy p{max-width:62ch}
         .sv__why{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,6vw,96px);align-items:start}
         .sv__why-h{margin:0;max-width:16ch;text-wrap:balance}
+        .sv__process-h{margin:0 0 clamp(28px,4vw,48px);text-wrap:balance}
+        .sv__steps{--gap:clamp(20px,2.5vw,36px);list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap)}
+        .sv__step{position:relative;display:grid;align-content:start;gap:12px}
+        .sv__step:not(:last-child)::after{content:"";position:absolute;left:76px;right:calc(var(--gap) * -1 + 20px);top:27px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--teal),rgba(2,141,134,.2))}
+        .sv__step-n{position:relative;z-index:1;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;margin-bottom:6px;background:var(--deep);color:#fff;font:700 20px/1 var(--font-display);box-shadow:0 0 0 8px var(--paper,#f6f7f9),0 14px 30px -14px rgba(1,54,59,.6)}
+        .sv__step:nth-child(2) .sv__step-n{background:var(--teal-ink,#016c66)}
+        .sv__step:nth-child(3) .sv__step-n{background:var(--teal,#028d86)}
+        .sv__step-t{margin:0;font:600 clamp(19px,1.5vw,22px)/1.25 var(--font-display);color:var(--deep);letter-spacing:-.01em}
+        .sv__step p{margin:0;font-size:clamp(15.5px,1.05vw,17px);line-height:1.6;color:var(--ink-soft,var(--text));max-width:38ch;text-wrap:pretty}
         .sv__why-list{list-style:none;margin:0;padding:0;display:grid}
         .sv__why-item{display:grid;grid-template-columns:24px minmax(0,1fr);gap:16px;padding:22px 0;border-top:1px solid var(--line)}
         .sv__why-item:first-child{padding-top:6px;border-top:0}
@@ -215,6 +246,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         .sv__pg small{opacity:.6}
         .sv__pg strong{font:700 clamp(18px,1.8vw,26px)/1.2 var(--font-display)}
         .sv__pg--next{text-align:right}
+        @media(max-width:760px){.sv__steps{grid-template-columns:minmax(0,1fr);gap:26px}.sv__step:not(:last-child)::after{left:27px;right:auto;top:64px;bottom:-18px;width:2px;height:auto;background:linear-gradient(var(--teal),rgba(2,141,134,.3))}.sv__step{grid-template-columns:56px minmax(0,1fr);column-gap:18px;row-gap:6px;padding:0}.sv__step-n{grid-row:span 2;margin:0}.sv__step-t{align-self:end}}
         @media(max-width:900px){.sv__intro,.sv__feature-grid,.sv__sec{grid-template-columns:minmax(0,1fr);gap:28px}.sv__sec.is-flip .sv__sec-img{order:0}.sv__bullets{grid-template-columns:minmax(0,1fr)}}
       `}</style>
     </>

@@ -146,46 +146,49 @@ export function AiUseCases() {
 
   return (
     <div className="aiu">
-      <div className="aiu__tabs" role="tablist" aria-label="Einsatzbereiche" aria-orientation="vertical">
-        {CASES.map((cs, i) => (
-          <button
-            key={cs.key}
-            ref={(el) => {
-              tabs.current[i] = el;
-            }}
-            type="button"
-            role="tab"
-            id={`${id}-t${i}`}
-            aria-selected={i === active}
-            aria-controls={`${id}-p`}
-            tabIndex={i === active ? 0 : -1}
-            className="aiu__tab"
-            onClick={() => setActive(i)}
-            onKeyDown={onKey}
-          >
-            <span className="aiu__tab-ic">{cs.icon}</span>
-            <span className="aiu__tab-txt">
-              <span className="aiu__tab-label">{cs.tab}</span>
-              <span className="aiu__tab-sub">{cs.example.replace(/^Beispiel:\s*/, "")}</span>
-            </span>
-          </button>
-        ))}
-      </div>
-      <div className="aiu__panel" role="tabpanel" id={`${id}-p`} aria-labelledby={`${id}-t${active}`}>
-        <div className="aiu__head">
-          <p className="aiu__title">{c.tab}</p>
-          <p className="aiu__example">{c.example}</p>
+      <div className="aiu__grid">
+        <div className="aiu__tabs" role="tablist" aria-label="Einsatzbereiche" aria-orientation="vertical">
+          {CASES.map((cs, i) => (
+            <button
+              key={cs.key}
+              ref={(el) => {
+                tabs.current[i] = el;
+              }}
+              type="button"
+              role="tab"
+              id={`${id}-t${i}`}
+              aria-selected={i === active}
+              aria-controls={`${id}-p`}
+              tabIndex={i === active ? 0 : -1}
+              className="aiu__tab"
+              onClick={() => setActive(i)}
+              onKeyDown={onKey}
+            >
+              <span className="aiu__tab-ic">{cs.icon}</span>
+              <span className="aiu__tab-txt">
+                <span className="aiu__tab-label">{cs.tab}</span>
+                <span className="aiu__tab-sub">{cs.example.replace(/^Beispiel:\s*/, "")}</span>
+              </span>
+            </button>
+          ))}
         </div>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.ol key={c.key} className="aiu__flow" exit={{ opacity: 0, transition: { duration: 0.15 } }}>
-            <Node kind="in" {...c.input} delay={0} />
-            <Node kind="ai" {...c.ai} delay={0.08} />
-            <Node kind="out" {...c.output} delay={0.16} />
-          </motion.ol>
-        </AnimatePresence>
+        <div className="aiu__panel" role="tabpanel" id={`${id}-p`} aria-labelledby={`${id}-t${active}`}>
+          <div className="aiu__head">
+            <p className="aiu__title">{c.tab}</p>
+            <p className="aiu__example">{c.example}</p>
+          </div>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.ol key={c.key} className="aiu__flow" exit={{ opacity: 0, transition: { duration: 0.15 } }}>
+              <Node kind="in" {...c.input} delay={0} />
+              <Node kind="ai" {...c.ai} delay={0.08} />
+              <Node kind="out" {...c.output} delay={0.16} />
+            </motion.ol>
+          </AnimatePresence>
+        </div>
       </div>
       <style>{`
-        .aiu{position:relative;display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);color:#e4f1f0;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02)) ,#022b2f;border:1px solid rgba(255,255,255,.1);border-radius:24px;overflow:hidden;box-shadow:0 50px 100px -60px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08)}
+        .aiu{container:aiu/inline-size;position:relative;color:#e4f1f0;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02)) ,#022b2f;border:1px solid rgba(255,255,255,.1);border-radius:24px;overflow:hidden;box-shadow:0 50px 100px -60px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.08)}
+        .aiu__grid{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr)}
         .aiu::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(127,227,217,.55),transparent);pointer-events:none}
         .aiu__tabs{display:grid;align-content:start;gap:4px;padding:14px;border-right:1px solid rgba(255,255,255,.08);background:rgba(0,0,0,.14)}
         .aiu__tab{display:flex;align-items:flex-start;gap:12px;width:100%;min-height:56px;padding:12px 14px;border-radius:14px;text-align:left;color:rgba(228,241,240,.72);transition:background .25s,color .25s}
@@ -214,9 +217,8 @@ export function AiUseCases() {
         .aiu__node--ai .aiu__badge{background:var(--sun);border-color:var(--sun);color:var(--deep)}
         .aiu__node--ai .aiu__step{color:#ffd76a}
         .aiu__node--out .aiu__badge{background:#7fe3d9;border-color:#7fe3d9;color:var(--deep)}
-        @media (max-width:1100px){.aiu{grid-template-columns:minmax(0,1fr)}.aiu__tabs{grid-template-columns:repeat(auto-fill,minmax(210px,1fr));border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}}
-        @media (max-width:860px){.aiu__flow{grid-template-columns:minmax(0,1fr);gap:22px}.aiu__node{grid-template-columns:40px minmax(0,1fr);gap:14px}.aiu__node + .aiu__node::before{left:38px;top:-22px;width:1px;height:22px;background:linear-gradient(rgba(127,227,217,.15),rgba(127,227,217,.7))}.aiu__node + .aiu__node::after{display:none}}
-        @media (max-width:560px){.aiu__tabs{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px;gap:6px;scrollbar-width:none}.aiu__tabs::-webkit-scrollbar{display:none}.aiu__tab{flex:none;width:auto;min-height:44px;padding:10px 14px;align-items:center;scroll-snap-align:start}.aiu__tab-sub{display:none}.aiu__tab-ic{width:28px;height:28px}.aiu__panel{padding:20px 16px}}
+        @container aiu (max-width:760px){.aiu__grid{grid-template-columns:minmax(0,1fr)}.aiu__tabs{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;padding:12px;border-right:0;border-bottom:1px solid rgba(255,255,255,.08)}.aiu__tab{min-height:48px;padding:9px 10px;align-items:center;gap:9px;border-radius:12px}.aiu__tab-sub{display:none}.aiu__tab-ic{width:28px;height:28px;border-radius:8px}.aiu__tab-label{font-size:13.5px;line-height:1.25}}
+        @container aiu (max-width:640px){.aiu__flow{grid-template-columns:minmax(0,1fr);gap:22px}.aiu__node{grid-template-columns:40px minmax(0,1fr);gap:14px}.aiu__node + .aiu__node::before{left:38px;top:-22px;width:1px;height:22px;background:linear-gradient(rgba(127,227,217,.15),rgba(127,227,217,.7))}.aiu__node + .aiu__node::after{display:none}.aiu__panel{padding:20px 16px}}
       `}</style>
     </div>
   );
