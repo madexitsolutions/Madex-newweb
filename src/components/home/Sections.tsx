@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@/components/layout/Transition";
 import { openOrion } from "@/components/layout/Orion";
 import { AiUseCases } from "./AiSolutions";
@@ -24,31 +24,111 @@ function Check() {
 }
 
 /* --------------------------------------------------------------- Offer */
-/** The offer as a 55-second clip. Nothing is downloaded until the visitor presses play (it has sound). */
+const OFFER_VIDEO = {
+  wide: { src: "/media/video/madex-angebot-1080.mp4", small: "/media/video/madex-angebot-720.mp4", poster: "/media/video/madex-angebot-poster.webp" },
+  phone: { src: "/media/video/madex-angebot-mobil-720.mp4", poster: "/media/video/madex-angebot-mobil-poster.webp" },
+};
+
+/**
+ * The offer as a 55-second clip. Starts muted as soon as it scrolls into view and
+ * pauses when it leaves; phones get the vertical version. Nothing is downloaded
+ * before the video is close to the screen. With reduced motion it waits for a click.
+ */
 function OfferVideo() {
-  const [playing, setPlaying] = useState(false);
+  const ref = useRef<HTMLVideoElement>(null);
+  const [phone, setPhone] = useState(false);
   const [src, setSrc] = useState("");
-  const start = () => {
-    setSrc(window.matchMedia("(max-width: 900px)").matches ? "/media/video/madex-angebot-720.mp4" : "/media/video/madex-angebot-1080.mp4");
-    setPlaying(true);
+  const [muted, setMuted] = useState(true);
+  const [paused, setPaused] = useState(true);
+  const visible = useRef(false);
+  const reduced = useRef(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 700px)");
+    const pick = () => {
+      setPhone(mq.matches);
+      setSrc(mq.matches ? OFFER_VIDEO.phone.src : window.matchMedia("(max-width: 1100px)").matches ? OFFER_VIDEO.wide.small : OFFER_VIDEO.wide.src);
+    };
+    const v = ref.current;
+    if (!v) return;
+    reduced.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // load once the video is near, play while at least 40 % of it is visible
+    const near = new IntersectionObserver(
+      ([e]) => {
+        if (!e.isIntersecting) return;
+        pick();
+        near.disconnect();
+      },
+      { rootMargin: "400px 0px" },
+    );
+    const seen = new IntersectionObserver(
+      ([e]) => {
+        visible.current = e.intersectionRatio >= 0.4;
+        if (reduced.current) return;
+        if (visible.current) v.play().catch(() => {});
+        else v.pause();
+      },
+      { threshold: [0, 0.4] },
+    );
+    near.observe(v);
+    seen.observe(v);
+    mq.addEventListener("change", pick);
+    return () => {
+      near.disconnect();
+      seen.disconnect();
+      mq.removeEventListener("change", pick);
+    };
+  }, []);
+
+  // the source arrives after the first visibility check: start once it is set
+  useEffect(() => {
+    if (src && visible.current && !reduced.current) ref.current?.play().catch(() => {});
+  }, [src]);
+
+  const toggleSound = () => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = !v.muted;
+    setMuted(v.muted);
+    if (!v.muted && v.paused) v.play().catch(() => {});
   };
+
   return (
-    <figure className="ovid">
+    <figure className={`ovid${phone ? " ovid--phone" : ""}`}>
       <div className="ovid__frame">
-        {playing ? (
-          <video className="ovid__media" src={src} poster="/media/video/madex-angebot-poster.webp" controls autoPlay playsInline preload="auto">
-            Ihr Browser kann dieses Video nicht abspielen.
-          </video>
-        ) : (
-          <button type="button" className="ovid__start" onClick={start} aria-label="Video abspielen: Ihre neue Website ist inklusive (55 Sekunden, mit Ton)">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="ovid__media" src="/media/video/madex-angebot-poster.webp" alt="" width={1600} height={900} loading="lazy" decoding="async" />
+        <video
+          ref={ref}
+          className="ovid__media"
+          src={src || undefined}
+          poster={phone ? OFFER_VIDEO.phone.poster : OFFER_VIDEO.wide.poster}
+          muted
+          playsInline
+          loop
+          preload="none"
+          controls={!paused && !muted}
+          onPlay={() => setPaused(false)}
+          onPause={() => setPaused(true)}
+          aria-label="Video: Ihre neue Website ist inklusive (55 Sekunden)"
+        >
+          Ihr Browser kann dieses Video nicht abspielen.
+        </video>
+        {paused && muted ? (
+          <button type="button" className="ovid__start" onClick={() => ref.current?.play().catch(() => {})} aria-label="Video abspielen">
             <span className="ovid__play" aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24">
                 <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
               </svg>
             </span>
           </button>
+        ) : (
+          muted && (
+            <button type="button" className="ovid__sound" onClick={toggleSound}>
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4zM16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              Ton an
+            </button>
+          )
         )}
       </div>
       <figcaption className="ovid__cap">
