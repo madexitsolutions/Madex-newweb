@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   }
   const d = parsed.data;
   // Honeypot filled → accept silently, store nothing.
-  if (d.fax) return NextResponse.json({ ok: true });
+  if (d.hp) return NextResponse.json({ ok: true });
 
   const isAnalysis = d.source === "kostenlose-prufung" || d.source === "hero" || d.service === "Kostenlose Analyse";
   const fields: Record<string, string> = {};

@@ -12,7 +12,8 @@ export const runtime = "nodejs";
 const schema = z.object({
   email: z.string().trim().email("Bitte geben Sie eine gültige E-Mail-Adresse ein.").max(200),
   website: z.string().trim().max(200).optional().default(""),
-  fax: z.string().max(0).optional().or(z.literal("")),
+  // spam trap; a neutral name so browser autofill leaves it empty
+  hp: z.string().max(500).optional().default(""),
 });
 
 /**
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ ok: false, error: parsed.error.issues[0].message }, { status: 422 });
   const d = parsed.data;
-  if (d.fax) return NextResponse.json({ ok: true });
+  if (d.hp) return NextResponse.json({ ok: true });
   const ip = ipFromRequest(req);
   const source = req.headers.get("referer") ?? "";
 

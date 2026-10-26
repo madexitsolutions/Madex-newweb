@@ -448,7 +448,7 @@ function QuickAnalysis() {
       const res = await fetch("/api/analyse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ website: f.get("website"), email: f.get("email"), fax: f.get("fax") }),
+        body: JSON.stringify({ website: f.get("website"), email: f.get("email"), hp: f.get("hp_check") }),
       });
       const json = (await res.json()) as { ok: boolean; error?: string; reference?: string; url?: string };
       if (json.ok && json.url) {
@@ -483,7 +483,7 @@ function QuickAnalysis() {
           <span className="sr-only">Ihre E-Mail</span>
           <input name="email" type="email" autoComplete="email" required placeholder="Ihre E-Mail" maxLength={200} />
         </label>
-        <input name="fax" tabIndex={-1} autoComplete="off" className="hx__hp" aria-hidden="true" />
+        <input name="hp_check" tabIndex={-1} autoComplete="off" className="hx__hp" aria-hidden="true" />
         <button type="submit" className="hx__submit" disabled={state === "sending"}>
           {state === "sending" ? "Analyse startet …" : "Gratis-Analyse"}
           <Svg d={I.arrow} />

@@ -10,7 +10,7 @@ import { site } from "@/content/site";
 type Errors = Record<string, string>;
 type Key = keyof typeof empty;
 
-const empty = { name: "", company: "", email: "", phone: "", service: "", website: "", message: "", date: "", slot: "", fax: "" };
+const empty = { name: "", company: "", email: "", phone: "", service: "", website: "", message: "", date: "", slot: "", hp: "" };
 
 /** Validate one field against the shared schema (same rules as the API). */
 function checkField(k: Key | "consent", value: string | boolean): string | undefined {
@@ -303,8 +303,8 @@ export function ContactForm({
             </fieldset>
 
             <div className="cf__hp" aria-hidden="true">
-              <label htmlFor={`${uid}-fax`}>Fax</label>
-              <input id={`${uid}-fax`} name="fax" tabIndex={-1} autoComplete="off" value={values.fax} onChange={onChange("fax")} />
+              <label htmlFor={`${uid}-hp`}>Bitte leer lassen</label>
+              <input id={`${uid}-hp`} name="hp_check" tabIndex={-1} autoComplete="off" value={values.hp} onChange={onChange("hp")} />
             </div>
 
             <div className={`cf__consent${errors.consent ? " is-invalid" : ""}`}>

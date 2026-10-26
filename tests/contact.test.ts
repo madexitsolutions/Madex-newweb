@@ -18,8 +18,11 @@ describe("Kontaktformular-Schema", () => {
     expect(contactSchema.safeParse({ ...valid, phone: "+41 52 589 67 59" }).success).toBe(true);
     expect(contactSchema.safeParse({ ...valid, phone: "<script>" }).success).toBe(false);
   });
-  it("erkennt ein ausgefülltes Honeypot-Feld", () => {
-    expect(contactSchema.safeParse({ ...valid, fax: "spam" }).success).toBe(false);
+  it("liest das Honeypot-Feld (die Route verwirft ausgefüllte Anfragen still)", () => {
+    expect(contactSchema.parse({ ...valid, hp: "spam" }).hp).toBe("spam");
+  });
+  it("ignoriert das alte Feld «fax», das Browser automatisch ausfüllen", () => {
+    expect(contactSchema.safeParse({ ...valid, fax: "+41 52 000 00 00" }).success).toBe(true);
   });
 });
 

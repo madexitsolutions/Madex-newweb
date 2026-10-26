@@ -21,8 +21,8 @@ export const contactSchema = z.object({
   date: z.string().trim().max(20).optional().or(z.literal("")),
   slot: z.string().trim().max(60).optional().or(z.literal("")),
   consent: z.literal(true, { errorMap: () => ({ message: "Bitte stimmen Sie der Datenverarbeitung zu." }) }),
-  // honeypot – must stay empty
-  fax: z.string().max(0).optional().or(z.literal("")),
+  // honeypot – stays empty for people; a neutral name so browser autofill leaves it alone
+  hp: z.string().max(500).optional().or(z.literal("")),
   source: z.string().max(80).optional(),
 });
 
