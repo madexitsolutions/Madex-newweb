@@ -26,7 +26,8 @@ Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablag
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Optional: Inhaber-Konto für `/admin` bei leerer Datenbank anlegen (sonst Ersteinrichtung unter `/admin`) |
 | `DATA_DIR`, `DATA_ENCRYPTION_KEY` | Ablage und Verschlüsselung von Anfragen, Chats, Einstellungen |
 | `SMTP_*`, `MAIL_FROM`, `CONTACT_TO_EMAIL` | E-Mail-Benachrichtigung bei neuen Anfragen |
-| `OPENAI_API_KEY`, `OPENAI_MODEL` | KI-Chatbot «Orion» |
+| `OPENAI_API_KEY`, `OPENAI_MODEL` | KI-Chatbot «Orion» und die Texte der Website-Analyse |
+| `PAGESPEED_API_KEY` | Website-Analyse: Google-Messung (Ladezeit, Core Web Vitals, Bildschirmfotos); ohne Schlüssel läuft die Analyse ohne diesen Teil |
 | `NEXT_PUBLIC_GA4_ID` / `NEXT_PUBLIC_GTM_ID` | Tracking (alternativ im Admin eintragen) |
 | `GA4_PROPERTY_ID`, `GOOGLE_SERVICE_ACCOUNT_*` | Analytics-Berichte im Admin |
 | `GOOGLE_PLACES_API_KEY`, `GOOGLE_PLACE_ID` | Live-Google-Bewertungen (nur 4–5 Sterne), sonst hinterlegte Kundenstimmen |

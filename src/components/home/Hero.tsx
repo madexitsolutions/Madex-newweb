@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Link } from "@/components/layout/Transition";
+import { Link, useTransition } from "@/components/layout/Transition";
 
 const WORDS = ["Design", "Websites", "Marketing", "KI"];
 
@@ -437,6 +437,7 @@ function Stars({ value }: { value: number }) {
 
 /* ---------------------------------------------------- quick form */
 function QuickAnalysis() {
+  const { navigate } = useTransition();
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -449,7 +450,12 @@ function QuickAnalysis() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ website: f.get("website"), email: f.get("email"), fax: f.get("fax") }),
       });
-      const json = (await res.json()) as { ok: boolean; error?: string; reference?: string };
+      const json = (await res.json()) as { ok: boolean; error?: string; reference?: string; url?: string };
+      if (json.ok && json.url) {
+        setMsg("Die Analyse startet …");
+        navigate(json.url);
+        return;
+      }
       if (!json.ok) {
         setState("error");
         setMsg(json.error || "Die Anfrage konnte nicht gesendet werden. Rufen Sie uns an: 052 589 67 59");
@@ -468,8 +474,8 @@ function QuickAnalysis() {
       <form className="hx__form" onSubmit={submit}>
         <label className="hx__field">
           <Svg d={I.globe} />
-          <span className="sr-only">Ihre Website (optional)</span>
-          <input name="website" type="text" inputMode="url" autoComplete="url" placeholder="Ihre Website (optional)" maxLength={200} />
+          <span className="sr-only">Ihre Website, z. B. firma.ch</span>
+          <input name="website" type="text" inputMode="url" autoComplete="url" placeholder="Ihre Website, z. B. firma.ch" maxLength={200} />
         </label>
         <span className="hx__sep" aria-hidden="true" />
         <label className="hx__field">
@@ -479,12 +485,12 @@ function QuickAnalysis() {
         </label>
         <input name="fax" tabIndex={-1} autoComplete="off" className="hx__hp" aria-hidden="true" />
         <button type="submit" className="hx__submit" disabled={state === "sending"}>
-          {state === "sending" ? "Wird gesendet …" : "Gratis-Analyse"}
+          {state === "sending" ? "Analyse startet …" : "Gratis-Analyse"}
           <Svg d={I.arrow} />
         </button>
       </form>
       <p className={`hx__msg${state === "error" ? " is-err" : state === "done" ? " is-ok" : ""}`} role="status">
-        {msg || "Kostenlos und unverbindlich: SEO-, Website- und Google-Check mit drei konkreten Verbesserungsvorschlägen."}
+        {msg || "Kostenlos und sofort: SEO-, Mobile- und Google-Check Ihrer Website mit drei konkreten Verbesserungsvorschlägen."}
       </p>
     </>
   );
