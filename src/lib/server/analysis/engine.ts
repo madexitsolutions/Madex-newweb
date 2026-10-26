@@ -8,8 +8,8 @@
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { CATEGORIES, STEPS, type AiInsights, type CategoryKey, type Check, type Lighthouse, type PagePreview, type ReportView, type StepKey, type StepState } from "@/lib/analysis";
 import { read, update } from "@/lib/server/store";
-import { insights } from "./ai";
-import { contentChecks, googleChecks, mobileChecks, parsePage, preview, seoChecks, speedChecks, techChecks } from "./page";
+import { designReview, insights } from "./ai";
+import { contentChecks, designChecks, googleChecks, mobileChecks, parsePage, preview, seoChecks, speedChecks, techChecks } from "./page";
 import { pagespeedConfigured, runPagespeed, type PsiResult } from "./pagespeed";
 import { FetchError, safeFetch } from "./safe-fetch";
 import { lighthouseChecks, scoreChecks } from "./score";
@@ -33,6 +33,7 @@ export type Report = {
   insights?: AiInsights;
   emailSentAt?: string;
   inquiryRef?: string;
+  shots?: { mobile?: boolean; desktop?: boolean };
 };
 
 type Shots = { mobile?: string; desktop?: string };
@@ -130,6 +131,7 @@ export function toView(r: Report): ReportView {
     insights: r.insights,
     emailMasked: maskEmail(r.email),
     emailSentAt: r.emailSentAt,
+    shots: r.shots,
   };
 }
 
@@ -163,9 +165,16 @@ async function run(r: Report) {
     log(`Antwort ${fetched.status} in ${fetched.ms.toLocaleString("de-CH")} ms, ${Math.round(fetched.bytes / 1024).toLocaleString("de-CH")} KB HTML`);
 
     // Google needs 20–60 s per run: start both right away and collect them later
-    const psi = pagespeedConfigured()
-      ? { mobile: runPagespeed(fetched.url, "mobile"), desktop: runPagespeed(fetched.url, "desktop") }
-      : null;
+    // each screenshot is stored as soon as it arrives, so the scan can show the real page
+    const shoot = (which: "mobile" | "desktop") =>
+      runPagespeed(fetched.url, which).then(async (res) => {
+        if (res?.screenshot) {
+          await update<Shots>(`${name(r.id)}-bilder`, {}, (s) => void (s[which] = res.screenshot));
+          r.shots = { ...r.shots, [which]: true };
+        }
+        return res;
+      });
+    const psi = pagespeedConfigured() ? { mobile: shoot("mobile"), desktop: shoot("desktop") } : null;
 
     const p = parsePage(fetched);
     r.page = preview(p);
@@ -212,9 +221,17 @@ async function run(r: Report) {
       addChecks(lighthouseChecks(mobile, desktop));
       const strip = ({ screenshot, ...lh }: PsiResult): Lighthouse => (void screenshot, lh);
       r.lighthouse = { mobile: mobile ? strip(mobile) : undefined, desktop: desktop ? strip(desktop) : undefined };
-      if (mobile?.screenshot || desktop?.screenshot) await update<Shots>(`${name(r.id)}-bilder`, {}, (s) => void Object.assign(s, { mobile: mobile?.screenshot, desktop: desktop?.screenshot }));
     }
     await step("speed", "done");
+
+    await step("design", "run");
+    addChecks(await designChecks(p));
+    const review = await designReview({ url: r.url, page: r.page, desktop: desktop?.screenshot, mobile: mobile?.screenshot });
+    if (review) {
+      log("Bildschirmfotos von Desktop und Smartphone beurteilt");
+      addChecks(review);
+    }
+    await step("design", "done");
 
     await step("ai", "run");
     r.scores = scoreChecks(r.checks);

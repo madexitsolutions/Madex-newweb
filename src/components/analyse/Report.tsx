@@ -101,6 +101,7 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
       window.removeEventListener("afterprint", after);
     };
   }, [report.domain]);
+  const cats = CATEGORIES.filter((c) => typeof s[c.key] === "number");
   const lh = report.lighthouse;
   const shot = (which: "mobile" | "desktop") => (lh?.[which]?.hasScreenshot ? `/api/analyse/${report.id}/bild/${which}?t=${encodeURIComponent(token)}` : null);
   const byCat = (key: string) => report.checks.filter((c) => c.category === key);
@@ -175,7 +176,7 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
             Ihre Werte im Überblick
           </h2>
           <ul className="az-cats">
-            {CATEGORIES.map((c) => (
+            {cats.map((c) => (
               <li key={c.key} className={`az-cat tone-${scoreTone(s[c.key])}`}>
                 <a href={`#pruefung-${c.key}`} className="az-cat__link">
                   <span className="az-cat__head">
@@ -257,9 +258,9 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
           <h2 id="az-all-h" className="az-h2">
             Alle Prüfpunkte
           </h2>
-          <p className="az-sub">{report.checks.filter((c) => c.status !== "info").length} Messungen in sechs Bereichen. Öffnen Sie einen Bereich für die Details.</p>
+          <p className="az-sub">{report.checks.filter((c) => c.status !== "info").length} Messungen in {cats.length === 7 ? "sieben" : "sechs"} Bereichen. Öffnen Sie einen Bereich für die Details.</p>
           <div className="az-groups">
-            {CATEGORIES.map((c) => {
+            {cats.map((c) => {
               const list = byCat(c.key).sort((a, b) => order(a) - order(b));
               const open = list.some((x) => x.status === "bad");
               return (
@@ -341,13 +342,19 @@ function Device({ which, data, shot }: { which: "mobile" | "desktop"; data: Ligh
   ];
   return (
     <article className={`az-device az-device--${which}`}>
-      <div className="az-device__frame">
-        {shot ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={shot} alt={`So lädt Ihre Website ${which === "mobile" ? "auf dem Smartphone" : "am Computer"}`} loading="lazy" />
-        ) : (
-          <span className="az-device__none">Kein Bildschirmfoto</span>
-        )}
+      <div className="az-device__stage">
+        <div className={which === "mobile" ? "mk-iphone" : "mk-mac"}>
+          <div className="mk-screen">
+            {shot ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={shot} alt={`So lädt Ihre Website ${which === "mobile" ? "auf dem Smartphone" : "am Computer"}`} loading="lazy" />
+            ) : (
+              <span className="az-device__none">Kein Bildschirmfoto</span>
+            )}
+            {which === "mobile" && <span className="mk-island" aria-hidden="true" />}
+          </div>
+          {which === "desktop" && <div className="mk-base" aria-hidden="true" />}
+        </div>
       </div>
       <div className="az-device__data">
         <h3>{which === "mobile" ? "Smartphone" : "Desktop"}</h3>

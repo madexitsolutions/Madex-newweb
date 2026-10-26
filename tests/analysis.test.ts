@@ -35,7 +35,7 @@ describe("scoreChecks", () => {
     expect(s.google).toBe(0);
   });
   it("caps the total when Google may not index the page", () => {
-    const all = (["seo", "google", "mobile", "speed", "tech", "content"] as const).map((k) => c(k, "ok", 2));
+    const all = (["seo", "google", "design", "mobile", "speed", "tech", "content"] as const).map((k) => c(k, "ok", 2));
     expect(scoreChecks(all).overall).toBe(100);
     expect(scoreChecks([...all, c("google", "bad", 0.1, "indexable")]).overall).toBe(45);
   });
@@ -104,5 +104,30 @@ describe("fallback insights", () => {
     expect(r.top[0].title).toBe("title");
     expect(r.top[0].impact).toBe("hoch");
     expect(r.summary).toContain("Potenzial");
+  });
+});
+
+describe("design checks and recommendations", () => {
+  it("reads fonts, builders and dated markup from the code", async () => {
+    const { designChecks } = await import("@/lib/server/analysis/page");
+    const old = `<html><body><center><font face="Arial">Willkommen</font></center><table width="800" bgcolor="#fff"><tr><td>a</td></tr></table><table width="800" cellpadding="2"><tr><td>b</td></tr></table><div class="elementor-section">x</div><p>Individuelle Beratung</p></body></html>`;
+    const list = await designChecks(parsePage({ url: "https://alt.ch/", status: 200, headers: new Headers(), body: old, bytes: old.length, ms: 50, redirects: [] }));
+    const st = (id: string) => list.find((x) => x.id === id)?.status;
+    expect(st("fonts")).toBe("warn");
+    expect(st("template")).toBe("warn");
+    expect(st("legacy")).toBe("bad");
+    expect(list.find((x) => x.id === "template")?.value).toBe("Baukasten: Elementor");
+  });
+  it("does not take words in the text for a page builder", async () => {
+    const { designChecks } = await import("@/lib/server/analysis/page");
+    const html = `<html><head><link href="https://fonts.googleapis.com/css2?family=Inter" rel="stylesheet"></head><body><p>Individuelle Websites, kein Baukasten wie Wix oder Jimdo.</p></body></html>`;
+    const list = await designChecks(parsePage({ url: "https://neu.ch/", status: 200, headers: new Headers(), body: html, bytes: html.length, ms: 50, redirects: [] }));
+    expect(list.find((x) => x.id === "template")?.status).toBe("ok");
+  });
+  it("always gives three recommendations, even when everything passes", () => {
+    const checks = (["seo", "google", "design", "mobile", "speed", "tech", "content"] as const).map((k) => c(k, "ok", 2));
+    const r = fallback({ url: "https://top.ch/", page: preview(parsed()), checks, scores: scoreChecks(checks), opportunities: [] });
+    expect(r.top).toHaveLength(3);
+    expect(Object.values(r.categories).join(" ")).not.toMatch(/alles im grünen Bereich/);
   });
 });

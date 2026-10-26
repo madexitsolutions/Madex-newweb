@@ -281,3 +281,65 @@ export function contentChecks(p: Parsed): Check[] {
   out.push(check("content", "trust", "Vertrauenselemente (Bewertungen, Referenzen)", reviews ? "ok" : "warn", reviews ? "vorhanden" : "nicht gefunden", reviews ? "Bewertungen und Referenzen überzeugen Neukunden." : "Kundenstimmen oder Google-Bewertungen auf der Website erhöhen das Vertrauen deutlich.", 1));
   return out;
 }
+
+/* ------------------------------------------------------------------ design */
+
+/**
+ * What the code reveals about the design. The visual judgement (modern or
+ * dated, hierarchy, images) comes from the AI review of the screenshots.
+ */
+export async function designChecks(p: Parsed): Promise<Check[]> {
+  const out: Check[] = [];
+  const h = p.html;
+  const fontRe = /fonts\.googleapis|fonts\.bunny|use\.typekit|@font-face|\.woff2?["')?]/i;
+  let fonts = fontRe.test(h);
+  if (!fonts) {
+    // fonts are often declared in the stylesheet, not in the HTML
+    const sheets = p.root
+      .querySelectorAll('link[rel~="stylesheet" i]')
+      .map((l) => abs(p, l.getAttribute("href")))
+      .filter(Boolean)
+      .slice(0, 3);
+    for (const css of await Promise.all(sheets.map((u) => probe(u, 6000)))) if (fontRe.test(css.body)) fonts = true;
+  }
+  out.push(
+    check("design", "fonts", "Eigene Schriften", fonts ? "ok" : "warn", fonts ? "Webschriften geladen" : "nur Standardschriften", fonts ? "Die Website nutzt eigene Schriften für einen eigenständigen Auftritt." : "Mit Standardschriften wie Arial wirkt die Website austauschbar.", 1.5),
+  );
+  const builder = /elementor-|\/elementor\//i.test(h) ? "Elementor" : /et_pb_|\/themes\/Divi\//i.test(h) ? "Divi" : /\bvc_row|js_composer/i.test(h) ? "WPBakery" : /static\.wixstatic|_wixCIDX|wix-image/i.test(h) ? "Wix" : /jimdo(?:cdn|content|static)|\.jimdo\.com/i.test(h) ? "Jimdo" : /static1\.squarespace|squarespace-cdn/i.test(h) ? "Squarespace" : /webnode\.(?:page|com)\/|wnd-/i.test(h) ? "Webnode" : /editmysite|weebly\.com/i.test(h) ? "Weebly" : /img1\.wsimg/i.test(h) ? "GoDaddy" : /fusion-builder|\/themes\/Avada\//i.test(h) ? "Avada" : "";
+  out.push(
+    check(
+      "design",
+      "template",
+      "Individuelles Design",
+      builder ? "warn" : "ok",
+      builder ? `Baukasten: ${builder}` : "kein Baukasten erkannt",
+      builder ? `Mit ${builder} gebaute Seiten ähneln sich oft und laden viel überflüssigen Code.` : "Es wurde kein typischer Seitenbaukasten erkannt.",
+      1.5,
+    ),
+  );
+  const legacy = [
+    /<font[\s>]/i.test(h) && "<font>",
+    /<center>/i.test(h) && "<center>",
+    /<marquee/i.test(h) && "Lauftext",
+    /<frameset|<frame\s/i.test(h) && "Frames",
+    (h.match(/<table[^>]+(?:width|bgcolor|cellpadding)=/gi) ?? []).length >= 2 && "Tabellen-Layout",
+    /jquery[-.]1\.\d|jquery\/1\.\d/i.test(h) && "jQuery 1",
+    /bootstrap(?:\.min)?\.css\?ver=3|bootstrap\/3\.\d/i.test(h) && "Bootstrap 3",
+  ].filter(Boolean) as string[];
+  out.push(
+    check(
+      "design",
+      "legacy",
+      "Zeitgemässe Technik im Layout",
+      legacy.length >= 2 ? "bad" : legacy.length ? "warn" : "ok",
+      legacy.length ? legacy.join(", ") : "nichts Veraltetes gefunden",
+      legacy.length ? "Veraltete Bausteine deuten auf ein älteres Layout hin – das sehen Besucher oft auf den ersten Blick." : "Im Code stecken keine veralteten Layout-Bausteine.",
+      2,
+    ),
+  );
+  const touch = p.root.querySelector('link[rel~="apple-touch-icon" i]') !== null;
+  out.push(check("design", "touch-icon", "App-Symbol für Smartphones", touch ? "ok" : "warn", touch ? "vorhanden" : "fehlt", touch ? "Auf dem Startbildschirm erscheint Ihr Logo." : "Speichert jemand Ihre Seite auf dem Handy, erscheint kein Logo, sondern ein Platzhalter.", 0.5));
+  const motion = /@keyframes|transition\s*:|data-aos|gsap|framer-motion|lottie/i.test(h);
+  out.push(check("design", "motion", "Bewegung und Interaktion", motion ? "ok" : "warn", motion ? "vorhanden" : "keine gefunden", motion ? "Dezente Animationen machen die Seite lebendig." : "Ohne dezente Bewegung (Übergänge, Hover-Effekte) wirkt eine Seite schnell statisch.", 0.5));
+  return out;
+}

@@ -1,32 +1,51 @@
 "use client";
 
 import { useState } from "react";
-import type { Check, PagePreview } from "@/lib/analysis";
+import type { Check } from "@/lib/analysis";
 
 /**
- * A drawn version of the scanned page from its real content (title, menu, H1,
- * headings, share image, brand colour). Results of finished checks appear as
- * markers on the element they belong to.
+ * What the scan shows inside the browser and the phone: a neutral skeleton
+ * until Google's screenshot of the real page arrives, then the screenshot.
+ * Results of finished checks appear as markers on top.
  */
-export function Wireframe({ page, checks, compact = false }: { page?: PagePreview; checks: Check[]; compact?: boolean }) {
-  const [imgOk, setImgOk] = useState(true);
-  const [iconOk, setIconOk] = useState(true);
+export function ScanPreview({ src, checks, compact = false }: { src?: string | null; checks: Check[]; compact?: boolean }) {
+  const [loaded, setLoaded] = useState(false);
   const find = (id: string) => checks.find((c) => c.id === id);
-  if (!page) return <Skeleton compact={compact} />;
-  const accent = page.themeColor || "var(--teal)";
-  const tiles = Math.min(compact ? 2 : 3, Math.max(2, Math.ceil(page.images / 4)));
-  const headings = page.headings.slice(0, compact ? 2 : 4);
   return (
-    <div className={`wf${compact ? " wf--compact" : ""}`} style={{ ["--wf-accent" as string]: accent }}>
+    <div className={`wf${compact ? " wf--compact" : ""}`}>
+      <Skeleton compact={compact} hidden={loaded} />
+      {src && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className={`az-shot${loaded ? " is-in" : ""}`} src={src} alt="" onLoad={() => setLoaded(true)} />
+      )}
+      {!compact && (
+        <div className="wf__marks">
+          <Marker check={find("title")} slot="a" />
+          <Marker check={find("h1")} slot="b" />
+          <Marker check={find("alt")} slot="c" />
+          <Marker check={find("design-ai") ?? find("legal")} slot="d" />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Marker({ check, slot }: { check?: Check; slot: string }) {
+  if (!check) return null;
+  return (
+    <span className={`wf-mark wf-mark--${slot} is-${check.status}`}>
+      <span className="wf-mark__dot" />
+      {check.label}
+      {check.value ? `: ${check.value}` : ""}
+    </span>
+  );
+}
+
+function Skeleton({ compact, hidden }: { compact: boolean; hidden: boolean }) {
+  return (
+    <div className={`wf__skel${hidden ? " is-out" : ""}`}>
       <div className="wf__head">
-        <span className="wf__logo">
-          {page.favicon && iconOk ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={page.favicon} alt="" width={16} height={16} onError={() => setIconOk(false)} referrerPolicy="no-referrer" />
-          ) : (
-            <i />
-          )}
-        </span>
+        <span className="wf__logo" />
         {compact ? (
           <span className="wf__burger">
             <i />
@@ -35,81 +54,32 @@ export function Wireframe({ page, checks, compact = false }: { page?: PagePrevie
           </span>
         ) : (
           <span className="wf__nav">
-            {(page.nav.length ? page.nav : ["", "", "", ""]).slice(0, 5).map((n, i) => (
-              <span key={i}>{n}</span>
-            ))}
+            <span />
+            <span />
+            <span />
+            <span />
           </span>
         )}
-        <Marker check={find("viewport") ?? find("title")} compact={compact} />
       </div>
       <div className="wf__hero">
-        {page.ogImage && imgOk && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className="wf__hero-img" src={page.ogImage} alt="" onError={() => setImgOk(false)} referrerPolicy="no-referrer" />
-        )}
-        <div className="wf__hero-copy">
-          <p className="wf__h1">{page.h1 || page.title || "Ohne Hauptüberschrift"}</p>
-          {page.description && !compact && <p className="wf__desc">{page.description}</p>}
-          <span className="wf__cta" />
-        </div>
-        <Marker check={find("h1")} compact={compact} />
+        <span className="wf__line wf__line--xl" />
+        <span className="wf__line wf__line--lg" />
+        <span className="wf__line wf__line--short" />
+        <span className="wf__cta" />
       </div>
       <div className="wf__body">
-        {headings.map((h, i) => (
+        {Array.from({ length: compact ? 2 : 4 }, (_, i) => (
           <div key={i} className="wf__block">
-            <p className="wf__h2">{h}</p>
+            <span className="wf__line wf__line--h" />
             <span className="wf__line" />
             <span className="wf__line wf__line--short" />
           </div>
         ))}
         <div className="wf__tiles">
-          {Array.from({ length: tiles }, (_, i) => (
+          {Array.from({ length: compact ? 1 : 3 }, (_, i) => (
             <span key={i} className="wf__tile" />
           ))}
-          <Marker check={find("alt")} compact={compact} />
         </div>
-      </div>
-      <div className="wf__foot">
-        <Marker check={find("legal") ?? find("contact")} compact={compact} />
-      </div>
-    </div>
-  );
-}
-
-function Marker({ check, compact }: { check?: Check; compact: boolean }) {
-  if (!check || compact) return null;
-  return (
-    <span className={`wf-mark is-${check.status}`}>
-      <span className="wf-mark__dot" />
-      {check.label}
-      {check.value ? `: ${check.value}` : ""}
-    </span>
-  );
-}
-
-function Skeleton({ compact }: { compact: boolean }) {
-  return (
-    <div className={`wf wf--skeleton${compact ? " wf--compact" : ""}`}>
-      <div className="wf__head">
-        <span className="wf__logo">
-          <i />
-        </span>
-        <span className="wf__nav">
-          <span />
-          <span />
-          <span />
-        </span>
-      </div>
-      <div className="wf__hero">
-        <div className="wf__hero-copy">
-          <span className="wf__line" />
-          <span className="wf__line wf__line--short" />
-        </div>
-      </div>
-      <div className="wf__body">
-        <span className="wf__line" />
-        <span className="wf__line" />
-        <span className="wf__line wf__line--short" />
       </div>
     </div>
   );

@@ -36,7 +36,8 @@ export function renderReportEmail(r: Report) {
   const counts = { bad: r.checks.filter((x) => x.status === "bad").length, warn: r.checks.filter((x) => x.status === "warn").length, ok: r.checks.filter((x) => x.status === "ok").length };
   const lh = r.lighthouse;
 
-  const bars = CATEGORIES.map((cat) => {
+  const cats = CATEGORIES.filter((cat) => typeof s[cat.key] === "number");
+  const bars = cats.map((cat) => {
     const v = s[cat.key];
     return `<tr>
 <td style="padding:10px 0 4px;${FONT};font-size:14px;color:${INK};font-weight:bold">${esc(cat.label)}</td>
@@ -123,7 +124,7 @@ ${strengths}
     `Gesamtergebnis: ${s.overall} von 100 Punkten (${scoreLabel(s.overall)})`,
     ins.headline,
     ins.summary,
-    "Ihre Werte:\n" + CATEGORIES.map((cat) => `- ${cat.label}: ${s[cat.key]}`).join("\n"),
+    "Ihre Werte:\n" + cats.map((cat) => `- ${cat.label}: ${s[cat.key]}`).join("\n"),
     ins.top.length ? "Das bringt am meisten:\n" + ins.top.map((t, i) => `${i + 1}. ${t.title} (Wirkung ${t.impact})\n   ${t.problem}\n   So lösen Sie es: ${t.solution}`).join("\n") : "",
     `Vollständiger Bericht: ${url}`,
     `Fragen? ${c.phonePrimary.label} · ${c.email}`,

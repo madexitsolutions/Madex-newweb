@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "@/components/layout/Transition";
 import { STEPS, type ReportView, type StepState } from "@/lib/analysis";
 import { Report } from "./Report";
-import { Wireframe } from "./Wireframe";
+import { ScanPreview } from "./Wireframe";
 import "./analyse.css";
 
 /** Each step stays visible at least this long, so a fast scan still reads as one. */
@@ -107,7 +107,7 @@ function Scan({ report, shown, logShown, complete, token, offline }: { report: R
   const lines = report.log.slice(Math.max(0, logShown - 7), logShown);
   const current = STEPS[Math.min(shown, STEPS.length - 1)];
   const mobileActive = !failed && current.key === "mobile" && !complete;
-  const shotReady = (which: "mobile" | "desktop") => Boolean(report.lighthouse?.[which]?.hasScreenshot && shown > STEPS.findIndex((s) => s.key === "speed"));
+  const shot = (which: "mobile" | "desktop") => (report.shots?.[which] || report.lighthouse?.[which]?.hasScreenshot ? `/api/analyse/${report.id}/bild/${which}?t=${encodeURIComponent(token)}` : null);
 
   return (
     <section className={`az-scan${complete ? " is-complete" : ""}${failed ? " is-failed" : ""}`} aria-labelledby="az-scan-title">
@@ -129,26 +129,16 @@ function Scan({ report, shown, logShown, complete, token, offline }: { report: R
               </span>
             </div>
             <div className="az-browser__view">
-              {shotReady("desktop") ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img className="az-shot" src={`/api/analyse/${report.id}/bild/desktop?t=${encodeURIComponent(token)}`} alt="" />
-              ) : (
-                <Wireframe page={report.page} checks={visibleChecks} />
-              )}
+              <ScanPreview src={shot("desktop")} checks={visibleChecks} />
               {!failed && <div className="az-beam" />}
               <div className="az-grid-overlay" />
             </div>
           </div>
 
           <div className={`az-phone${mobileActive ? " is-active" : ""}`}>
-            <div className="az-phone__notch" />
             <div className="az-phone__view">
-              {shotReady("mobile") ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img className="az-shot" src={`/api/analyse/${report.id}/bild/mobile?t=${encodeURIComponent(token)}`} alt="" />
-              ) : (
-                <Wireframe page={report.page} checks={visibleChecks} compact />
-              )}
+              <ScanPreview src={shot("mobile")} checks={visibleChecks} compact />
+              <div className="az-phone__island" />
               {mobileActive && <div className="az-beam az-beam--phone" />}
             </div>
           </div>
@@ -166,14 +156,7 @@ function Scan({ report, shown, logShown, complete, token, offline }: { report: R
           <h1 id="az-scan-title" className="az-panel__title">
             {failed ? "Wir konnten diese Website nicht prüfen" : complete ? "Ihre Website ist geprüft" : "Wir prüfen Ihre Website"}
           </h1>
-          <p className="az-target">
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.8" />
-              <path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" fill="none" stroke="currentColor" strokeWidth="1.8" />
-            </svg>
-            <span className="sr-only">Geprüfte Adresse: </span>
-            <span className="az-target__url">{report.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}</span>
-          </p>
+          <SiteLine domain={report.domain} favicon={report.page?.favicon} />
 
           {failed ? (
             <div className="az-fail" role="alert">
@@ -236,5 +219,24 @@ function Scan({ report, shown, logShown, complete, token, offline }: { report: R
         </div>
       </div>
     </section>
+  );
+}
+
+/** The checked site under the heading: its own icon and the domain. */
+function SiteLine({ domain, favicon }: { domain: string; favicon?: string }) {
+  const [icon, setIcon] = useState(true);
+  return (
+    <p className="az-target">
+      <span className="az-target__icon" aria-hidden="true">
+        {favicon && icon ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={favicon} alt="" width={20} height={20} onError={() => setIcon(false)} referrerPolicy="no-referrer" />
+        ) : (
+          <span>{domain.charAt(0).toUpperCase()}</span>
+        )}
+      </span>
+      <span className="sr-only">Geprüfte Website: </span>
+      <span className="az-target__url">{domain}</span>
+    </p>
   );
 }
