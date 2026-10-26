@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rate-limit";
 import { getReport, markEmailSent } from "@/lib/server/analysis/engine";
+import { clientIp } from "@/lib/server/analysis/guard";
 import { sendReport } from "@/lib/server/analysis/email";
 
 export const runtime = "nodejs";
@@ -8,6 +9,7 @@ export const runtime = "nodejs";
 /** Sends the report to the e-mail address given in the hero form (never to another one). */
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
+  if (!rateLimit(`analyse-mail-ip:${clientIp(req)}`, 6, 60 * 60_000)) return NextResponse.json({ ok: false, error: "Zu viele Anfragen. Bitte warten Sie einen Moment." }, { status: 429 });
   let token: string | null = null;
   try {
     token = String(((await req.json()) as { t?: unknown }).t ?? "");

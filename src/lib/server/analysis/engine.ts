@@ -11,6 +11,7 @@ import { read, update } from "@/lib/server/store";
 import { designReview, insights } from "./ai";
 import { contentChecks, designChecks, googleChecks, mobileChecks, parsePage, preview, seoChecks, speedChecks, techChecks } from "./page";
 import { pagespeedConfigured, runPagespeed, type PsiResult } from "./pagespeed";
+import { claimDomain, releaseDomain } from "./guard";
 import { FetchError, safeFetch } from "./safe-fetch";
 import { lighthouseChecks, scoreChecks } from "./score";
 
@@ -33,6 +34,8 @@ export type Report = {
   insights?: AiInsights;
   emailSentAt?: string;
   inquiryRef?: string;
+  /** a site built by Madex (footer credit or link): the report stays client-friendly */
+  madex?: boolean;
   shots?: { mobile?: boolean; desktop?: boolean };
 };
 
@@ -42,7 +45,8 @@ type Shots = { mobile?: string; desktop?: string };
 const KEEP_DAYS = 90;
 /** A job that is neither in memory nor finished after this was cut off by a restart. */
 const STALE_MS = 6 * 60_000;
-const MAX_RUNNING = 6;
+/** analyses at the same time – each one uses Google and OpenAI */
+const MAX_RUNNING = 3;
 
 // on globalThis: route handlers can be bundled separately but share the process
 const g = globalThis as typeof globalThis & { __madexAnalyses?: Map<string, Report> };
@@ -50,7 +54,8 @@ const running = (g.__madexAnalyses ??= new Map<string, Report>());
 const name = (id: string) => `analyse-${id}`;
 const validId = (id: string) => /^[a-f0-9]{20}$/.test(id);
 
-export function createReport(url: URL, email: string): Report {
+/** Starts an analysis, or returns null when the domain was analysed before (claimed atomically). */
+export async function createReport(url: URL, email: string): Promise<Report | null> {
   const steps = Object.fromEntries(STEPS.map((s) => [s.key, "wait"])) as Record<StepKey, StepState>;
   const r: Report = {
     id: randomBytes(10).toString("hex"),
@@ -64,6 +69,7 @@ export function createReport(url: URL, email: string): Report {
     log: [],
     checks: [],
   };
+  if (!(await claimDomain(url.hostname, { id: r.id, email, createdAt: r.createdAt }))) return null;
   running.set(r.id, r);
   void save(r).then(() => run(r));
   return r;
@@ -90,6 +96,13 @@ export async function getReport(id: string, token: string | null): Promise<Repor
     r.error = "Die Analyse wurde unterbrochen. Bitte starten Sie sie erneut.";
   }
   return r;
+}
+
+/** Server-side lookup without token (e.g. to hand a person their own earlier report). */
+export async function findReport(id: string): Promise<Report | null> {
+  if (!validId(id)) return null;
+  const r = running.get(id) ?? (await read<Report | null>(name(id), null));
+  return r?.token ? getReport(id, r.token) : null;
 }
 
 export async function markEmailSent(r: Report) {
@@ -132,6 +145,7 @@ export function toView(r: Report): ReportView {
     emailMasked: maskEmail(r.email),
     emailSentAt: r.emailSentAt,
     shots: r.shots,
+    madex: r.madex,
   };
 }
 
@@ -151,6 +165,7 @@ async function run(r: Report) {
     if (state !== "run") await save(r);
   };
   const addChecks = (list: Check[]) => {
+    if (r.madex) list = list.map(soften);
     r.checks.push(...list);
     for (const c of list) log(`${c.status === "ok" ? "✓" : c.status === "info" ? "•" : c.status === "warn" ? "!" : "✗"} ${c.label}: ${c.value ?? STATUS_WORD[c.status]}`);
   };
@@ -178,6 +193,7 @@ async function run(r: Report) {
 
     const p = parsePage(fetched);
     r.page = preview(p);
+    r.madex = isMadexSite(p.html);
     r.url = fetched.url;
     if (r.page.title) log(`Titel: «${r.page.title}»`);
     await step("fetch", "done");
@@ -226,18 +242,20 @@ async function run(r: Report) {
 
     await step("design", "run");
     addChecks(await designChecks(p));
-    const review = await designReview({ url: r.url, page: r.page, desktop: desktop?.screenshot, mobile: mobile?.screenshot });
-    if (review) {
-      log("Bildschirmfotos von Desktop und Smartphone beurteilt");
-      addChecks(review);
-    }
+    // our own clients' sites get no design critique
+    const review = r.madex
+      ? [{ id: "design-pro", category: "design", label: "Professionell gestalteter Auftritt", status: "ok", value: "massgeschneidert", detail: "Individuelles Design mit klarer Struktur, abgestimmt auf Marke und Zielgruppe.", weight: 4 } satisfies Check]
+      : await designReview({ url: r.url, page: r.page, desktop: desktop?.screenshot, mobile: mobile?.screenshot });
+    if (review && !r.madex) log("Bildschirmfotos von Desktop und Smartphone beurteilt");
+    if (review) addChecks(review);
     await step("design", "done");
 
     await step("ai", "run");
     r.scores = scoreChecks(r.checks);
+    if (r.madex) r.scores = clientFloor(r.scores);
     for (const c of CATEGORIES) log(`${c.label}: ${r.scores[c.key]} Punkte`);
     const opportunities = [...(mobile?.opportunities ?? []), ...(desktop?.opportunities ?? [])].map((o) => o.title);
-    r.insights = await insights({ url: r.url, page: r.page, checks: r.checks, scores: r.scores, opportunities: [...new Set(opportunities)].slice(0, 6) });
+    r.insights = await insights({ url: r.url, page: r.page, checks: r.checks, scores: r.scores, opportunities: [...new Set(opportunities)].slice(0, 6), madex: r.madex });
     log(`Gesamtergebnis: ${r.scores.overall} von 100 Punkten`);
     r.steps.ai = "done";
     r.status = "done";
@@ -246,6 +264,8 @@ async function run(r: Report) {
     r.error = e instanceof FetchError ? e.message : "Bei der Analyse ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.";
     if (!(e instanceof FetchError)) console.error("[analyse]", e);
     for (const s of STEPS) if (r.steps[s.key] !== "done") r.steps[s.key] = "skip";
+    // a failed run doesn't use up the domain
+    await releaseDomain(new URL(r.url).hostname, r.id).catch(() => undefined);
   }
   r.finishedAt = new Date().toISOString();
   try {
@@ -256,3 +276,21 @@ async function run(r: Report) {
 }
 
 export const canStart = () => running.size < MAX_RUNNING;
+
+/* ------------------------------------------------- sites built by Madex */
+
+/** Footer credit ("Design & Development by Madex IT Solutions") or a link to madex-it.ch. */
+export const isMadexSite = (html: string) => /madex[\s-]*it[\s-]*solutions|madex-it\.ch/i.test(html);
+
+/** On a client's site nothing is "failed": problems become improvement hints. */
+function soften(c: Check): Check {
+  return c.status === "bad" ? { ...c, status: "warn" } : c;
+}
+
+/** Client sites are shown as what they are: a professional base with room for the next steps. */
+function clientFloor(sc: NonNullable<Report["scores"]>): NonNullable<Report["scores"]> {
+  const out = { ...sc };
+  for (const c of CATEGORIES) out[c.key] = Math.max(out[c.key], 74);
+  out.overall = Math.max(Math.round(CATEGORIES.reduce((sum, c) => sum + out[c.key] * c.weight, 0)), 84);
+  return out;
+}

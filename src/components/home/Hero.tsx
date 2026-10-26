@@ -438,6 +438,11 @@ function Stars({ value }: { value: number }) {
 /* ---------------------------------------------------- quick form */
 function QuickAnalysis() {
   const { navigate } = useTransition();
+  // when the form became usable – the server rejects sends faster than a person can type
+  const startedAt = useRef(0);
+  useEffect(() => {
+    startedAt.current = Date.now();
+  }, []);
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -448,9 +453,9 @@ function QuickAnalysis() {
       const res = await fetch("/api/analyse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ website: f.get("website"), email: f.get("email"), hp: f.get("hp_check") }),
+        body: JSON.stringify({ website: f.get("website"), email: f.get("email"), hp: f.get("hp_check"), startedAt: startedAt.current }),
       });
-      const json = (await res.json()) as { ok: boolean; error?: string; reference?: string; url?: string };
+      const json = (await res.json()) as { ok: boolean; error?: string; message?: string; url?: string };
       if (json.ok && json.url) {
         setMsg("Die Analyse startet …");
         navigate(json.url);
@@ -462,7 +467,7 @@ function QuickAnalysis() {
         return;
       }
       setState("done");
-      setMsg(`Danke! Wir melden uns innerhalb von 24 Stunden. Ihre Referenz: ${json.reference}`);
+      setMsg(json.message || "Danke! Wir melden uns innerhalb von 24 Stunden.");
       e.currentTarget?.reset();
     } catch {
       setState("error");

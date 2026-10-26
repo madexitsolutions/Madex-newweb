@@ -109,9 +109,23 @@ export type ReportView = {
   insights?: AiInsights;
   /** Google screenshots that are ready (shown in the scan as soon as they arrive) */
   shots?: { mobile?: boolean; desktop?: boolean };
+  /** site built by Madex: closing text speaks to an existing client */
+  madex?: boolean;
   emailMasked: string;
   emailSentAt?: string;
 };
+
+/** Closing call to action – for sites built by Madex it speaks to an existing client. */
+export const closingText = (madex?: boolean) =>
+  madex
+    ? {
+        title: "Gemeinsam den nächsten Schritt gehen",
+        text: "Ihre Website ist professionell aufgestellt. Gerne zeigen wir Ihnen in einem kostenlosen Gespräch, wie Sie mit Google Ads, Social Media und laufender Suchmaschinenoptimierung noch mehr Anfragen daraus machen.",
+      }
+    : {
+        title: "Sollen wir diese Punkte für Sie lösen?",
+        text: "Wir besprechen den Bericht mit Ihnen kostenlos und unverbindlich und zeigen, was sich mit wenig Aufwand verbessern lässt. Im Madex-Wartungspaket ab CHF 250 pro Monat ist eine neue Website im Wert von CHF 8’000 bereits inklusive – mit Hosting, Domain und laufender Betreuung.",
+      };
 
 export const scoreTone = (n: number) => (n >= 85 ? "good" : n >= 60 ? "fair" : n >= 40 ? "weak" : "poor");
 export const scoreLabel = (n: number) => (n >= 85 ? "Sehr gut" : n >= 70 ? "Gut" : n >= 50 ? "Ausbaufähig" : "Kritisch");

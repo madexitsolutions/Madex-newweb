@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CATEGORIES, scoreLabel, scoreTone, type Check, type Lighthouse, type ReportView } from "@/lib/analysis";
+import { CATEGORIES, closingText, scoreLabel, scoreTone, type Check, type Lighthouse, type ReportView } from "@/lib/analysis";
 import { Link } from "@/components/layout/Transition";
 
 const dateFmt = new Intl.DateTimeFormat("de-CH", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Zurich" });
@@ -294,10 +294,8 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
       <section className="az-cta" aria-labelledby="az-cta-h">
         <div className="container az-cta__inner">
           <div>
-            <h2 id="az-cta-h">Sollen wir diese Punkte für Sie lösen?</h2>
-            <p>
-              Wir besprechen den Bericht mit Ihnen kostenlos und zeigen, was sich mit wenig Aufwand verbessern lässt. Im Madex-Wartungspaket ab CHF 250 pro Monat ist eine neue Website im Wert von CHF 8’000 bereits inklusive – mit Hosting, Domain und laufender Betreuung.
-            </p>
+            <h2 id="az-cta-h">{closingText(report.madex).title}</h2>
+            <p>{closingText(report.madex).text}</p>
           </div>
           <p className="az-print-contact">
             Madex IT Solutions GmbH · Buchenstrasse 36 · 8212 Neuhausen am Rheinfall

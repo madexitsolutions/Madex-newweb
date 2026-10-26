@@ -94,7 +94,7 @@ export async function techChecks(p: Parsed): Promise<Check[]> {
   if (https) out.push(check("tech", "mixed", "Unsichere Inhalte auf sicherer Seite", mixed === 0 ? "ok" : "warn", mixed === 0 ? "keine" : `${mixed} Dateien`, mixed === 0 ? "Alle Dateien werden verschlüsselt geladen." : "Einige Bilder oder Skripte werden noch über http geladen.", 1));
 
   const kb = Math.round(p.fetched.bytes / 1024);
-  out.push(check("tech", "html-size", "Grösse des HTML-Dokuments", kb < 150 ? "ok" : kb < 400 ? "warn" : "bad", `${fmt(kb)} KB`, kb < 150 ? "Das Dokument ist schlank." : "Das HTML ist sehr gross – oft durch eingebettete Daten oder Page-Builder.", 1));
+  out.push(check("tech", "html-size", "Grösse des HTML-Dokuments", kb < 150 ? "ok" : kb < 400 ? "warn" : "bad", `${fmt(kb)} KB`, kb < 150 ? "Das Dokument ist schlank." : "Das HTML ist sehr gross – oft durch eingebettete Daten oder viele Erweiterungen.", 1));
 
   const cms = /wp-content|wp-includes/i.test(p.html) ? "WordPress" : /wix\.com|_wixCIDX/i.test(p.html) ? "Wix" : /jimdo/i.test(p.html) ? "Jimdo" : /cdn\.shopify|Shopify\.theme/i.test(p.html) ? "Shopify" : /squarespace/i.test(p.html) ? "Squarespace" : /webflow/i.test(p.html) ? "Webflow" : /__NEXT_DATA__|\/_next\//.test(p.html) ? "Next.js" : "";
   if (cms) out.push(check("tech", "cms", "System der Website", "info", cms, `Die Website läuft mit ${cms}.`, 0));
@@ -243,7 +243,7 @@ export function speedChecks(p: Parsed): Check[] {
   const scripts = p.root.querySelectorAll("script[src]").length;
   const css = p.root.querySelectorAll('link[rel="stylesheet" i]').length;
   const files = scripts + css;
-  out.push(check("speed", "requests", "Anzahl Skript- und CSS-Dateien", files <= 15 ? "ok" : files <= 35 ? "warn" : "bad", `${files} Dateien`, files <= 15 ? "Die Seite lädt wenige Zusatzdateien." : "Viele einzelne Dateien – typisch für Plugins und Page-Builder – verlangsamen die Seite.", 1));
+  out.push(check("speed", "requests", "Anzahl Skript- und CSS-Dateien", files <= 15 ? "ok" : files <= 35 ? "warn" : "bad", `${files} Dateien`, files <= 15 ? "Die Seite lädt wenige Zusatzdateien." : "Viele einzelne Dateien verlangsamen den Seitenaufbau – sie lassen sich meist zusammenfassen.", 1));
   const imgs = p.root.querySelectorAll("img");
   const lazy = imgs.filter((i) => i.getAttribute("loading") === "lazy" || i.hasAttribute("data-src") || i.hasAttribute("data-lazy-src")).length;
   out.push(check("speed", "lazy", "Bilder werden bei Bedarf geladen", imgs.length <= 3 || lazy >= imgs.length / 2 ? "ok" : lazy > 0 ? "warn" : "bad", imgs.length ? `${lazy} von ${imgs.length}` : "keine Bilder", "Lazy Loading lädt Bilder erst, wenn sie ins Bild kommen.", 1));
@@ -305,7 +305,8 @@ export async function designChecks(p: Parsed): Promise<Check[]> {
   out.push(
     check("design", "fonts", "Eigene Schriften", fonts ? "ok" : "warn", fonts ? "Webschriften geladen" : "nur Standardschriften", fonts ? "Die Website nutzt eigene Schriften für einen eigenständigen Auftritt." : "Mit Standardschriften wie Arial wirkt die Website austauschbar.", 1.5),
   );
-  const builder = /elementor-|\/elementor\//i.test(h) ? "Elementor" : /et_pb_|\/themes\/Divi\//i.test(h) ? "Divi" : /\bvc_row|js_composer/i.test(h) ? "WPBakery" : /static\.wixstatic|_wixCIDX|wix-image/i.test(h) ? "Wix" : /jimdo(?:cdn|content|static)|\.jimdo\.com/i.test(h) ? "Jimdo" : /static1\.squarespace|squarespace-cdn/i.test(h) ? "Squarespace" : /webnode\.(?:page|com)\/|wnd-/i.test(h) ? "Webnode" : /editmysite|weebly\.com/i.test(h) ? "Weebly" : /img1\.wsimg/i.test(h) ? "GoDaddy" : /fusion-builder|\/themes\/Avada\//i.test(h) ? "Avada" : "";
+  // only DIY site builders count – WordPress page builders (Elementor & Co.) are a professional tool we use too
+  const builder = /static\.wixstatic|_wixCIDX|wix-image/i.test(h) ? "Wix" : /jimdo(?:cdn|content|static)|\.jimdo\.com/i.test(h) ? "Jimdo" : /static1\.squarespace|squarespace-cdn/i.test(h) ? "Squarespace" : /webnode\.(?:page|com)\/|wnd-/i.test(h) ? "Webnode" : /editmysite|weebly\.com/i.test(h) ? "Weebly" : /img1\.wsimg/i.test(h) ? "GoDaddy" : "";
   out.push(
     check(
       "design",

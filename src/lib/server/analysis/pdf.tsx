@@ -24,6 +24,7 @@ import {
 } from "@react-pdf/renderer";
 import {
   CATEGORIES,
+  closingText,
   scoreLabel,
   type Check,
   type Lighthouse,
@@ -688,14 +689,10 @@ function ReportPdf({
                   marginBottom: 6,
                 }}
               >
-                Sollen wir diese Punkte für Sie lösen?
+                {closingText(r.madex).title}
               </Text>
               <Text style={{ color: "#d9ecea", marginBottom: 10, lineHeight: 1.45 }}>
-                Wir besprechen den Bericht mit Ihnen kostenlos und unverbindlich
-                und zeigen, was sich mit wenig Aufwand verbessern lässt. Im
-                Madex-Wartungspaket ab CHF 250 pro Monat ist eine neue Website
-                im Wert von CHF 8’000 bereits inklusive – mit Hosting, Domain
-                und laufender Betreuung.
+                {closingText(r.madex).text}
               </Text>
               <Text style={{ color: "#fff", fontWeight: 700 }}>
                 {site.contact.phonePrimary.label} · {site.contact.email} ·{" "}

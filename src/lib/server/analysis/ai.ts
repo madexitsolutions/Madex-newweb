@@ -102,11 +102,11 @@ Antworte ausschliesslich mit JSON: {"score":55,"verdict":"1–2 Sätze Gesamtein
 
 /* ---------------------------------------------------------- assessment */
 
-export async function insights(input: { url: string; page: PagePreview; checks: Check[]; scores: Record<CategoryKey, number> & { overall: number }; opportunities: string[] }): Promise<AiInsights> {
+export async function insights(input: { url: string; page: PagePreview; checks: Check[]; scores: Record<CategoryKey, number> & { overall: number }; opportunities: string[]; madex?: boolean }): Promise<AiInsights> {
   if (openAiConfigured()) {
     try {
       const ai = await askModel(input);
-      if (ai) return ai;
+      if (ai) return input.madex ? clientSafe(ai, input) : ai;
     } catch {
       /* fall back to the rule-based text */
     }
@@ -133,7 +133,12 @@ Regeln:
 - Stütze dich NUR auf die gelieferten Messwerte. Erfinde keine Zahlen, Rankings, Besucherzahlen oder Umsätze und versprich keine Platzierungen.
 - Nenne das Unternehmen nicht beim Namen, wenn es nicht eindeutig aus Titel oder H1 hervorgeht.
 - Es gibt immer Verbesserungspotenzial. Schreibe nie, dass alles in Ordnung ist oder nichts zu tun sei – auch bei guten Werten zeigst du, was sich noch herausholen lässt.
-- Genau drei Empfehlungen: die wirksamsten Verbesserungen aus den Prüfungen mit Status "bad" oder "warn", konkret und umsetzbar, nach Wirkung sortiert. Mindestens eine betrifft Design oder Kundengewinnung.
+${
+    input.madex
+      ? `- Diese Website wurde von Madex IT Solutions entwickelt und wird von uns betreut. Der Ton ist durchwegs positiv und wertschätzend: Die Website ist eine professionelle, sauber umgesetzte Basis. Kritisiere nie Design, Umsetzung oder Technik und verwende keine Wörter wie «Mangel», «Fehler» oder «schlecht».
+- Genau drei Empfehlungen als Chancen für mehr Kunden und Sichtbarkeit (z. B. Google-Bewertungen, Google Ads, Social Media, neue Inhalte, lokale Suchmaschinenoptimierung), jeweils mit Wirkung «mittel» oder «niedrig».`
+      : `- Genau drei Empfehlungen: die wirksamsten Verbesserungen aus den Prüfungen mit Status "bad" oder "warn", konkret und umsetzbar, nach Wirkung sortiert. Mindestens eine betrifft Design oder Kundengewinnung.`
+  }
 Antworte ausschliesslich mit JSON in dieser Form:
 {"headline":"Kurzes Fazit (max. 12 Wörter)","summary":"2–3 Sätze Gesamteinschätzung","strengths":["Stärke 1","Stärke 2"],"categories":{"seo":"1 Satz","google":"1 Satz","design":"1 Satz","mobile":"1 Satz","speed":"1 Satz","tech":"1 Satz","content":"1 Satz"},"top":[{"title":"Massnahme","problem":"Was heute fehlt und warum es Kunden kostet","solution":"Was konkret zu tun ist","impact":"hoch|mittel|niedrig"}]}`;
   const raw = await askJson(system, `Messdaten der Analyse:\n${JSON.stringify(data)}`, 1500);
@@ -148,7 +153,10 @@ Antworte ausschliesslich mit JSON in dieser Form:
     summary: noEszett(v.summary),
     strengths: v.strengths.map(noEszett),
     categories,
-    top: [...v.top.map((t) => ({ title: noEszett(t.title), problem: noEszett(t.problem), solution: noEszett(t.solution), impact: t.impact })), ...EXTRA_RECOMMENDATIONS].slice(0, 3),
+    top: [
+      ...v.top.map((t): Recommendation => ({ title: noEszett(t.title), problem: noEszett(t.problem), solution: noEszett(t.solution), impact: input.madex && t.impact === "hoch" ? "mittel" : t.impact })),
+      ...(input.madex ? CLIENT_RECOMMENDATIONS : EXTRA_RECOMMENDATIONS),
+    ].slice(0, 3),
     ai: true,
   };
 }
@@ -234,9 +242,32 @@ const EXTRA_RECOMMENDATIONS: Recommendation[] = [
   },
 ];
 
+/** For sites built by Madex: growth steps instead of criticism. */
+const CLIENT_RECOMMENDATIONS: Recommendation[] = [
+  {
+    title: "Mehr Google-Bewertungen sammeln",
+    problem: "Ihre Website ist eine starke Basis. Bewertungen sind jetzt der Hebel, der Interessenten in der Region zusätzlich überzeugt.",
+    solution: "Zufriedene Kunden gezielt um eine Google-Bewertung bitten und die besten Stimmen auf der Website zeigen.",
+    impact: "mittel",
+  },
+  {
+    title: "Mit Google Ads und Social Media mehr Besucher gewinnen",
+    problem: "Die Website ist bereit für mehr Besucher – gezielte Werbung bringt sie genau dann, wenn Kunden suchen.",
+    solution: "Eine lokale Google-Ads-Kampagne und regelmässige Social-Media-Beiträge, die auf Ihre Leistungsseiten führen.",
+    impact: "mittel",
+  },
+  {
+    title: "Inhalte laufend erweitern",
+    problem: "Neue Inhalte zeigen Google und Besuchern, dass Ihr Unternehmen aktiv ist, und bringen zusätzliche Suchbegriffe.",
+    solution: "Referenzen, aktuelle Projekte und Antworten auf häufige Kundenfragen regelmässig ergänzen.",
+    impact: "niedrig",
+  },
+];
+
 /** Rule-based texts from the checks (no AI available). */
 export function fallback(input: Parameters<typeof insights>[0]): AiInsights {
   const { scores, checks } = input;
+  if (input.madex) return clientFallback(input);
   const weakest = [...CATEGORIES].sort((a, b) => scores[a.key] - scores[b.key]);
   const strongest = [...CATEGORIES].sort((a, b) => scores[b.key] - scores[a.key]);
   const rank = (c: Check) => (c.status === "bad" ? 2 : 1) * c.weight;
@@ -271,5 +302,43 @@ export function fallback(input: Parameters<typeof insights>[0]): AiInsights {
     categories,
     top,
     ai: false,
+  };
+}
+
+/** Rule-based texts for a site built by Madex: positive, with growth steps. */
+function clientFallback({ scores, checks }: Parameters<typeof insights>[0]): AiInsights {
+  const strongest = [...CATEGORIES].sort((a, b) => scores[b.key] - scores[a.key]);
+  const categories: Partial<Record<CategoryKey, string>> = {};
+  for (const c of CATEGORIES) {
+    const open = checks.filter((x) => x.category === c.key && x.status === "warn").length;
+    categories[c.key] = open ? `Professionell umgesetzt, mit ${open} Möglichkeit${open === 1 ? "" : "en"} für den weiteren Ausbau.` : "Professionell umgesetzt.";
+  }
+  return {
+    headline: "Professionell umgesetzt – bereit für den nächsten Schritt",
+    summary: `Ihre Website steht auf einer soliden, modernen Basis. Besonders stark ist sie bei «${strongest[0].label}» und «${strongest[1].label}». Jetzt geht es darum, noch mehr Besucher und Anfragen daraus zu machen.`,
+    strengths: checks
+      .filter((c) => c.status === "ok" && c.weight >= 1.5)
+      .slice(0, 4)
+      .map((c) => c.label),
+    categories,
+    top: CLIENT_RECOMMENDATIONS,
+    ai: false,
+  };
+}
+
+/**
+ * A client's own site must never read as criticism of our work, whatever the
+ * model writes: headline, design text and recommendations are fixed, a
+ * critical summary is replaced.
+ */
+function clientSafe(ai: AiInsights, input: Parameters<typeof insights>[0]): AiInsights {
+  const safe = clientFallback(input);
+  const critical = /design|gestalt|layout|veraltet|altmodisch|mangel|fehler|schlecht|schwach|unprofessionell/i;
+  return {
+    ...ai,
+    headline: safe.headline,
+    summary: critical.test(ai.summary) ? safe.summary : ai.summary,
+    categories: Object.fromEntries(Object.entries({ ...ai.categories, design: safe.categories.design }).map(([k, v]) => [k, v && critical.test(v) && k !== "design" ? safe.categories[k as CategoryKey] : v])),
+    top: CLIENT_RECOMMENDATIONS,
   };
 }

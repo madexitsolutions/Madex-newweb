@@ -27,6 +27,7 @@ Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablag
 | `DATA_DIR`, `DATA_ENCRYPTION_KEY` | Ablage und Verschlüsselung von Anfragen, Chats, Einstellungen |
 | `SMTP_*`, `MAIL_FROM`, `CONTACT_TO_EMAIL` | E-Mail-Benachrichtigung bei neuen Anfragen |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | KI-Chatbot «Orion» und die Texte der Website-Analyse |
+| `ANALYSE_HOURLY_LIMIT`, `ANALYSE_DAILY_LIMIT` | Website-Analyse: Kostenbremse für alle Besucher zusammen (Standard 12 pro Stunde, 40 pro Tag) |
 | `PAGESPEED_API_KEY` | Website-Analyse: Google-Messung (Ladezeit, Core Web Vitals, Bildschirmfotos); ohne Schlüssel läuft die Analyse ohne diesen Teil |
 | `NEXT_PUBLIC_GA4_ID` / `NEXT_PUBLIC_GTM_ID` | Tracking (alternativ im Admin eintragen) |
 | `GA4_PROPERTY_ID`, `GOOGLE_SERVICE_ACCOUNT_*` | Analytics-Berichte im Admin |
