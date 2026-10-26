@@ -1347,7 +1347,9 @@
   font-size: 17px;
   line-height: 1.6;
 }
+/* source line: only in the PDF */
 .az-foot {
+  display: none;
   padding-block: 22px 40px;
   margin-bottom: 0;
   font-size: 13.5px;
@@ -1720,6 +1722,7 @@
     color: #fff;
   }
   .az-foot {
+    display: block;
     padding: 12px 0 0;
     font-size: 8.5pt;
   }

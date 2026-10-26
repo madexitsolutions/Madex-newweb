@@ -60,6 +60,16 @@ function StatusIcon({ status }: { status: Check["status"] }) {
 export function Report({ report, token, onUpdate }: { report: ReportView; token: string; onUpdate: (r: ReportView) => void }) {
   const s = report.scores!;
   const ins = report.insights!;
+  const [copied, setCopied] = useState(false);
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 2500);
+    } catch {
+      window.prompt("Link zum Bericht:", window.location.href);
+    }
+  };
   const [mail, setMail] = useState<{ state: "idle" | "sending" | "sent" | "error"; msg?: string }>(report.emailSentAt ? { state: "sent" } : { state: "idle" });
   const send = async () => {
     setMail({ state: "sending" });
@@ -145,6 +155,9 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
               )}
               <button type="button" className="btn btn--ghost az-on-dark" onClick={() => window.print()}>
                 Als PDF speichern
+              </button>
+              <button type="button" className="btn btn--ghost az-on-dark" onClick={copyLink} title="Der Link ist 90 Tage gültig">
+                {copied ? "Link kopiert" : "Link kopieren"}
               </button>
             </div>
             {mail.state === "error" && (
