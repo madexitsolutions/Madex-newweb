@@ -73,12 +73,24 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
       setMail({ state: "error", msg: "Die E-Mail konnte nicht gesendet werden. Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut." });
     }
   };
-  // the PDF shows every check, also those in closed groups
+  // the PDF shows every check, also those in closed groups, and gets a clear file name
   useEffect(() => {
-    const open = () => document.querySelectorAll<HTMLDetailsElement>(".az-group").forEach((d) => (d.open = true));
-    window.addEventListener("beforeprint", open);
-    return () => window.removeEventListener("beforeprint", open);
-  }, []);
+    let title = document.title;
+    const before = () => {
+      document.querySelectorAll<HTMLDetailsElement>(".az-group").forEach((d) => (d.open = true));
+      title = document.title;
+      document.title = `Website-Analyse ${report.domain}`;
+    };
+    const after = () => {
+      document.title = title;
+    };
+    window.addEventListener("beforeprint", before);
+    window.addEventListener("afterprint", after);
+    return () => {
+      window.removeEventListener("beforeprint", before);
+      window.removeEventListener("afterprint", after);
+    };
+  }, [report.domain]);
   const lh = report.lighthouse;
   const shot = (which: "mobile" | "desktop") => (lh?.[which]?.hasScreenshot ? `/api/analyse/${report.id}/bild/${which}?t=${encodeURIComponent(token)}` : null);
   const byCat = (key: string) => report.checks.filter((c) => c.category === key);
@@ -86,6 +98,17 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
 
   return (
     <div className="az-report">
+      {/* letterhead, only in the PDF */}
+      <header className="az-print-head" aria-hidden="true">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/logo.svg" alt="" width={168} height={36} />
+        <div>
+          <strong>Website-Analyse</strong>
+          <span>
+            {report.domain} · {dateFmt.format(new Date(report.createdAt))}
+          </span>
+        </div>
+      </header>
       <section className="az-sum" aria-labelledby="az-title">
         <div className="az-scan__glow" aria-hidden="true" />
         <div className="container az-sum__grid">
@@ -262,6 +285,11 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
               Wir besprechen den Bericht mit Ihnen kostenlos und zeigen, was sich mit wenig Aufwand verbessern lässt. Im Madex-Wartungspaket ab CHF 250 pro Monat ist eine neue Website im Wert von CHF 8’000 bereits inklusive – mit Hosting, Domain und laufender Betreuung.
             </p>
           </div>
+          <p className="az-print-contact">
+            Madex IT Solutions GmbH · Buchenstrasse 36 · 8212 Neuhausen am Rheinfall
+            <br />
+            052 589 67 59 · info@madex-it.ch · madex-it.ch
+          </p>
           <div className="az-cta__actions">
             <Link href="/kontakt" className="btn btn--primary">
               Kostenloses Gespräch vereinbaren

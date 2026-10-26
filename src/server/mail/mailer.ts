@@ -30,6 +30,8 @@ export type SendInput = {
   subject: string;
   template: string;
   content: EmailContent;
+  /** own layout instead of the standard template (content is then only the fallback) */
+  rendered?: { html: string; text: string };
   replyTo?: string;
   related?: { type: string; id: string };
   attachments?: { filename: string; content: Buffer | string; contentType?: string }[];
@@ -59,7 +61,7 @@ export async function sendMail(input: SendInput): Promise<{ ok: boolean; error?:
   }
   try {
     const transport = nodemailer.createTransport({ host: cfg.host, port: cfg.port, secure: cfg.secure, auth: cfg.user ? { user: cfg.user, pass: cfg.pass } : undefined });
-    const { html, text } = await renderEmail(input.content);
+    const { html, text } = input.rendered ?? (await renderEmail(input.content));
     await transport.sendMail({ from: cfg.from, to, subject: input.subject, html, text, replyTo: input.replyTo || cfg.replyTo, attachments: input.attachments });
     await log("sent");
     return { ok: true };

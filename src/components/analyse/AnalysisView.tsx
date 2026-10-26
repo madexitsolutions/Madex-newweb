@@ -164,8 +164,16 @@ function Scan({ report, shown, logShown, complete, token, offline }: { report: R
         <div className="az-panel">
           <p className="az-panel__kicker">{failed ? "Analyse abgebrochen" : complete ? "Analyse abgeschlossen" : "Analyse läuft"}</p>
           <h1 id="az-scan-title" className="az-panel__title">
-            {failed ? "Wir konnten diese Website nicht prüfen" : <>Wir prüfen {report.domain}</>}
+            {failed ? "Wir konnten diese Website nicht prüfen" : complete ? "Ihre Website ist geprüft" : "Wir prüfen Ihre Website"}
           </h1>
+          <p className="az-target">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.8" />
+              <path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            </svg>
+            <span className="sr-only">Geprüfte Adresse: </span>
+            <span className="az-target__url">{report.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}</span>
+          </p>
 
           {failed ? (
             <div className="az-fail" role="alert">

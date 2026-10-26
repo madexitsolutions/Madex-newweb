@@ -36,6 +36,13 @@
     color-scheme: light only;
 }
 
+/* never in printouts and PDFs (e.g. the website analysis report) */
+@media print {
+    :host {
+        display: none !important;
+    }
+}
+
 :host([data-embedded="true"]) {
     width: 100% !important;
 }
