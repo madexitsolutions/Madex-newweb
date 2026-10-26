@@ -154,9 +154,9 @@ export function Report({ report, token, onUpdate }: { report: ReportView; token:
                   {mail.state === "sending" ? "Wird gesendet …" : `Bericht an ${report.emailMasked} senden`}
                 </button>
               )}
-              <button type="button" className="btn btn--ghost az-on-dark" onClick={() => window.print()}>
-                Als PDF speichern
-              </button>
+              <a className="btn btn--ghost az-on-dark" href={`/api/analyse/${report.id}/pdf?t=${encodeURIComponent(token)}`} download>
+                PDF herunterladen
+              </a>
               <button type="button" className="btn btn--ghost az-on-dark" onClick={copyLink} title="Der Link ist 90 Tage gültig">
                 {copied ? "Link kopiert" : "Link kopieren"}
               </button>

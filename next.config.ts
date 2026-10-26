@@ -39,7 +39,8 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   poweredByHeader: false,
   // dashboard (src/server, /admin): native/wasm database drivers stay outside the bundle
-  serverExternalPackages: ["@electric-sql/pglite", "postgres"],
+  // PDF report (website analysis): renders with its own layout engine on the server
+  serverExternalPackages: ["@electric-sql/pglite", "postgres", "@react-pdf/renderer"],
   experimental: {
     serverActions: { bodySizeLimit: "12mb" },
   },

@@ -9,7 +9,8 @@ import { site } from "@/content/site";
 import { sendMail } from "@/server/mail/mailer";
 import { esc } from "@/server/mail/template";
 import { appUrl } from "@/server/lib/app-url";
-import type { Report } from "./engine";
+import { getShot, type Report } from "./engine";
+import { renderReportPdf } from "./pdf";
 
 const INK = "#01292d";
 const SOFT = "#4f6164";
@@ -104,7 +105,7 @@ ${strengths}
 
 <tr><td align="center" style="padding:20px 32px 8px">
 <a href="${esc(url)}" style="display:inline-block;background:#027872;color:#ffffff;text-decoration:none;padding:14px 26px;border-radius:999px;${FONT};font-size:15px;font-weight:bold">Vollständigen Bericht ansehen</a>
-<p style="margin:10px 0 0;${FONT};font-size:12px;color:${SOFT}">Mit allen ${r.checks.filter((x) => x.status !== "info").length} Prüfpunkten. Der Link ist 90 Tage gültig.</p></td></tr>
+<p style="margin:10px 0 0;${FONT};font-size:12px;color:${SOFT}">Den Bericht finden Sie auch als PDF im Anhang. Online mit allen ${r.checks.filter((x) => x.status !== "info").length} Prüfpunkten. Der Link ist 90 Tage gültig.</p></td></tr>
 
 <tr><td style="padding:24px 32px 28px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e3f3f1;border-radius:12px"><tr><td style="padding:20px 22px">
 <p style="margin:0 0 6px;${FONT};font-size:16px;font-weight:bold;color:${INK}">Sollen wir die Punkte gemeinsam anschauen?</p>
@@ -137,6 +138,15 @@ ${strengths}
 
 export async function sendReport(r: Report) {
   if (!r.scores || !r.insights) return { ok: false, error: "Die Analyse ist noch nicht fertig." };
+  // the designed PDF goes along; if it can't be rendered, the e-mail still goes out
+  let attachments: { filename: string; content: Buffer; contentType: string }[] | undefined;
+  try {
+    const [mobile, desktop] = await Promise.all([getShot(r.id, "mobile"), getShot(r.id, "desktop")]);
+    const pdf = await renderReportPdf(r, { mobile: mobile ?? undefined, desktop: desktop ?? undefined }, reportUrl(r));
+    attachments = [{ filename: `Website-Analyse ${r.domain}.pdf`, content: pdf, contentType: "application/pdf" }];
+  } catch (e) {
+    console.error("[analyse] PDF für E-Mail nicht erstellt:", e);
+  }
   return sendMail({
     to: r.email,
     subject: `Ihre Website-Analyse für ${r.domain}: ${r.scores.overall} von 100 Punkten`,
@@ -144,5 +154,6 @@ export async function sendReport(r: Report) {
     content: { title: `Website-Analyse für ${r.domain}`, cta: { label: "Bericht ansehen", url: reportUrl(r) } },
     rendered: renderReportEmail(r),
     related: { type: "website-analyse", id: r.id },
+    attachments,
   });
 }
