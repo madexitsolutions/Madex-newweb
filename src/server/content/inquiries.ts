@@ -283,6 +283,11 @@ export function inquiryCsvRows(rows: Inquiry[]) {
 
 const OPEN_STATES = ["new", "open", "quoted"] as const;
 
+/** The follow-up date of an open enquiry has come. */
+export function isFollowUpDue(q: Pick<Inquiry, "followUpAt" | "status">, now = new Date()) {
+  return Boolean(q.followUpAt && q.followUpAt <= now && (OPEN_STATES as readonly string[]).includes(q.status));
+}
+
 /** Enquiries whose follow-up date has come (open ones only), oldest first. */
 export async function dueFollowUps(now = new Date(), limit = 20) {
   return db

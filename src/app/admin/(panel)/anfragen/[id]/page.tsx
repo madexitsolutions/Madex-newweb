@@ -7,7 +7,7 @@ import { requireModule } from "@/modules/registry";
 import { requirePermission } from "@/server/auth/session";
 import { db } from "@/server/db";
 import { inquiries, users } from "@/server/db/schema";
-import { INQUIRY_STATUS, assignableUsers, fieldLabel } from "@/server/content/inquiries";
+import { INQUIRY_STATUS, assignableUsers, fieldLabel, isFollowUpDue } from "@/server/content/inquiries";
 import { maskIp } from "@/server/lib/request";
 import { getSettings } from "@/server/settings";
 import { PROJECT } from "@/site/project";
@@ -58,7 +58,7 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
   const extra = Object.entries(row.fields);
   const projectPanel = PROJECT.inquiryPanel ? await PROJECT.inquiryPanel({ reference: row.reference, fields: row.fields }) : null;
   const followUp = row.followUpAt ? row.followUpAt.toLocaleDateString("en-CA", { timeZone: "Europe/Zurich" }) : "";
-  const followUpDue = row.followUpAt && row.followUpAt.getTime() <= Date.now() && row.status !== "done" && row.status !== "spam";
+  const followUpDue = isFollowUpDue(row);
 
   return (
     <>
