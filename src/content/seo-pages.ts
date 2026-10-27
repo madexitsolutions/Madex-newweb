@@ -45,8 +45,8 @@ export const staticSeo: Record<string, { title: string; description: string }> =
     description: "Wir freuen uns darauf, mit Ihnen in Kontakt zu treten und Ihr digitales Marketing für mehr Erfolg zu optimieren! In Schaffhausen, Zürich, Thurgau und der Ostschweiz",
   },
   "/kostenlose-prufung": {
-    title: "Kostenlose Prüfung – Website- & Marketing-Analyse",
-    description: "Kostenloses Erstgespräch mit Website- und Marketing-Analyse: SEO-Kurzcheck, Website-Check, Google-Sichtbarkeit, Konkurrenz-Check und drei konkrete Verbesserungsvorschläge.",
+    title: "Kostenlose Website-Analyse – Ergebnis in 60 Sekunden",
+    description: "Prüfen Sie Ihre Website kostenlos: SEO, Google-Sichtbarkeit, Design, Mobile, Ladezeit und Technik – mit Punktzahl und drei konkreten Verbesserungen, auch als PDF.",
   },
   "/agb": {
     title: "AGB – Allgemeine Geschäftsbedingungen",

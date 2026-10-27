@@ -1,0 +1,131 @@
+/* Kostenlose Website-Analyse: dark hero with the scanner and a sample report, then what is checked and how it works. */
+
+.ka {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: calc(var(--header-h) + 64px) 0 clamp(72px, 8vw, 120px);
+  background: radial-gradient(110% 80% at 85% 15%, #024a50 0%, transparent 55%), linear-gradient(180deg, #02272b 0%, #011b1e 100%);
+}
+.ka::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.3;
+  background-image: linear-gradient(rgba(160, 255, 236, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(160, 255, 236, 0.08) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 70% 40%, #000 0%, transparent 70%);
+}
+.ka__glow {
+  position: absolute;
+  z-index: -1;
+  right: 4%;
+  top: 18%;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background: rgba(25, 179, 169, 0.28);
+  filter: blur(120px);
+  pointer-events: none;
+}
+.ka__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: center;
+}
+
+.ka__crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; list-style: none; margin: 0 0 18px; padding: 0; font-size: 13px; color: var(--on-dark-soft); }
+.ka__crumbs li + li::before { content: "/"; margin-right: 8px; opacity: 0.45; }
+.ka__crumbs a { display: inline-flex; align-items: center; min-height: 44px; transition: color 0.3s; }
+.ka__crumbs a:hover { color: #fff; }
+.ka__crumbs [aria-current] { color: var(--on-dark); }
+
+.ka__title {
+  margin: 0 0 22px;
+  max-width: 14ch;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.2vw, 74px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  font-weight: 700;
+  color: #fff;
+  text-wrap: balance;
+}
+.ka__lead { margin: 0; max-width: 52ch; font-size: clamp(16px, 1.25vw, 18.5px); line-height: 1.6; color: var(--on-dark-soft); }
+.ka .hx__form { margin-top: 34px; }
+.ka__facts { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 26px; font-size: 14px; color: var(--on-dark); }
+.ka__facts li { display: inline-flex; align-items: center; gap: 8px; }
+.ka__facts svg { color: var(--teal-glow); }
+
+/* sample report – the one bold element of the page */
+.ka__sample {
+  margin: 0;
+  padding: 26px 28px 24px;
+  border-radius: var(--radius-m);
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 50px 100px -40px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(160, 255, 236, 0.18);
+  animation: kaRise 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+.ka__sample-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 18px; border-bottom: 1px solid var(--line-soft); }
+.ka__sample-url { font-weight: 600; font-size: 15px; color: var(--deep); }
+.ka__sample-tag { padding: 4px 10px; border-radius: 999px; background: var(--mint); color: var(--teal-ink); font-size: 12.5px; font-weight: 600; }
+.ka__sample-score { display: flex; align-items: center; gap: 20px; padding: 22px 0 18px; }
+.ka__sample-score svg { width: 104px; height: 104px; flex: none; transform: rotate(-90deg); }
+.ka__ring-bg { fill: none; stroke: var(--mint); stroke-width: 11; }
+.ka__ring { fill: none; stroke: #d08a12; stroke-width: 11; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: calc(100 - var(--p)); animation: kaRing 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
+.ka__sample-score strong { display: block; font-family: var(--font-display); font-size: 46px; line-height: 1; letter-spacing: -0.03em; color: var(--deep); }
+.ka__sample-score span { font-size: 14px; color: var(--ink-soft); }
+.ka__bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.ka__bars li { display: grid; grid-template-columns: 74px minmax(0, 1fr) 28px; align-items: center; gap: 12px; font-size: 14px; color: var(--ink-soft); }
+.ka__bars b { text-align: right; color: var(--deep); font-variant-numeric: tabular-nums; }
+.ka__bar { height: 8px; border-radius: 999px; background: var(--mint); overflow: hidden; }
+.ka__bar i { display: block; height: 100%; border-radius: inherit; transform-origin: left; animation: kaBar 1s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: calc(0.6s + var(--i) * 0.07s); }
+.ka__bar--ok i { background: var(--teal); }
+.ka__bar--mid i { background: #d08a12; }
+.ka__bar--low i { background: #c2412d; }
+.ka__sample-tip { display: flex; gap: 10px; align-items: flex-start; margin-top: 20px; padding: 12px 14px; border-radius: var(--radius-s); background: #fff6e6; font-size: 14px; line-height: 1.5; color: var(--ink); }
+.ka__sample-tip svg { flex: none; margin-top: 2px; color: #b06f00; }
+
+@keyframes kaRise { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+@keyframes kaRing { from { stroke-dashoffset: 100; } }
+@keyframes kaBar { from { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .ka__sample, .ka__ring, .ka__bar i { animation: none; }
+}
+
+/* the seven areas */
+.ka-areas__head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 64px; align-items: end; margin-bottom: clamp(36px, 4vw, 56px); }
+.ka-areas__head .h2 { margin: 0; text-wrap: balance; }
+.ka-areas__head .lead { margin: 0; max-width: 52ch; color: var(--ink-soft); }
+.ka-areas__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(32px, 5vw, 80px); }
+.ka-area { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 18px; padding: 24px 0; border-top: 1px solid var(--line); }
+.ka-area__icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: var(--mint); color: var(--teal-ink); }
+.ka-area h3 { margin: 4px 0 6px; font-size: 19px; line-height: 1.3; letter-spacing: -0.01em; color: var(--deep); }
+.ka-area p { margin: 0; max-width: 54ch; font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); }
+
+/* how it works – a real sequence, so numbered */
+.ka-steps .h2 { margin: 0 0 clamp(32px, 4vw, 52px); }
+.ka-steps__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 3vw, 44px); counter-reset: none; }
+.ka-steps__list li { position: relative; padding-top: 22px; border-top: 2px solid var(--deep); }
+.ka-steps__n { display: block; margin-bottom: 14px; font-family: var(--font-display); font-size: 44px; line-height: 1; font-weight: 700; letter-spacing: -0.03em; color: var(--teal); font-variant-numeric: tabular-nums; }
+.ka-steps__list h3 { margin: 0 0 8px; font-size: 20px; line-height: 1.3; color: var(--deep); }
+.ka-steps__list p { margin: 0; max-width: 40ch; font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); }
+.ka-steps__again { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; margin: clamp(36px, 4vw, 52px) 0 0; font-size: 15px; color: var(--ink-soft); }
+.ka-steps__again span a { color: var(--teal-ink); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+
+@media (max-width: 1000px) {
+  .ka__grid { grid-template-columns: minmax(0, 1fr); }
+  .ka__sample { max-width: 520px; }
+  .ka-areas__head { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .ka { padding-top: calc(var(--header-h) + 32px); }
+  .ka-areas__list, .ka-steps__list { grid-template-columns: minmax(0, 1fr); }
+  .ka__sample { padding: 20px 18px; }
+  .ka__bars li { grid-template-columns: 64px minmax(0, 1fr) 26px; }
+}
