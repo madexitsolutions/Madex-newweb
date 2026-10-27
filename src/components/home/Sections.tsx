@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@/components/layout/Transition";
 import { openOrion } from "@/components/layout/Orion";
@@ -30,27 +31,26 @@ const OFFER_VIDEO = {
 };
 
 /**
- * The offer as a 55-second clip. Starts muted as soon as it scrolls into view and
- * pauses when it leaves; phones get the vertical version. Nothing is downloaded
- * before the video is close to the screen. With reduced motion it waits for a click.
+ * Video that starts muted as soon as it scrolls into view and pauses when it
+ * leaves. Nothing is downloaded before it is close to the screen; with reduced
+ * motion it waits for a click. `choose` returns the source (called when the
+ * video comes near and when one of the `watch` media queries changes).
  */
-function OfferVideo() {
+function useScrollVideo(choose: () => string, watch: string[] = []) {
   const ref = useRef<HTMLVideoElement>(null);
-  const [phone, setPhone] = useState(false);
   const [src, setSrc] = useState("");
   const [muted, setMuted] = useState(true);
   const [paused, setPaused] = useState(true);
   const visible = useRef(false);
   const reduced = useRef(false);
+  const chooser = useRef(choose);
+  chooser.current = choose;
 
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 700px)");
-    const pick = () => {
-      setPhone(mq.matches);
-      setSrc(mq.matches ? OFFER_VIDEO.phone.src : window.matchMedia("(max-width: 1100px)").matches ? OFFER_VIDEO.wide.small : OFFER_VIDEO.wide.src);
-    };
     const v = ref.current;
     if (!v) return;
+    const pick = () => setSrc(chooser.current());
+    const queries = watch.map((q) => window.matchMedia(q));
     reduced.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // load once the video is near, play while at least 40 % of it is visible
     const near = new IntersectionObserver(
@@ -72,12 +72,13 @@ function OfferVideo() {
     );
     near.observe(v);
     seen.observe(v);
-    mq.addEventListener("change", pick);
+    queries.forEach((q) => q.addEventListener("change", pick));
     return () => {
       near.disconnect();
       seen.disconnect();
-      mq.removeEventListener("change", pick);
+      queries.forEach((q) => q.removeEventListener("change", pick));
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the queries are fixed per video
   }, []);
 
   // the source arrives after the first visibility check: start once it is set
@@ -92,44 +93,62 @@ function OfferVideo() {
     setMuted(v.muted);
     if (!v.muted && v.paused) v.play().catch(() => {});
   };
+  const play = () => ref.current?.play().catch(() => {});
+  const events = { onPlay: () => setPaused(false), onPause: () => setPaused(true) };
+  return { ref, src, muted, paused, toggleSound, play, events };
+}
+
+/** Play button while paused, «Ton an» while playing muted. */
+function VideoControls({ v }: { v: ReturnType<typeof useScrollVideo> }) {
+  if (v.paused && v.muted)
+    return (
+      <button type="button" className="ovid__start" onClick={v.play} aria-label="Video abspielen">
+        <span className="ovid__play" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24">
+            <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+          </svg>
+        </span>
+      </button>
+    );
+  if (!v.muted) return null;
+  return (
+    <button type="button" className="ovid__sound" onClick={v.toggleSound}>
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4zM16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      Ton an
+    </button>
+  );
+}
+
+/** The offer as a 55-second clip; phones get the vertical version. */
+function OfferVideo() {
+  const [phone, setPhone] = useState(false);
+  const v = useScrollVideo(() => {
+    const isPhone = window.matchMedia("(max-width: 700px)").matches;
+    setPhone(isPhone);
+    return isPhone ? OFFER_VIDEO.phone.src : window.matchMedia("(max-width: 1100px)").matches ? OFFER_VIDEO.wide.small : OFFER_VIDEO.wide.src;
+  }, ["(max-width: 700px)"]);
 
   return (
     <figure className={`ovid${phone ? " ovid--phone" : ""}`}>
       <div className="ovid__frame">
         <video
-          ref={ref}
+          ref={v.ref}
           className="ovid__media"
-          src={src || undefined}
+          src={v.src || undefined}
           poster={phone ? OFFER_VIDEO.phone.poster : OFFER_VIDEO.wide.poster}
           muted
           playsInline
           loop
           preload="none"
-          controls={!paused && !muted}
-          onPlay={() => setPaused(false)}
-          onPause={() => setPaused(true)}
+          controls={!v.paused && !v.muted}
+          {...v.events}
           aria-label="Video: Ihre neue Website ist inklusive (55 Sekunden)"
         >
           Ihr Browser kann dieses Video nicht abspielen.
         </video>
-        {paused && muted ? (
-          <button type="button" className="ovid__start" onClick={() => ref.current?.play().catch(() => {})} aria-label="Video abspielen">
-            <span className="ovid__play" aria-hidden="true">
-              <svg width="26" height="26" viewBox="0 0 24 24">
-                <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
-              </svg>
-            </span>
-          </button>
-        ) : (
-          muted && (
-            <button type="button" className="ovid__sound" onClick={toggleSound}>
-              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 9.5v5h3.5L12 19V5L7.5 9.5H4zM16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              Ton an
-            </button>
-          )
-        )}
+        <VideoControls v={v} />
       </div>
       <figcaption className="ovid__cap">
         <strong>Das Angebot in 55 Sekunden</strong>
@@ -249,6 +268,70 @@ export function Steps() {
             </li>
           ))}
         </ol>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------- Content production */
+const SHOOT_PHOTOS = [
+  { src: "/media/2026/10/shooting-studio.webp", alt: "Fotograf von Madex beim Produkt-Shooting im Besprechungsraum eines Kunden" },
+  { src: "/media/2026/10/shooting-standort.webp", alt: "Standortbesprechung vor dem Firmengebäude von Mila d’Opiz" },
+  { src: "/media/2026/10/shooting-drohne.webp", alt: "Drohnenpilot steuert eine Drohne vor dem Firmengebäude" },
+  { src: "/media/2026/10/shooting-raum.webp", alt: "Für das Shooting eingerichteter Raum mit Studioleuchte und Produktregal" },
+];
+
+/** Behind-the-scenes clip of a shoot – vertical, plays muted when in view. */
+function ShootVideo() {
+  const v = useScrollVideo(() => "/media/2026/10/Madex-It-Solutions-011026.mp4");
+  return (
+    <figure className="cp__video">
+      <div className="ovid__frame cp__frame">
+        <video
+          ref={v.ref}
+          className="ovid__media"
+          src={v.src || undefined}
+          poster="/media/2026/10/Madex-It-Solutions-011026.webp"
+          muted
+          playsInline
+          loop
+          preload="none"
+          controls={!v.paused && !v.muted}
+          {...v.events}
+          aria-label="Video: Einblick in ein Foto- und Video-Shooting bei einem Kunden (45 Sekunden)"
+        >
+          Ihr Browser kann dieses Video nicht abspielen.
+        </video>
+        <VideoControls v={v} />
+      </div>
+      <figcaption className="cp__cap">Einblick in ein Shooting bei Mila d’Opiz</figcaption>
+    </figure>
+  );
+}
+
+export function ContentProduction() {
+  return (
+    <section className="cp" aria-labelledby="cp-title">
+      <div className="container cp__grid">
+        <div className="cp__copy">
+          <h2 id="cp-title" className="sec-title sec-title--sm">
+            Starke Inhalte. Starke Partner. Starker Auftritt.
+          </h2>
+          <p className="sec-lead">Professionelle Video-Shootings und Foto-Shootings machen Ihre Marke sichtbar und sorgen für Inhalte, die im Gedächtnis bleiben.</p>
+          <p>Dank unseres starken Partnernetzwerks können wir Unternehmen auch in den Bereichen Foto, Video und Content-Produktion professionell unterstützen – passend zu Ihrem Auftritt und Ihrer Marke.</p>
+          <p className="cp__claim">Von der Idee bis zum fertigen Content – alles aus einer Hand.</p>
+          <div className="cp__mosaic">
+            {SHOOT_PHOTOS.map((ph) => (
+              <div key={ph.src} className="cp__tile">
+                <Image src={ph.src} alt={ph.alt} fill sizes="(max-width: 900px) 50vw, 340px" />
+              </div>
+            ))}
+          </div>
+          <Link href="/marketing-solutions/photo-werbevideos" className="b b--quiet cp__more">
+            Foto &amp; Video ansehen
+          </Link>
+        </div>
+        <ShootVideo />
       </div>
     </section>
   );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "@/components/home/home.css";
 import { Hero } from "@/components/home/Hero";
-import { AiSection, Offer, Pricing, Steps } from "@/components/home/Sections";
+import { AiSection, ContentProduction, Offer, Pricing, Steps } from "@/components/home/Sections";
 import { LatestProjects, PartnerMarquee } from "@/components/sections/HomeSections";
 import { ServicesConstellation } from "@/components/sections/ServicesConstellation";
 import { Testimonials } from "@/components/sections/Testimonials";
@@ -22,6 +22,7 @@ export default async function HomePage() {
       <PartnerMarquee logos={partners.logos} />
       <Offer />
       <Steps />
+      <ContentProduction />
       <AiSection />
       <ServicesConstellation />
       <Pricing />
