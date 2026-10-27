@@ -28,10 +28,7 @@ export const PROJECT: {
     {
       group: "Vertrieb",
       after: "Übersicht",
-      items: [
-        { href: "/admin/analysen", label: "Website-Analysen", icon: "sparkle", permission: "inquiries.view", module: "inquiries" },
-        { href: "/admin/chatbot", label: "Chatbot Orion", icon: "bot", permission: "inquiries.view" },
-      ],
+      items: [{ href: "/admin/chatbot", label: "Chatbot Orion", icon: "bot", permission: "inquiries.view" }],
     },
     { group: "Website", items: [{ href: "/admin/projekte", label: "Projekte", icon: "file", permission: "content.view" }] },
   ],

@@ -152,6 +152,10 @@ export const NAV: { group: string; items: NavItem[] }[] = [
     ],
   },
   {
+    group: "Vertrieb",
+    items: [{ href: "/admin/anfragen", label: "Anfragen", icon: "inbox", permission: "inquiries.view", module: "inquiries", badge: "inquiries" }],
+  },
+  {
     group: "Shop",
     items: [
       { href: "/admin/bestellungen", label: "Bestellungen", icon: "cart", permission: "orders.view", module: "shop", badge: "orders" },
@@ -170,21 +174,18 @@ export const NAV: { group: string; items: NavItem[] }[] = [
       { website: true, href: "/admin/menues", label: "Menüs", icon: "menuedit", permission: "website.manage" },
       { href: "/admin/beitraege", label: "Beiträge", icon: "file", permission: "content.view", module: "blog" },
       { href: "/admin/medien", label: "Mediathek", icon: "image", permission: "media.manage" },
-      { href: "/admin/anfragen", label: "Anfragen", icon: "inbox", permission: "inquiries.view", module: "inquiries", badge: "inquiries" },
     ],
   },
   {
     group: "Marketing",
     items: [
       { href: "/admin/seo", label: "SEO", icon: "search", permission: "seo.manage", module: "seo" },
-      { href: "/admin/plugins/analytics", label: "Google Analytics", icon: "chart", permission: "settings.manage", module: "analytics" },
       { href: "/admin/weiterleitungen", label: "Weiterleitungen", icon: "shuffle", permission: "seo.manage", module: "redirects" },
     ],
   },
   {
     group: "System",
     items: [
-      { href: "/admin/plugins", label: "Plugins", icon: "plug", permission: "settings.manage" },
       { href: "/admin/benutzer", label: "Benutzer & Rollen", icon: "users", permission: "users.view" },
       { href: "/admin/integrationen", label: "Integrationen", icon: "key", permission: "integrations.manage" },
       { href: "/admin/einstellungen", label: "Einstellungen", icon: "gear", permission: "settings.manage" },
@@ -195,8 +196,9 @@ export const NAV: { group: string; items: NavItem[] }[] = [
 
 export async function enabledModules(): Promise<Settings["modules"]> {
   const m = { ...(await getSettings("modules")) };
-  // plugins the website of this project doesn't support are always off
-  for (const p of PLUGINS) if (!isPluginAvailable(p.key)) m[p.key] = false;
+  // plugins the website of this project doesn't support are always off; with a fixed list
+  // (src/site/project.ts) the listed ones are always on – there is no plugins page to switch them
+  for (const p of PLUGINS) m[p.key] = PROJECT.plugins === "all" ? isPluginAvailable(p.key) && m[p.key] : PROJECT.plugins.includes(p.key);
   // the built-in shop pages are an option of the shop
   return { ...m, storefront: m.shop && m.storefront };
 }

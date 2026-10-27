@@ -1,32 +1,26 @@
 import { ActionButton } from "@/components/admin/action-button";
 import { ActionForm, Submit } from "@/components/admin/forms";
 import { FormSection, Icon, PageHeader, Panel, Tabs, one } from "@/components/admin/kit";
-import { redirect } from "next/navigation";
 import { requirePermission } from "@/server/auth/session";
 import { smtpConfig } from "@/server/mail/mailer";
 import { getSettings, getSettingsForForm } from "@/server/settings";
 import { saveBrandingAction, saveEmailAction, saveGeneralAction, sendDigestAction, testEmailAction } from "./actions";
 import { BrandingFields } from "./branding-fields";
+import { SETTINGS_TABS } from "./tabs";
 import "../../system.css";
 
 export const metadata = { title: "Einstellungen" };
 
-const BASE = "/admin/einstellungen";
-const TABS = [
-  { key: "allgemein", label: "Allgemein", href: BASE, icon: "building" as const },
-  { key: "branding", label: "Branding", href: `${BASE}?tab=branding`, icon: "palette" as const },
-  { key: "email", label: "E-Mail", href: `${BASE}?tab=email`, icon: "mail" as const },
-];
+const OWN_TABS = ["allgemein", "branding", "email"];
 
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   await requirePermission("settings.manage");
   const sp = await searchParams;
-  if (one(sp.tab) === "module") redirect("/admin/plugins");
-  const tab = TABS.some((t) => t.key === one(sp.tab)) ? one(sp.tab) : "allgemein";
+  const tab = OWN_TABS.includes(one(sp.tab)) ? one(sp.tab) : "allgemein";
   return (
     <>
-      <PageHeader title="Einstellungen" description="Firmendaten, Erscheinungsbild und E-Mail-Versand dieser Installation." />
-      <Tabs items={TABS} active={tab} label="Einstellungen" />
+      <PageHeader title="Einstellungen" description="Firmendaten, Erscheinungsbild, E-Mail-Versand, Kontaktformular, SEO und Google Analytics." />
+      <Tabs items={SETTINGS_TABS} active={tab} label="Einstellungen" />
       {tab === "allgemein" && <GeneralTab />}
       {tab === "branding" && <BrandingTab />}
       {tab === "email" && <EmailTab />}

@@ -10,6 +10,8 @@ import { ratedPages } from "@/server/content/seo";
 import { change, type DigestSection, type DigestWeek } from "@/server/digest";
 import { appUrl } from "@/server/lib/app-url";
 
+const LEADS = `/admin/anfragen?status=alle&formular=${encodeURIComponent("Kostenlose Analyse")}`;
+
 const inRange = (iso: string | undefined, a: Date, b: Date) => {
   const t = iso ? Date.parse(iso) : NaN;
   return t >= a.getTime() && t < b.getTime();
@@ -28,9 +30,9 @@ export async function madexDigest(w: DigestWeek): Promise<DigestSection[]> {
     out.push({
       title: "Website-Analysen",
       rows: [
-        { label: "Analysen gestartet", value: number(week.length), change: change(week.length, prev.length), href: appUrl("/admin/analysen") },
-        { label: "Bericht nicht geöffnet", value: number(unopened), href: appUrl("/admin/analysen?ansicht=ungeoeffnet") },
-        ...weak.slice(0, 3).map((a) => ({ label: "Grosses Potenzial", value: `${a.domain} (${a.score} Punkte)`, href: appUrl(`/admin/analysen?q=${encodeURIComponent(a.domain)}`) })),
+        { label: "Analysen gestartet", value: number(week.length), change: change(week.length, prev.length), href: appUrl(LEADS) },
+        { label: "Bericht nicht geöffnet", value: number(unopened), href: appUrl(LEADS) },
+        ...weak.slice(0, 3).map((a) => ({ label: "Grosses Potenzial", value: `${a.domain} (${a.score} Punkte)`, href: appUrl(`/admin/anfragen?status=alle&q=${encodeURIComponent(a.domain)}`) })),
       ],
     });
   }

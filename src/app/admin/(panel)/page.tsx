@@ -81,7 +81,6 @@ export default async function Overview() {
     glance.inquiries !== null && { label: "Anfragen", n: glance.inquiries, href: "/admin/anfragen?status=alle", icon: "inbox" as const },
     { label: "Bilder & Dateien", n: glance.media, href: "/admin/medien", icon: "image" as const },
     { label: "Benutzer", n: glance.users, href: "/admin/benutzer", icon: "users" as const },
-    { label: "Aktive Plugins", n: activePlugins, href: "/admin/plugins", icon: "plug" as const },
   ] as (Glance | false)[]).filter((x): x is Glance => Boolean(x));
 
   return (
@@ -103,7 +102,7 @@ export default async function Overview() {
         <section className="ov-welcome" aria-labelledby="ov-welcome-title">
           <div className="ov-welcome__intro">
             <h2 id="ov-welcome-title">Willkommen in Ihrem Dashboard</h2>
-            <p>Hier steuern Sie Ihre Website ohne Programmieren: Texte und Bilder ändern, Seiten anlegen und Funktionen wie Shop oder Google Analytics per Plugin dazuschalten.</p>
+            <p>Hier beantworten Sie Anfragen, pflegen Projekte und SEO der Website und sehen, wie viele Besucher kommen.</p>
             <a href={general.siteUrl || "/"} target="_blank" rel="noopener" className="a-btn a-btn--primary">
               <Icon name="external" size={16} />
               Website ansehen
@@ -142,11 +141,7 @@ export default async function Overview() {
             </div>
           )}
           <div className="ov-welcome__col">
-            <h3>Mehr Funktionen</h3>
-            <Link href="/admin/plugins">
-              <Icon name="plug" size={16} />
-              Plugins aktivieren
-            </Link>
+            <h3>Team und Hilfe</h3>
             <Link href="/admin/benutzer">
               <Icon name="users" size={16} />
               Team einladen

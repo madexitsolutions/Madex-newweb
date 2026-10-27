@@ -1,20 +1,18 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ActionButton } from "@/components/admin/action-button";
 import { ActionForm, Submit } from "@/components/admin/forms";
-import { FormSection, Icon, PageHeader, Panel } from "@/components/admin/kit";
-import { pluginByKey } from "@/modules/registry";
+import { FormSection, Icon, PageHeader, Panel, Tabs } from "@/components/admin/kit";
+import { enabledModules, isPluginAvailable, pluginByKey } from "@/modules/registry";
 import { requirePermission } from "@/server/auth/session";
 import { appUrl } from "@/server/lib/app-url";
 import { pluginSetupStates } from "@/server/plugins";
 import { getSettings, getSettingsForForm } from "@/server/settings";
-import { togglePluginAction } from "../actions";
+import { PLUGIN_FORMS, SETTINGS_TABS } from "../../einstellungen/tabs";
 import { saveAnalyticsAction, saveAnnouncementAction, saveContactFormAction, saveCookiesAction, saveCustomCodeAction, saveMaintenanceAction, saveSeoSiteAction } from "./actions";
 import "../../../system.css";
 import "../plugins.css";
 
-const FORMS = ["inquiries", "seo", "analytics", "cookies", "announcement", "maintenance", "customCode"] as const;
-type FormKey = (typeof FORMS)[number];
+type FormKey = (typeof PLUGIN_FORMS)[number];
 
 export async function generateMetadata({ params }: { params: Promise<{ key: string }> }) {
   return { title: pluginByKey((await params).key)?.name ?? "Plugin" };
@@ -23,31 +21,20 @@ export async function generateMetadata({ params }: { params: Promise<{ key: stri
 export default async function PluginSetupPage({ params }: { params: Promise<{ key: string }> }) {
   const { key } = await params;
   const plugin = pluginByKey(key);
-  if (!plugin) notFound();
-  if (!FORMS.includes(key as FormKey)) redirect(plugin.setup?.href ?? "/admin/plugins");
+  if (!plugin || !isPluginAvailable(plugin.key)) notFound();
+  if (!PLUGIN_FORMS.includes(key as FormKey)) redirect(plugin.setup?.href ?? "/admin/einstellungen");
   await requirePermission(key === "seo" ? "seo.manage" : "settings.manage");
-  const [modules, states] = await Promise.all([getSettings("modules"), pluginSetupStates()]);
+  const [modules, states] = await Promise.all([enabledModules(), pluginSetupStates()]);
   const active = modules[plugin.key];
   const state = states[plugin.key];
 
   return (
     <>
-      <PageHeader
-        crumb={{ href: "/admin/plugins", label: "Plugins" }}
-        title={plugin.name}
-        meta={active ? <span className="a-pill a-pill--ok">Aktiv</span> : <span className="a-pill a-pill--muted">Inaktiv</span>}
-        description={plugin.description}
-        actions={
-          active ? (
-            <ActionButton action={togglePluginAction} fields={{ key: plugin.key, active: "0" }} label="Deaktivieren" variant="quiet" small={false} question={`«${plugin.name}» deaktivieren? Die Einstellungen bleiben gespeichert.`} />
-          ) : (
-            <ActionButton action={togglePluginAction} fields={{ key: plugin.key, active: "1" }} label="Aktivieren" variant="primary" small={false} />
-          )
-        }
-      />
+      <PageHeader title="Einstellungen" description="Firmendaten, Erscheinungsbild, E-Mail-Versand, Kontaktformular, SEO und Google Analytics." />
+      <Tabs items={SETTINGS_TABS} active={plugin.key} label="Einstellungen" />
       {!active ? (
         <Panel>
-          <p className="a-muted">Aktivieren Sie das Plugin, um es einzurichten. Bereits gespeicherte Einstellungen bleiben erhalten.</p>
+          <p className="a-muted">Diese Funktion ist auf dieser Website nicht verfügbar.</p>
         </Panel>
       ) : (
         <>

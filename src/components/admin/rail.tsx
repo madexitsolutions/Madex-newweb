@@ -5,7 +5,6 @@ import { inquiries, media } from "@/server/db/schema";
 import { dueFollowUps } from "@/server/content/inquiries";
 import { ratedPages } from "@/server/content/seo";
 import type { Settings } from "@/server/settings";
-import { AVAILABLE_PLUGINS } from "@/modules/registry";
 import { PROJECT } from "@/site/project";
 import { RailCards, type RailData } from "./rail-cards";
 
@@ -19,7 +18,6 @@ export async function Rail({ user, modules, siteUrl }: { user: CurrentUser; modu
   const data: RailData = {
     siteUrl,
     maintenance: modules.maintenance,
-    plugins: can("settings.manage") ? AVAILABLE_PLUGINS.filter((p) => modules[p.key]).map((p) => ({ name: p.name, icon: p.icon })) : null,
     totp: user.totpEnabled,
     inquiries: null,
     seo: null,

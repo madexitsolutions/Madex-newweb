@@ -119,6 +119,11 @@ body:has(.adm) { background: #f3f5f5; }
 .a-rail__contact .a-ico { color: var(--a-teal); }
 /* small Madex mark at the bottom right of every page */
 .a-mainfoot { display: flex; justify-content: flex-end; margin-top: 40px; padding-top: 14px; }
+/* with the right-hand rail: in the bottom-right corner of the window, under the rail – not floating beside narrow content */
+@media (min-width: 1500px) {
+  .a-mainfoot { position: fixed; right: 22px; bottom: 14px; margin: 0; padding: 0; z-index: 2; }
+  .a-rail { padding-bottom: 64px; }
+}
 .a-signature { display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px; border-radius: 6px; font-size: 12px; font-weight: 600; color: var(--a-faint); text-decoration: none; opacity: .8; transition: opacity .2s, color .2s; }
 .a-signature:hover, .a-signature:focus-visible { opacity: 1; color: var(--a-petrol); }
 

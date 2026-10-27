@@ -3,13 +3,12 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
-import { Icon, type IconName } from "./kit";
+import { Icon } from "./kit";
 import { MADEX } from "./madex";
 
 export type RailData = {
   siteUrl: string;
   maintenance: boolean;
-  plugins: { name: string; icon: IconName }[] | null;
   totp: boolean;
   inquiries: { open: number; latest: { id: string; who: string; subject: string; at: string }[]; due: { id: string; who: string; subject: string; at: string }[] } | null;
   seo: { avg: number; weak: number; weakest: { path: string; title: string; score: number }[] } | null;
@@ -132,25 +131,6 @@ function Website({ d }: { d: RailData }) {
   );
 }
 
-function Plugins({ list }: { list: NonNullable<RailData["plugins"]> }) {
-  return (
-    <Card title={`Aktive Plugins (${list.length})`} action={<More href="/admin/plugins">Plugins verwalten</More>}>
-      {list.length ? (
-        <ul className="a-rail__chips">
-          {list.map((p) => (
-            <li key={p.name}>
-              <Icon name={p.icon} size={14} />
-              {p.name}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="a-rail__hint">Noch keine. Kontaktformular, Google Analytics und mehr lassen sich mit einem Klick aktivieren.</p>
-      )}
-    </Card>
-  );
-}
-
 function Tips({ title, items }: { title: string; items: string[] }) {
   return (
     <Card title={title}>
@@ -204,8 +184,6 @@ export function RailCards({ data }: { data: RailData }) {
   } else if (on("/admin/medien")) {
     if (data.media) cards.push(<Card key="m" title="Mediathek"><p className="a-rail__big"><strong>{data.media.files.toLocaleString("de-CH")}</strong> Dateien · {mb(data.media.bytes)}</p></Card>);
     cards.push(<Tips key="t" title="Bilder für die Website" items={["Fotos mit höchstens 2000 px Breite hochladen – die Website verkleinert sie automatisch.", "Alt-Text beschreibt das Bild für Google und Screenreader."]} />);
-  } else if (on("/admin/plugins") || on("/admin/einstellungen") || on("/admin/integrationen")) {
-    if (data.plugins) cards.push(<Plugins key="p" list={data.plugins} />);
   } else if (on("/admin/benutzer") || on("/admin/sicherheit") || on("/admin/konto")) {
     cards.push(
       <Card key="sec" title="Ihr Konto">
