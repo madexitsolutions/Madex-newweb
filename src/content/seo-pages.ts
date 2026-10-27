@@ -1,12 +1,12 @@
 /** Default title/description of every fixed page – the admin can override them per page. */
 export const staticSeo: Record<string, { title: string; description: string }> = {
   "/": {
-    title: "Madex IT Solutions – Webdesign, Google Ads, SEO & Social Media für Schweizer KMU",
-    description: "Website im Wert von CHF 8’000.– inklusive bei Abschluss eines Online-Marketing-Pakets. Webdesign, Google Ads, SEO, Social Media, Grafikdesign und Werbevideos aus Neuhausen am Rheinfall.",
+    title: "Website-Wartung für 250 CHF/Monat – inkl. Domain und Hosting",
+    description: "Website-Wartung für nur 250 CHF/Monat – inkl. Domain, Hosting und Änderungen! Zusätzlich erhältst du eine neue Webseite im Wert von 8.000 CHF geschenkt. Ideal für KMU!",
   },
   "/marketing-solutions": {
     title: "Marketinglösungen in Schaffhausen",
-    description: "Marketinglösungen aus einer Hand: Webdesign, Digital Marketing, SEO, Photo & Werbevideos, Social Media, Google Marketing, Graphic Design, Analyse und Planung sowie KI-Assistenten für Websites.",
+    description: "Massgeschneiderte Marketinglösungen für Unternehmen in Schaffhausen. Steigern Sie Ihre Markenbekanntheit mit Madex IT Solutions.",
   },
   "/uber-uns": {
     title: "Über uns",
@@ -25,24 +25,24 @@ export const staticSeo: Record<string, { title: string; description: string }> =
     description: "Durchsuchen Sie das Portfolio von Madex IT Solutions: Websites, Grafikdesign und Werbevideos für Schweizer Unternehmen.",
   },
   "/website-portfolio": {
-    title: "Website Portfolio – Websites, die unsere Kunden als Geschenk bekamen",
-    description: "Über 70 realisierte Websites für Schweizer KMU – von Auto Pozzo bis Sun-Foiltec. Kostenlose Website mit unserem Online-Marketing-Paket.",
+    title: "Die neuen Webseiten, die unsere Kunden als Geschenk bekamen",
+    description: "Die neuen Webseiten, die unsere Kunden als Geschenk bekamen in den Kantonen Thurgau, Zürich, Schaffhausen. Profitieren auch Sie von einer kostenlosen, modernen Website!",
   },
   "/graphic-design-portfolio": {
-    title: "Graphic Design Portfolio – Brandings, Print & Social Media",
-    description: "Grafikdesigns für Unternehmen in Thurgau, Zürich und Schaffhausen: Brandings, Printprodukte und Social-Media-Designs von Madex IT Solutions.",
+    title: "Grafikdesigns für Unternehmen in Thurgau, Zürich und Schaffhausen",
+    description: "Nachfolgend finden Sie einige der Grafikdesigns, die wir für Unternehmen in Thurgau, Zürich, Schaffhausen und St. Gallen erstellt haben – hochwertige Designs für unsere geschätzten Kunden in der Ostschweiz!",
   },
   "/werbevideos-portfolio": {
-    title: "Werbevideos Portfolio – Kreative Videos für Unternehmen",
-    description: "Eine Auswahl kreativer und wirkungsvoller Werbevideos, die Madex IT Solutions für Unternehmen aus Schaffhausen und der Ostschweiz produziert hat.",
+    title: "Werbevideos Schaffhausen - Kreative Videos für Unternehmen",
+    description: "Werbevideos Schaffhausen! In unserem Werbevideos Portfolio zeigen wir kreative und wirkungsvolle Produktionen für Unternehmen in Thurgau, Zürich, Schaffhausen und St. Gallen.",
   },
   "/partners": {
-    title: "Unsere geschätzten Partner",
-    description: "Starke Partner, starke Lösungen: Madex IT Solutions arbeitet mit ausgewählten Unternehmen und Spezialisten zusammen – und betreut Kunden aus der ganzen Schweiz.",
+    title: "Unsere geschätzten Partner – Experten für Digital Marketing",
+    description: "Unsere geschätzten Partner unterstützen wir in Webentwicklung, Grafikdesign, Digital Marketing und IT-Support. In Schaffhausen, Zürich, Thurgau und der Ostschweiz",
   },
   "/kontakt": {
-    title: "Kontakt – erreichen Sie uns über Ihre bevorzugte Kontaktmethode",
-    description: "Kontakt zu Madex IT Solutions in Neuhausen am Rheinfall: 052 589 67 59, 076 507 33 32, info@madex-it.ch. Kostenloses Erstgespräch buchen.",
+    title: "Kontakt - Sie können uns über Ihre bevorzugte Kontaktmethode erreichen",
+    description: "Wir freuen uns darauf, mit Ihnen in Kontakt zu treten und Ihr digitales Marketing für mehr Erfolg zu optimieren! In Schaffhausen, Zürich, Thurgau und der Ostschweiz",
   },
   "/kostenlose-prufung": {
     title: "Kostenlose Prüfung – Website- & Marketing-Analyse",

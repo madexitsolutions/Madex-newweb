@@ -135,6 +135,98 @@ export async function getSeo(path: string) {
   return row ?? null;
 }
 
+/* ---------- all pages of the website, rated ---------- */
+
+/** A page of the website with its built-in SEO (project code: src/site/project.ts → seoPages). */
+export type SitePage = { path: string; group: string; title: string; description: string; image?: string };
+
+export type SeoCheck = { label: string; ok: boolean; points: number; max: number; hint: string; /** short problem, e.g. "Titel zu lang (72 Zeichen)" */ issue: string };
+
+/** Effective SEO of one page (dashboard changes over built-in defaults) with its rating. */
+export type RatedPage = {
+  path: string;
+  group: string;
+  title: string;
+  description: string;
+  ogImage: string;
+  noindex: boolean;
+  canonical: string;
+  /** changed in the dashboard (otherwise the website's own defaults apply) */
+  custom: boolean;
+  defaults: SitePage | null;
+  score: number;
+  checks: SeoCheck[];
+};
+
+const GENERIC_IMAGE = /\/og\.(jpe?g|png|webp)$/i;
+
+/**
+ * 0–100 per page: title (35), description (35), own share image (10),
+ * indexed (10), unique title (5), readable address (5).
+ */
+export function rateSeo(v: { path: string; title: string; description: string; ogImage: string; noindex: boolean }, duplicateTitle = false): { score: number; checks: SeoCheck[] } {
+  const t = v.title.trim().length;
+  const d = v.description.trim().length;
+  const checks: SeoCheck[] = [
+    { label: "Titel vorhanden", ok: t > 0, points: t > 0 ? 20 : 0, max: 20, hint: "Ohne Titel zeigt Google irgendeinen Text der Seite an.", issue: "Titel fehlt" },
+    {
+      label: "Titellänge 30–60 Zeichen",
+      ok: t >= 30 && t <= SEO_LIMITS.titleMax,
+      points: t >= 30 && t <= SEO_LIMITS.titleMax ? 15 : t >= 15 && t <= 70 ? 7 : 0,
+      max: 15,
+      hint: t > SEO_LIMITS.titleMax ? "Längere Titel schneidet Google ab." : "Kurze Titel verschenken Platz für Suchbegriffe wie Leistung und Ort.",
+      issue: `Titel zu ${t > SEO_LIMITS.titleMax ? "lang" : "kurz"} (${t} Zeichen)`,
+    },
+    { label: "Beschreibung vorhanden", ok: d > 0, points: d > 0 ? 20 : 0, max: 20, hint: "Ohne Beschreibung wählt Google einen zufälligen Textausschnitt.", issue: "Beschreibung fehlt" },
+    {
+      label: `Beschreibung ${SEO_LIMITS.descMin}–${SEO_LIMITS.descMax} Zeichen`,
+      ok: d >= SEO_LIMITS.descMin && d <= SEO_LIMITS.descMax,
+      points: d >= SEO_LIMITS.descMin && d <= SEO_LIMITS.descMax ? 15 : d >= 50 && d <= 200 ? 7 : 0,
+      max: 15,
+      hint: d > SEO_LIMITS.descMax ? "Google schneidet den Text ab – die wichtigste Aussage gehört an den Anfang." : "Nutzen Sie den Platz für Nutzen und Aufruf, z. B. «Jetzt Offerte anfragen».",
+      issue: `Beschreibung zu ${d > SEO_LIMITS.descMax ? "lang" : "kurz"} (${d} Zeichen)`,
+    },
+    { label: "Eigenes Vorschaubild", ok: Boolean(v.ogImage) && !GENERIC_IMAGE.test(v.ogImage), points: v.ogImage && !GENERIC_IMAGE.test(v.ogImage) ? 10 : 0, max: 10, hint: "Ein passendes Bild macht geteilte Links auf WhatsApp, LinkedIn und Facebook auffälliger.", issue: "Kein eigenes Vorschaubild" },
+    { label: "Bei Google sichtbar", ok: !v.noindex, points: v.noindex ? 0 : 10, max: 10, hint: "Die Seite ist auf noindex gesetzt und erscheint nicht bei Google.", issue: "Nicht bei Google sichtbar" },
+    { label: "Titel nur einmal verwendet", ok: !duplicateTitle, points: duplicateTitle ? 0 : 5, max: 5, hint: "Mehrere Seiten mit demselben Titel konkurrieren bei Google miteinander.", issue: "Titel doppelt verwendet" },
+    {
+      label: "Lesbare Adresse",
+      ok: v.path.length <= 75 && !/[A-Z_?=]/.test(v.path),
+      points: v.path.length <= 75 && !/[A-Z_?=]/.test(v.path) ? 5 : 0,
+      max: 5,
+      hint: "Kurze Adressen aus Wörtern mit Bindestrich lassen sich besser merken und teilen.",
+      issue: "Sehr lange Adresse",
+    },
+  ];
+  return { score: checks.reduce((n, c) => n + c.points, 0), checks };
+}
+
+export const seoGrade = (n: number) => (n >= 85 ? { label: "Sehr gut", tone: "ok" as const } : n >= 70 ? { label: "Gut", tone: "info" as const } : n >= 50 ? { label: "Ausbaufähig", tone: "warn" as const } : { label: "Schwach", tone: "bad" as const });
+
+/** Every page: built-in defaults merged with dashboard changes, plus extra paths only kept in the dashboard. */
+export async function ratedPages(defaults: SitePage[]): Promise<RatedPage[]> {
+  const rows = await db.select().from(seoEntries);
+  const saved = new Map(rows.map((r) => [r.path, r]));
+  const known = new Set(defaults.map((p) => p.path));
+  const base = [
+    ...defaults.map((p) => ({ p, e: saved.get(p.path) })),
+    ...rows.filter((r) => !known.has(r.path)).map((e) => ({ p: null, e })),
+  ].map(({ p, e }) => ({
+    path: (p?.path ?? e?.path)!,
+    group: p?.group ?? "Weitere",
+    title: e?.title?.trim() || p?.title || "",
+    description: e?.description?.trim() || p?.description || "",
+    ogImage: e?.ogImage?.trim() || p?.image || "",
+    noindex: e?.noindex ?? false,
+    canonical: e?.canonical ?? "",
+    custom: Boolean(e),
+    defaults: p,
+  }));
+  const titles = new Map<string, number>();
+  for (const r of base) if (r.title) titles.set(r.title.toLowerCase(), (titles.get(r.title.toLowerCase()) ?? 0) + 1);
+  return base.map((r) => ({ ...r, ...rateSeo(r, (titles.get(r.title.toLowerCase()) ?? 0) > 1) }));
+}
+
 /* ---------- sitemap import ---------- */
 
 export const SITEMAP_LIMITS = { timeoutMs: 8_000, maxBytes: 5 * 1024 * 1024, maxSitemaps: 20, maxUrls: 5_000 };

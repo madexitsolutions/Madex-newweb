@@ -9,7 +9,8 @@ import { importSitemapAction, saveSeoAction } from "./actions";
 
 export type SeoFormEntry = { path: string; title: string; description: string; canonical: string; ogImage: string; noindex: boolean; ogMedia: PickedMedia | null };
 
-export function SeoEntryForm({ entry, siteHost, canMedia, saved }: { entry: SeoFormEntry | null; siteHost: string; canMedia: boolean; saved?: boolean }) {
+/** `fixedPath`: a page of the website – its address can't be changed here. */
+export function SeoEntryForm({ entry, siteHost, canMedia, saved, fixedPath = false, imageHint }: { entry: SeoFormEntry | null; siteHost: string; canMedia: boolean; saved?: boolean; fixedPath?: boolean; imageHint?: string }) {
   const [path, setPath] = useState(entry?.path ?? "/");
   const [ogImage, setOgImage] = useState(entry?.ogMedia ? "" : (entry?.ogImage ?? ""));
   const [hasMedia, setHasMedia] = useState(Boolean(entry?.ogMedia));
@@ -24,12 +25,16 @@ export function SeoEntryForm({ entry, siteHost, canMedia, saved }: { entry: SeoF
           )}
           <div className="a-seoform__body">
             {entry && <input type="hidden" name="original" value={entry.path} />}
-            <label className="a-field">
-              <span>Pfad</span>
-              <input name="path" value={path} onChange={(e) => setPath(e.target.value)} required maxLength={500} className="a-mono" placeholder="/ueber-uns" aria-invalid={state?.fieldErrors?.path ? true : undefined} spellCheck={false} autoFocus={!entry} />
-              <small>Pfad der Seite auf der Website, z. B. /kontakt. Eine ganze Adresse wird gekürzt.</small>
-              <FieldError state={state} name="path" />
-            </label>
+            {fixedPath ? (
+              <input type="hidden" name="path" value={path} />
+            ) : (
+              <label className="a-field">
+                <span>Pfad</span>
+                <input name="path" value={path} onChange={(e) => setPath(e.target.value)} required maxLength={500} className="a-mono" placeholder="/ueber-uns" aria-invalid={state?.fieldErrors?.path ? true : undefined} spellCheck={false} autoFocus={!entry} />
+                <small>Pfad der Seite auf der Website, z. B. /kontakt. Eine ganze Adresse wird gekürzt.</small>
+                <FieldError state={state} name="path" />
+              </label>
+            )}
             <SeoFields titleName="title" descriptionName="description" defaultTitle={entry?.title} defaultDescription={entry?.description} url={`${siteHost}${path === "/" ? "" : path.replace(/\//g, " › ").replace(/^ › /, " › ")}`} titleError={state?.fieldErrors?.title} descriptionError={state?.fieldErrors?.description} />
             <label className="a-field">
               <span>
@@ -40,7 +45,7 @@ export function SeoEntryForm({ entry, siteHost, canMedia, saved }: { entry: SeoF
               <FieldError state={state} name="canonical" />
             </label>
             <div className="sx-og">
-              <MediaPicker name="ogMediaId" label="Vorschaubild für soziale Netzwerke" defaultValue={entry?.ogMedia ? [entry.ogMedia] : []} canUpload={canMedia} onChange={(l) => setHasMedia(l.length > 0)} help="1200 × 630 px empfohlen." />
+              <MediaPicker name="ogMediaId" label="Vorschaubild für soziale Netzwerke" defaultValue={entry?.ogMedia ? [entry.ogMedia] : []} canUpload={canMedia} onChange={(l) => setHasMedia(l.length > 0)} help={`1200 × 630 px empfohlen.${imageHint ? ` ${imageHint}.` : ""}`} />
               {!hasMedia && (
                 <label className="a-field">
                   <span>

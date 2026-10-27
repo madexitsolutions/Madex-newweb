@@ -12,6 +12,8 @@ import { SEO_LIMITS, descState, getSeo, listSeo, seoSummary, titleState, type Se
 import { getSettings } from "@/server/settings";
 import { deleteSeoAction } from "./actions";
 import { SeoEntryForm, SitemapImport, type SeoFormEntry } from "./client";
+import { SitePagesView } from "./site-pages";
+import { PROJECT } from "@/site/project";
 import "../../content.css";
 
 export const metadata = { title: "SEO" };
@@ -48,6 +50,27 @@ export default async function SeoPage({ searchParams }: { searchParams: Promise<
   const page = Math.max(1, Number(one(sp.seite)) || 1);
   const editPath = one(sp.bearbeiten);
   const isNew = one(sp.neu) === "1";
+
+  // the project knows its pages: list all of them with a rating
+  if (PROJECT.seoPages) {
+    const general = await getSettings("general");
+    let host = "";
+    for (const u of [general.siteUrl, process.env.NEXT_PUBLIC_SITE_URL]) {
+      try {
+        if (u && !host) host = new URL(u).host;
+      } catch {
+        /* next candidate */
+      }
+    }
+    return (
+      <SitePagesView
+        defaults={await PROJECT.seoPages()}
+        siteHost={host || "ihre-website.ch"}
+        canMedia={user.permissions.has("media.manage")}
+        sp={{ view: one(sp.ansicht), group: one(sp.gruppe), q, page, edit: editPath, saved: one(sp.gespeichert) === "1", sort: one(sp.sort) }}
+      />
+    );
+  }
 
   const [{ rows, total }, sum, general, editing] = await Promise.all([listSeo({ q, filter: filter.key }, page, PER_PAGE), seoSummary(), getSettings("general"), editPath ? getSeo(editPath) : null]);
   let siteHost = "ihre-website.ch";

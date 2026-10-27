@@ -13,6 +13,7 @@ import { addMissingPaths, normalizePath, seoInput, sitemapPaths } from "@/server
 import { getMedia } from "@/server/media/library";
 import { mediaUrl } from "@/server/media/store";
 import { getSettings } from "@/server/settings";
+import { PROJECT } from "@/site/project";
 
 async function guard() {
   const user = await checkPermission("seo.manage");
@@ -49,6 +50,18 @@ export async function saveSeoAction(_: FormState, f: FormData): Promise<FormStat
     const [taken] = await db.select({ p: seoEntries.path }).from(seoEntries).where(eq(seoEntries.path, v.path));
     if (taken) return fail(`Für ${v.path} gibt es schon einen Eintrag. Bearbeiten Sie diesen oder wählen Sie einen anderen Pfad.`, { path: "Bereits vorhanden." });
   }
+  // a website page saved unchanged keeps using the website's own defaults
+  const site = PROJECT.seoPages ? (await PROJECT.seoPages()).find((p) => p.path === v.path) : undefined;
+  if (site && original === v.path && v.title === site.title.trim() && v.description === site.description.trim() && !v.canonical && !v.ogImage && !v.noindex) {
+    const [had] = await db.select({ p: seoEntries.path }).from(seoEntries).where(eq(seoEntries.path, v.path));
+    if (had) {
+      await db.delete(seoEntries).where(eq(seoEntries.path, v.path));
+      await audit(g.user, "seo.deleted", { entityType: "seo", entityId: v.path, summary: `SEO für ${v.path} auf Standard zurückgesetzt` });
+    }
+    revalidatePath("/admin/seo");
+    revalidatePath(v.path);
+    return ok("Gespeichert. Die Seite verwendet die Standardangaben der Website.");
+  }
   const values = { path: v.path, title: v.title || null, description: v.description || null, canonical: v.canonical || null, ogImage: v.ogImage || null, noindex: v.noindex, updatedAt: new Date() };
   await db.transaction(async (tx) => {
     if (original && original !== v.path) await tx.delete(seoEntries).where(eq(seoEntries.path, original));
@@ -56,6 +69,7 @@ export async function saveSeoAction(_: FormState, f: FormData): Promise<FormStat
   });
   await audit(g.user, original ? "seo.updated" : "seo.created", { entityType: "seo", entityId: v.path, summary: `SEO für ${v.path} ${original ? "geändert" : "angelegt"}${original && original !== v.path ? ` (vorher ${original})` : ""}` });
   revalidatePath("/admin/seo");
+  revalidatePath(v.path);
   if (v.path !== original) redirect(`/admin/seo?bearbeiten=${encodeURIComponent(v.path)}&gespeichert=1`);
   return ok("Gespeichert. Die Website übernimmt die Angaben beim nächsten Abruf.");
 }
@@ -67,6 +81,7 @@ export async function deleteSeoAction(f: FormData) {
   if (path) {
     await db.delete(seoEntries).where(eq(seoEntries.path, path));
     await audit(g.user, "seo.deleted", { entityType: "seo", entityId: path, summary: `SEO-Eintrag ${path} gelöscht` });
+    revalidatePath(path);
   }
   revalidatePath("/admin/seo");
   redirect("/admin/seo");

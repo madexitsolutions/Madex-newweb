@@ -20,7 +20,17 @@ export function MadexMark({ size = 20, light = false }: { size?: number; light?:
   );
 }
 
-/** Small «Erstellt von Madex» line for the sidebar, login and footers. */
+/** Small mark at the bottom right of every dashboard page: logo + name, links to the support contact. */
+export function MadexSignature() {
+  return (
+    <a href={MADEX.url} target="_blank" rel="noopener" className="a-signature" title={`Support: ${MADEX.email} · ${MADEX.phone}`}>
+      <MadexMark size={10} />
+      <span>{MADEX.name}</span>
+    </a>
+  );
+}
+
+/** Small «Erstellt von Madex» line for the login and footers. */
 export function MadexCredit({ light = false, className }: { light?: boolean; className?: string }) {
   return (
     <a href={MADEX.url} target="_blank" rel="noopener" className={`a-madex${light ? " a-madex--light" : ""}${className ? " " + className : ""}`}>

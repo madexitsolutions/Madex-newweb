@@ -36,9 +36,9 @@ export const services: Service[] = [
     slug: "website-development",
     name: "Webdesign & Website-Erstellung",
     short: "Wir erstellen einzigartige und funktionale Websites, die Ihre digitalen Bedürfnisse erfüllen.",
-    metaTitle: "Webdesign Schaffhausen – professionelle Websites für KMU & Start-ups",
+    metaTitle: "Webdesign Schaffhausen – professionelle Websites für Start-ups!",
     metaDescription:
-      "Moderne, individuelle Websites aus Schaffhausen: responsives Webdesign, SEO-Grundoptimierung, schnelle Ladezeiten, WordPress und persönlicher Support.",
+      "Webdesign Schaffhausen – Deine Webagentur in Schaffhausen für moderne und professionelle Webseiten. Wir entwickeln massgeschneiderte Lösungen.",
     eyebrow: "Marketing Solutions",
     heroTitle: "Webdesign & Website-Erstellung",
     image: "/media/brand/service-website-development.webp",
@@ -121,7 +121,7 @@ export const services: Service[] = [
     short: "Steigern Sie Ihre Online-Präsenz und erreichen Sie mehr Kunden effektiv.",
     metaTitle: "Online Marketing Schaffhausen – Experten für digitale Präsenz",
     metaDescription:
-      "Digital Marketing für Schweizer KMU: Google Ads, SEO, Social Media, Content Marketing, Analyse & Reporting sowie Strategie und Beratung aus einer Hand.",
+      "Online Marketing Schaffhausen, Zürich, Thurgau und Winterthur – Experten für digitales Marketing. Steigern Sie Ihre Online-Präsenz mit SEO, Social Media",
     eyebrow: "Digital Marketing",
     heroTitle: "Mehr Sichtbarkeit. Mehr Anfragen. Mehr Kunden.",
     image: "/media/brand/service-digital-marketing.webp",
@@ -191,7 +191,7 @@ export const services: Service[] = [
     short: "Verbessern Sie Ihr Suchmaschinen-Ranking und erhöhen Sie Ihre Online-Sichtbarkeit.",
     metaTitle: "SEO Optimierung – Schaffhausen, Zürich, Thurgau, Ostschweiz",
     metaDescription:
-      "SEO-Optimierung von Madex IT Solutions: On-Page, Keyword-Analyse, Content-Optimierung, technische SEO, Linkbuilding und regelmässiges Reporting.",
+      "SEO Optimierung in Schaffhausen, Zürich, Thurgau und der Ostschweiz. Steigern Sie Ihr Suchmaschinen-Ranking und erhalten Sie eine Webseite als Geschenk",
     eyebrow: "Marketing Solutions",
     heroTitle: "SEO Optimierung",
     image: "/media/brand/service-seo-optimization.webp",
@@ -273,7 +273,7 @@ export const services: Service[] = [
     short: "Kreative und ansprechende visuelle Inhalte zur Förderung Ihrer Marke.",
     metaTitle: "Photo & Werbevideos – Professionelle Fotografie und Imagefilme",
     metaDescription:
-      "Professionelle Fotografie, kreative Werbevideos, Imagefilme, Social-Media-Videos und Postproduktion von Madex IT Solutions.",
+      "Photo & Werbevideos in Schaffhausen, Zürich, Thurgau und der Ostschweiz. Professionelle Fotografie, kreative Werbevideos, Imagefilme und Unternehmenspräsentationen",
     eyebrow: "Marketing Solutions",
     heroTitle: "Photo & Werbevideos",
     image: "/media/brand/service-photo-advertising-video.webp",
@@ -344,7 +344,7 @@ export const services: Service[] = [
     short: "Erhöhen Sie Ihre Reichweite und Interaktion auf allen sozialen Plattformen.",
     metaTitle: "Social Media Marketing – Werbung in Schaffhausen, Zürich, Thurgau",
     metaDescription:
-      "Social Media Marketing von Madex IT Solutions: Strategie, Content-Erstellung, Community Management, Social Media Advertising sowie Analyse und Reporting.",
+      "Social Media Marketing in Schaffhausen, Zürich, Thurgau und der Ostschweiz. Effektive Werbung, die Ihre Marke stärkt und Ihre Reichweite in sozialen Netzwerken erhöht",
     eyebrow: "Marketing Solutions",
     heroTitle: "Social Media Marketing",
     image: "/media/brand/service-social-media-marketing.webp",
@@ -408,9 +408,9 @@ export const services: Service[] = [
     slug: "google-marketing",
     name: "Google Marketing",
     short: "Nutzen Sie gezielte Anzeigen und SEO, um Ihre Sichtbarkeit auf Google zu maximieren.",
-    metaTitle: "Google Marketing – Google Ads und Werbung in Schaffhausen",
+    metaTitle: "Google Marketing – Google Ads und Werbung in Schaffhausen!",
     metaDescription:
-      "Google Ads Kampagnen, Optimierung des Google-Unternehmensprofils sowie Google Analytics und Conversion Tracking von Madex IT Solutions.",
+      "Google Marketing in Schaffhausen, Zürich, Thurgau und der Ostschweiz. Mit gezielten Google Ads Kampagnen und Google Werbung steigern wir Ihre Online-Sichtbarkeit",
     eyebrow: "Marketing Solutions",
     heroTitle: "Google Marketing",
     image: "/media/brand/service-google-marketing.webp",
@@ -461,7 +461,7 @@ export const services: Service[] = [
     short: "Einzigartige und visuell ansprechende Designs, die Ihre Marke zum Leben erwecken.",
     metaTitle: "Graphic Design, Logo-Design und Branding in Schaffhausen, Zürich",
     metaDescription:
-      "Markenidentität und Logo-Design, Print-Design, digitale Medien, Werbekampagnen sowie Illustrationen und Infografiken von Madex IT Solutions.",
+      "Graphic Design, Markenidentität und Logo-Design in Schaffhausen, Zürich, Thurgau und der Ostschweiz. Wir bieten Print-Design, digitale Medien, Webdesign.",
     eyebrow: "Marketing Solutions",
     heroTitle: "Graphic Design",
     image: "/media/brand/service-graphic-design.webp",
@@ -530,9 +530,9 @@ export const services: Service[] = [
     slug: "analyse-und-planung",
     name: "Analyse und Planung",
     short: "Präzise Datenanalyse und strategische Planung für Ihren Geschäftserfolg.",
-    metaTitle: "Marktanalyse und strategische Planung für Ihr Marketing",
+    metaTitle: "Umfassende Marktanalyse und strategische Planung für Ihr Marketing",
     metaDescription:
-      "Marktanalyse, strategische Planung und Beratung, Projektmanagement, Prozessoptimierung und datengetriebene Entscheidungen von Madex IT Solutions.",
+      "Umfassende Marktanalyse, strategische Planung und Beratung für effektives Marketing und Werbung, in Schaffhausen, Zürich, Thurgau und der Ostschweiz",
     eyebrow: "Marketing Solutions",
     heroTitle: "Analyse und Planung",
     image: "/media/brand/service-analysis-planning.webp",

@@ -1,6 +1,7 @@
 import { count, eq, inArray } from "drizzle-orm";
 import { Brand } from "@/components/admin/brand";
 import { AdminNav, type NavGroupView } from "@/components/admin/nav";
+import { MadexSignature } from "@/components/admin/madex";
 import { Rail } from "@/components/admin/rail";
 import { NAV, enabledModules, navItemVisible } from "@/modules/registry";
 import { db } from "@/server/db";
@@ -34,6 +35,9 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       <div className="a-body">
         <main className="a-main" id="inhalt">
           {children}
+          <footer className="a-mainfoot">
+            <MadexSignature />
+          </footer>
         </main>
         <Rail user={user} modules={modules} siteUrl={general.siteUrl || "/"} />
       </div>
