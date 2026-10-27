@@ -38,7 +38,7 @@ export function Gallery({ tabs }: { tabs: Tab[] }) {
 
   return (
     <div className="gal">
-      <div className="gal__tabs" role="tablist" aria-label="Kategorien">
+      <div className="gal__tabs" role="tablist" aria-label="Kategorien" style={{ ["--n" as string]: tabs.length }}>
         {tabs.map((t) => (
           <button key={t.id} id={`tab-${t.id}`} role="tab" aria-selected={tab === t.id} aria-controls={`panel-${t.id}`} className={tab === t.id ? "is-on" : ""} onClick={() => { setTab(t.id); setShown(36); }}>
                         <span>
@@ -100,6 +100,12 @@ export function Gallery({ tabs }: { tabs: Tab[] }) {
         .gal__tabs button.is-on{color:#fff;background:linear-gradient(135deg,var(--teal),var(--petrol))}
         .gal__tabs button span{position:relative}
         .gal__tabs small{opacity:.6;margin-left:4px}
+        @media(max-width:600px){
+          .gal__tabs{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));width:100%;border-radius:20px;margin-bottom:28px}
+          .gal__tabs button{min-height:56px;padding:8px 6px;border-radius:15px;font-size:14.5px;line-height:1.2}
+          .gal__tabs button span{display:flex;flex-direction:column;align-items:center;gap:2px}
+          .gal__tabs small{margin:0;font-size:12.5px}
+        }
         .gal__pill{position:absolute;inset:0;border-radius:999px;background:linear-gradient(135deg,var(--teal),var(--petrol))}
         .gal__grid{columns:4 240px;column-gap:16px}
         .gal__item{display:block;width:100%;margin:0 0 16px;break-inside:avoid;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 20px 40px -32px rgba(1,41,45,.6)}

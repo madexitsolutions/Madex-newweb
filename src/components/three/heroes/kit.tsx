@@ -30,7 +30,8 @@ export function SceneRig({ children, scale = 1, tilt = 0.35, y = 0, shadow = tru
   const py = mobile ? -viewport.height / 2 + 1.25 : y - 0.15;
 
   useFrame((state, d) => {
-    const scroll = Math.min(1.2, window.scrollY / window.innerHeight);
+    // no scroll drift on mobile: the hero is tall there, so the drift pushed the scene up into the copy
+    const scroll = mobile ? 0 : Math.min(1.2, window.scrollY / window.innerHeight);
     if (outer.current) {
       outer.current.position.y = THREE.MathUtils.damp(outer.current.position.y, py + scroll * 1.1, 4, d);
     }
@@ -43,7 +44,8 @@ export function SceneRig({ children, scale = 1, tilt = 0.35, y = 0, shadow = tru
   return (
     <group ref={outer} position={[px, py, 0]} scale={s}>
       <group ref={inner}>{children}</group>
-      {shadow && <ContactShadows position={[0, -2.25, 0]} scale={7} blur={2.6} far={4.5} opacity={0.55} resolution={256} color="#000c0e" />}
+      {/* on mobile the camera looks down onto the shadow plane, which then shows as a dark bar */}
+      {shadow && !mobile && <ContactShadows position={[0, -2.25, 0]} scale={7} blur={2.6} far={4.5} opacity={0.55} resolution={256} color="#000c0e" />}
     </group>
   );
 }

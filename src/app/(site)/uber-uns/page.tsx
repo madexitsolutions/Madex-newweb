@@ -66,6 +66,7 @@ export default function AboutPage() {
           .ab__p1{position:absolute;left:0;top:0;width:78%;border-radius:var(--radius-l);overflow:hidden;box-shadow:0 40px 80px -40px rgba(1,41,45,.6)}
           .ab__p2{position:absolute;right:0;bottom:0;width:62%;border-radius:var(--radius-m);overflow:hidden;border:8px solid var(--mist);box-shadow:0 40px 80px -40px rgba(1,41,45,.6)}
           .ab__photos img{width:100%;height:auto;display:block}
+          @media(max-width:760px){.ab__photos{min-height:0;aspect-ratio:10/7.4;margin-top:8px}.ab__p1{width:84%}.ab__p2{width:64%;border-width:6px}}
         `}</style>
       </section>
 
