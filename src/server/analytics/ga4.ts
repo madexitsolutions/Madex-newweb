@@ -48,8 +48,8 @@ export function parseServiceAccount(email: string, rawKey: string): { email: str
 }
 
 /** Signed JWT assertion for the OAuth 2.0 JWT bearer flow. */
-export function createJwt(email: string, key: KeyObject | string, nowSec = Math.floor(Date.now() / 1000)) {
-  const claims = { iss: email, scope: GA4_SCOPE, aud: GA4_TOKEN_URL, iat: nowSec, exp: nowSec + 3600 };
+export function createJwt(email: string, key: KeyObject | string, nowSec = Math.floor(Date.now() / 1000), scope = GA4_SCOPE) {
+  const claims = { iss: email, scope, aud: GA4_TOKEN_URL, iat: nowSec, exp: nowSec + 3600 };
   const unsigned = `${b64({ alg: "RS256", typ: "JWT" })}.${b64(claims)}`;
   const signature = createSign("RSA-SHA256").update(unsigned).sign(key).toString("base64url");
   return `${unsigned}.${signature}`;
@@ -57,15 +57,17 @@ export function createJwt(email: string, key: KeyObject | string, nowSec = Math.
 
 const tokens = new Map<string, { token: string; exp: number }>();
 
-async function accessToken(email: string, key: KeyObject) {
-  const hit = tokens.get(email);
+/** OAuth access token of the service account (cached). Other Google APIs (e.g. Search Console) pass their own scope. */
+export async function accessToken(email: string, key: KeyObject, scope = GA4_SCOPE) {
+  const cacheKey = `${email} ${scope}`;
+  const hit = tokens.get(cacheKey);
   if (hit && hit.exp > Date.now() + 60_000) return hit.token;
   let res: Response;
   try {
     res = await fetch(GA4_TOKEN_URL, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: createJwt(email, key) }),
+      body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: createJwt(email, key, undefined, scope) }),
       signal: AbortSignal.timeout(15_000),
     });
   } catch {
@@ -73,7 +75,7 @@ async function accessToken(email: string, key: KeyObject) {
   }
   if (!res.ok) throw new Ga4Error("Anmeldung bei Google fehlgeschlagen – prüfen Sie E-Mail-Adresse und Schlüssel des Dienstkontos (Schlüssel eventuell widerrufen).", "auth");
   const json = (await res.json()) as { access_token: string; expires_in: number };
-  tokens.set(email, { token: json.access_token, exp: Date.now() + json.expires_in * 1000 });
+  tokens.set(cacheKey, { token: json.access_token, exp: Date.now() + json.expires_in * 1000 });
   return json.access_token;
 }
 

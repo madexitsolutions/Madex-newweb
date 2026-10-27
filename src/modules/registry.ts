@@ -205,6 +205,13 @@ export async function isModuleEnabled(key: ModuleKey) {
   return (await enabledModules())[key];
 }
 
+// project pages (src/site/project.ts → nav): into their group, or as a new group after `after`
+for (const extra of PROJECT.nav ?? []) {
+  const target = NAV.find((g) => g.group === extra.group);
+  if (target) target.items.push(...extra.items);
+  else NAV.splice(Math.max(0, NAV.findIndex((g) => g.group === extra.after)) + 1, 0, { group: extra.group, items: extra.items });
+}
+
 export function navItemVisible(item: NavItem, modules: Settings["modules"]) {
   if (item.website && !websiteEditing) return false;
   if (!item.module) return true;

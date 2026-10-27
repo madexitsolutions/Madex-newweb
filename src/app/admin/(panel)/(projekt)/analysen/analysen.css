@@ -1,0 +1,71 @@
+/* Website-Analysen (Madex) */
+.an-site small,
+.an-table td > small {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  color: var(--a-soft);
+  font-size: 13px;
+}
+.an-score {
+  --tone: var(--a-teal);
+  display: inline-grid;
+  place-items: center;
+  min-width: 40px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 12%, #fff);
+}
+.an-score--ok {
+  --tone: #1d8a52;
+}
+.an-score--warn {
+  --tone: var(--a-amber);
+}
+.an-score--bad {
+  --tone: var(--a-red);
+}
+.an-score--muted {
+  --tone: var(--a-soft);
+}
+.an-top {
+  max-width: 26ch;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: block !important;
+}
+.an-flag {
+  display: block;
+  font-size: 13px;
+  color: var(--a-faint);
+}
+.an-flag.is-on {
+  color: var(--a-ink);
+  font-weight: 600;
+}
+.an-flag::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--a-line);
+  vertical-align: 1px;
+}
+.an-flag.is-on::before {
+  background: #1d8a52;
+}
+.an-actions {
+  white-space: nowrap;
+}
+.an-actions form {
+  display: inline-block;
+}

@@ -10,6 +10,7 @@ import { Empty, Icon, PageHeader, Pager, qs } from "@/components/admin/kit";
 import { number } from "@/lib/format";
 import { db } from "@/server/db";
 import { media } from "@/server/db/schema";
+import { GSC_DAYS, searchConsolePages, searchConsoleQueries, type GscStats } from "@/server/analytics/search-console";
 import { getSeo, ratedPages, seoGrade, type RatedPage, type SitePage } from "@/server/content/seo";
 import { deleteSeoAction } from "./actions";
 import { SeoEntryForm, type SeoFormEntry } from "./client";
@@ -39,6 +40,23 @@ function Rating({ page }: { page: RatedPage }) {
   );
 }
 
+const pos = (n: number) => n.toLocaleString("de-CH", { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+const pct = (n: number) => `${(n * 100).toLocaleString("de-CH", { maximumFractionDigits: 1 })} %`;
+
+function Google({ g }: { g?: GscStats }) {
+  if (!g) return <span className="sx-gsc sx-gsc--none">Keine Klicks</span>;
+  return (
+    <span className="sx-gsc">
+      <span>
+        <strong>{number(g.clicks)}</strong> Klicks
+      </span>
+      <small>
+        {number(g.impressions)}× gezeigt, Pos. {pos(g.position)}
+      </small>
+    </span>
+  );
+}
+
 export async function SitePagesView({
   defaults,
   sp,
@@ -50,7 +68,8 @@ export async function SitePagesView({
   siteHost: string;
   canMedia: boolean;
 }) {
-  const all = await ratedPages(defaults);
+  const [all, gsc] = await Promise.all([ratedPages(defaults), searchConsolePages(siteHost)]);
+  const google = gsc.configured && "report" in gsc ? gsc.report : null;
   const groups = [...new Set(all.map((p) => p.group))];
   const ql = sp.q.toLowerCase();
   let list = all.filter(
@@ -61,6 +80,7 @@ export async function SitePagesView({
       (!ql || p.path.toLowerCase().includes(ql) || p.title.toLowerCase().includes(ql) || p.description.toLowerCase().includes(ql)),
   );
   if (sp.sort === "bewertung") list = [...list].sort((a, b) => a.score - b.score);
+  if (sp.sort === "klicks" && google) list = [...list].sort((a, b) => (google.pages[b.path]?.clicks ?? -1) - (google.pages[a.path]?.clicks ?? -1) || (google.pages[b.path]?.impressions ?? 0) - (google.pages[a.path]?.impressions ?? 0));
   const total = list.length;
   const pages = Math.max(1, Math.ceil(total / PER_PAGE));
   const rows = list.slice((sp.page - 1) * PER_PAGE, sp.page * PER_PAGE);
@@ -72,6 +92,7 @@ export async function SitePagesView({
   const closeHref = `/admin/seo${qs(base)}`;
   const editing = sp.edit ? all.find((p) => p.path === sp.edit) : undefined;
 
+  const queries = editing && google ? await searchConsoleQueries(siteHost, editing.path) : [];
   let entry: SeoFormEntry | null = null;
   if (editing) {
     const saved = await getSeo(editing.path);
@@ -104,7 +125,31 @@ export async function SitePagesView({
           <strong>{number(custom)}</strong>
           <span>im Dashboard angepasst</span>
         </Link>
+        {google && (
+          <Link href={`/admin/seo${qs({ ...base, sort: "klicks", seite: undefined })}`} className={`a-stat${sp.sort === "klicks" ? " is-active" : ""}`}>
+            <strong>{number(google.totals.clicks)}</strong>
+            <span>Klicks von Google ({GSC_DAYS} Tage)</span>
+          </Link>
+        )}
       </div>
+      {!gsc.configured && (
+        <p className="sx-note">
+          <Icon name="search" size={15} />
+          <span>
+            Klicks und Position bei Google erscheinen hier, sobald die Search Console verbunden ist: Dienstkonto unter{" "}
+            <Link href="/admin/plugins/analytics" className="a-link">
+              Plugins → Statistiken
+            </Link>{" "}
+            hinterlegen und seine E-Mail-Adresse in der Search Console als Nutzer hinzufügen.
+          </span>
+        </p>
+      )}
+      {gsc.configured && "error" in gsc && (
+        <p className="sx-note sx-note--warn" role="status">
+          <Icon name="alert" size={15} />
+          <span>Search Console: {gsc.error}</span>
+        </p>
+      )}
       <div className="a-toolbar">
         <div className="a-toolbar__row">
           <form className="a-search" role="search" action="/admin/seo">
@@ -135,10 +180,17 @@ export async function SitePagesView({
               </Link>
             ))}
           </div>
-          <Link href={`/admin/seo${qs({ ...base, sort: sp.sort ? undefined : "bewertung", seite: undefined })}`} className="a-btn a-btn--quiet a-btn--sm" scroll={false}>
-            <Icon name="filter" size={15} />
-            {sp.sort ? "Nach Seitenreihenfolge" : "Schwächste zuerst"}
-          </Link>
+          <div className="a-chips" role="group" aria-label="Sortierung">
+            {[
+              { key: "", label: "Seitenreihenfolge" },
+              { key: "bewertung", label: "Schwächste zuerst" },
+              ...(google ? [{ key: "klicks", label: "Meiste Klicks" }] : []),
+            ].map((o) => (
+              <Link key={o.key} href={`/admin/seo${qs({ ...base, sort: o.key || undefined, seite: undefined })}`} className={`a-chip${sp.sort === o.key ? " is-active" : ""}`} scroll={false}>
+                {o.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
       <section className="a-panel a-panel--flush">
@@ -153,7 +205,7 @@ export async function SitePagesView({
           <ul className="sx-list">
             {rows.map((p) => (
               <li key={p.path}>
-                <Link href={`/admin/seo${qs({ ...base, bearbeiten: p.path })}`} className={`sx-row${p.path === sp.edit ? " is-selected" : ""}`} scroll={false}>
+                <Link href={`/admin/seo${qs({ ...base, bearbeiten: p.path })}`} className={`sx-row${google ? " sx-row--gsc" : ""}${p.path === sp.edit ? " is-selected" : ""}`} scroll={false}>
                   <span className="sx-row__main">
                     <span className="sx-row__title">{p.title || <em className="a-muted">Ohne Titel</em>}</span>
                     <span className="sx-row__meta">
@@ -163,6 +215,7 @@ export async function SitePagesView({
                       {p.noindex && <span className="a-pill a-pill--warn">noindex</span>}
                     </span>
                   </span>
+                  {google && <Google g={google.pages[p.path]} />}
                   <Rating page={p} />
                   <Icon name="arrow" size={16} className="sx-row__go" />
                 </Link>
@@ -197,6 +250,63 @@ export async function SitePagesView({
                   ))}
                 </ul>
               </div>
+              {google && (
+                <div className="sx-google">
+                  <h3>
+                    Bei Google <small>letzte {GSC_DAYS} Tage</small>
+                  </h3>
+                  {google.pages[editing.path] ? (
+                    <>
+                      <dl className="sx-google__kpis">
+                        <div>
+                          <dt>Klicks</dt>
+                          <dd>{number(google.pages[editing.path].clicks)}</dd>
+                        </div>
+                        <div>
+                          <dt>Gezeigt</dt>
+                          <dd>{number(google.pages[editing.path].impressions)}</dd>
+                        </div>
+                        <div>
+                          <dt>Klickrate</dt>
+                          <dd>{pct(google.pages[editing.path].ctr)}</dd>
+                        </div>
+                        <div>
+                          <dt>Ø Position</dt>
+                          <dd>{pos(google.pages[editing.path].position)}</dd>
+                        </div>
+                      </dl>
+                      {queries.length > 0 && (
+                        <table className="a-table sx-google__q">
+                          <caption className="sr-only">Suchbegriffe</caption>
+                          <thead>
+                            <tr>
+                              <th scope="col">Gesucht nach</th>
+                              <th scope="col" className="a-num">
+                                Klicks
+                              </th>
+                              <th scope="col" className="a-num">
+                                Pos.
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {queries.map((q) => (
+                              <tr key={q.query}>
+                                <td>{q.query}</td>
+                                <td className="a-num">{number(q.clicks)}</td>
+                                <td className="a-num">{pos(q.position)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                      {google.pages[editing.path].impressions > 50 && google.pages[editing.path].ctr < 0.02 && <p className="sx-google__tip">Die Seite wird oft gezeigt, aber selten angeklickt. Ein klarerer Titel und eine Beschreibung mit Nutzen für den Leser erhöhen die Klickrate.</p>}
+                    </>
+                  ) : (
+                    <p className="a-muted">In diesem Zeitraum hat Google die Seite in keiner Suche gezeigt. Gute Titel, Beschreibungen und Links von anderen Seiten helfen.</p>
+                  )}
+                </div>
+              )}
               <SeoEntryForm key={editing.path} fixedPath siteHost={siteHost} canMedia={canMedia} saved={sp.saved} entry={entry} imageHint={editing.defaults?.image ? "Leer lassen = Bild der Seite" : undefined} />
               {editing.custom && (
                 <div className="a-danger a-danger--inset">

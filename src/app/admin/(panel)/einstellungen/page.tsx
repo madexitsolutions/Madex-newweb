@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { requirePermission } from "@/server/auth/session";
 import { smtpConfig } from "@/server/mail/mailer";
 import { getSettings, getSettingsForForm } from "@/server/settings";
-import { saveBrandingAction, saveEmailAction, saveGeneralAction, testEmailAction } from "./actions";
+import { saveBrandingAction, saveEmailAction, saveGeneralAction, sendDigestAction, testEmailAction } from "./actions";
 import { BrandingFields } from "./branding-fields";
 import "../../system.css";
 
@@ -262,6 +262,11 @@ async function EmailTab() {
               <span>Lagerbestand niedrig</span>
               <textarea name="notifyLowStock" rows={2} defaultValue={e.notifyLowStock.join("\n")} />
             </label>
+            <label className="a-field">
+              <span>Wochenbericht</span>
+              <textarea name="notifyWeekly" rows={2} defaultValue={e.notifyWeekly.join("\n")} />
+              <small>Jeden Montagmorgen: neue Anfragen, fällige Nachfass-Termine, Besucher und Google-Klicks der letzten Woche.</small>
+            </label>
           </FormSection>
           <div className="a-savebar">
             <Submit>Speichern</Submit>
@@ -282,6 +287,7 @@ async function EmailTab() {
             )}
           </p>
           <ActionButton action={testEmailAction} label="Test-E-Mail senden" small={false} pending="Wird gesendet …" icon={<Icon name="mail" size={16} />} />
+          <ActionButton action={sendDigestAction} label="Wochenbericht an mich senden" variant="ghost" small={false} pending="Wird zusammengestellt …" icon={<Icon name="chart" size={16} />} />
           <p className="a-footnote" style={{ margin: 0 }}>
             Alle versendeten E-Mails sehen Sie unter Sicherheit → E-Mail-Protokoll.
           </p>

@@ -98,6 +98,8 @@ export const SCHEMAS = {
     notifyNewOrder: list(),
     notifyInquiry: list(),
     notifyLowStock: list(),
+    /** weekly summary (Mondays); empty = none */
+    notifyWeekly: list(),
   }),
   security: z.object({
     require2fa: bool(true),

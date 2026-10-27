@@ -15,6 +15,13 @@
       "when": 1792486914859,
       "tag": "0001_website_pages_redirects",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793100094872,
+      "tag": "0002_inquiry_follow_up",
+      "breakpoints": true
     }
   ]
 }

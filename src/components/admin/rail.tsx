@@ -2,6 +2,7 @@ import { count, desc, eq, sum } from "drizzle-orm";
 import type { CurrentUser } from "@/server/auth/session";
 import { db } from "@/server/db";
 import { inquiries, media } from "@/server/db/schema";
+import { dueFollowUps } from "@/server/content/inquiries";
 import { ratedPages } from "@/server/content/seo";
 import type { Settings } from "@/server/settings";
 import { AVAILABLE_PLUGINS } from "@/modules/registry";
@@ -36,7 +37,12 @@ export async function Rail({ user, modules, siteUrl }: { user: CurrentUser; modu
           .where(eq(inquiries.status, "new"))
           .orderBy(desc(inquiries.createdAt))
           .limit(4);
-        data.inquiries = { open: open.n, latest: latest.map((i) => ({ id: i.id, who: i.name || i.email, subject: i.subject, at: i.createdAt.toISOString() })) };
+        const due = await dueFollowUps(new Date(), 4);
+        data.inquiries = {
+          open: open.n,
+          latest: latest.map((i) => ({ id: i.id, who: i.name || i.email, subject: i.subject, at: i.createdAt.toISOString() })),
+          due: due.map((i) => ({ id: i.id, who: i.name || i.email, subject: i.subject, at: i.followUpAt!.toISOString() })),
+        };
       })(),
     );
   if (modules.seo && can("seo.manage") && PROJECT.seoPages)

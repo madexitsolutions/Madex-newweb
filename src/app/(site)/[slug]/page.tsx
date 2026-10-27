@@ -8,20 +8,22 @@ import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal, ScrollZoom, StaggerGroup, StaggerItem } from "@/components/ui/motion";
 import { Link } from "@/components/layout/Transition";
-import { getPost, posts, projects, type Block } from "@/content/posts";
+import type { Block } from "@/content/posts";
+import { getProject, getProjects } from "@/lib/server/projects";
 import { media } from "@/lib/media";
 import { withSeo } from "@/lib/seo";
 import { site } from "@/content/site";
 
-export const dynamicParams = false;
+// projects can be added in the dashboard – unknown slugs render on demand
+export const dynamicParams = true;
 
-export function generateStaticParams() {
-  return posts.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  return (await getProjects()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const p = getPost(slug);
+  const p = await getProject(slug);
   if (!p) return {};
   return withSeo({ title: p.title, description: p.description || p.title, path: `/${p.slug}`, image: media(p.cover) });
 }
@@ -88,9 +90,9 @@ function Body({ blocks, skipImage }: { blocks: Block[]; skipImage?: string }) {
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPost(slug);
+  const pool = await getProjects();
+  const post = pool.find((p) => p.slug === slug);
   if (!post) notFound();
-  const pool = projects;
   const idx = pool.indexOf(post);
   const more = [1, 2, 3].map((k) => pool[(idx + k) % pool.length]).filter((p) => p.slug !== post.slug);
   const jsonLd = {

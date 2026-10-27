@@ -1,0 +1,132 @@
+/* Portfolio-Projekte (Madex) */
+.pj-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.pj-list li + li {
+  border-top: 1px solid var(--a-line);
+}
+.pj-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  min-height: 72px;
+  padding: 12px 20px;
+  color: inherit;
+  text-decoration: none;
+}
+.pj-row:hover,
+.pj-row.is-selected {
+  background: var(--a-paper);
+}
+.pj-row:focus-visible {
+  outline: 2px solid var(--a-teal);
+  outline-offset: -2px;
+}
+.pj-row img,
+.pj-row__noimg {
+  width: 96px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: var(--a-paper);
+  border: 1px solid var(--a-line);
+}
+.pj-row__main {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.pj-row__title {
+  font-weight: 600;
+  color: var(--a-ink);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.pj-row__meta {
+  font-size: 13px;
+  color: var(--a-soft);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.pj-row__date {
+  font-size: 13px;
+  color: var(--a-faint);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.pj-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 180px;
+  gap: 16px;
+  align-items: start;
+}
+.a-field > .pj-slug {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0;
+  font-size: inherit;
+  font-weight: 400;
+  align-items: center;
+  border: 1px solid var(--a-field);
+  border-radius: 8px;
+  background: #fff;
+}
+.pj-slug > span {
+  padding-left: 12px;
+  color: var(--a-faint);
+  font-size: 14px;
+  white-space: nowrap;
+}
+.pj-slug input {
+  border: 0 !important;
+  box-shadow: none !important;
+  padding-left: 2px;
+  min-width: 0;
+  flex: 1;
+  background: transparent;
+}
+.pj-slug:focus-within {
+  outline: 2px solid var(--a-teal);
+  outline-offset: 1px;
+}
+.pj-cover {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--a-line);
+}
+.pj-content {
+  font-size: 14px;
+  line-height: 1.55;
+}
+.pj-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 24px 0;
+}
+
+@media (max-width: 700px) {
+  .pj-row {
+    grid-template-columns: 72px minmax(0, 1fr);
+    padding: 12px 16px;
+  }
+  .pj-row img,
+  .pj-row__noimg {
+    width: 72px;
+    height: 48px;
+  }
+  .pj-row__date {
+    grid-column: 2;
+  }
+  .pj-two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

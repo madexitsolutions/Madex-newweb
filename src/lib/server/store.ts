@@ -87,6 +87,23 @@ export async function update<T, R = void>(name: string, fallback: T, fn: (data: 
   return result;
 }
 
+/** Names of the collections that start with `prefix` (e.g. every "analyse-<id>"). */
+export async function listCollections(prefix: string): Promise<string[]> {
+  try {
+    const files = await fs.readdir(DATA_DIR);
+    return files.filter((f) => f.startsWith(prefix) && f.endsWith(".json")).map((f) => f.slice(0, -5));
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw err;
+  }
+}
+
+/** Removes a collection (no error when it does not exist). */
+export async function remove(name: string) {
+  await fs.rm(file(name), { force: true });
+  cache.delete(name);
+}
+
 export function newId(prefix = ""): string {
   return prefix + randomBytes(9).toString("base64url");
 }

@@ -5,12 +5,13 @@ import { screenImage } from "@/components/sections/screenImage";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { Button } from "@/components/ui/Button";
 import { Reveal, SplitText } from "@/components/ui/motion";
-import { projects } from "@/content/posts";
+import { getProjects } from "@/lib/server/projects";
 import { staticSeo, withSeo } from "@/lib/seo";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/website-portfolio", ...staticSeo["/website-portfolio"] });
 
-export default function WebsitePortfolioPage() {
+export default async function WebsitePortfolioPage() {
+  const projects = await getProjects();
   return (
     <>
       <PageHero scene="portfolio"

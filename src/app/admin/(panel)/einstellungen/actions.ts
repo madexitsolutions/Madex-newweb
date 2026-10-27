@@ -9,6 +9,7 @@ import { checkPermission } from "@/server/auth/session";
 import { sendMail, smtpConfig } from "@/server/mail/mailer";
 import { mediaPath, saveUpload } from "@/server/media/store";
 import { clearSecret, getSettings, saveSettings, type Settings } from "@/server/settings";
+import { sendWeeklyDigest } from "@/server/digest";
 
 const PATH = "/admin/einstellungen";
 const NO_ACCESS = "Keine Berechtigung. Einstellungen ändern braucht das Recht «Allgemeine Einstellungen und Plugins».";
@@ -106,7 +107,7 @@ export async function saveBrandingAction(_: FormState, f: FormData): Promise<For
 export async function saveEmailAction(_: FormState, f: FormData): Promise<FormState> {
   const user = await checkPermission("settings.manage");
   if (!user) return fail(NO_ACCESS);
-  const lists = { notifyInquiry: formList(f, "notifyInquiry"), notifyNewOrder: formList(f, "notifyNewOrder"), notifyLowStock: formList(f, "notifyLowStock") };
+  const lists = { notifyInquiry: formList(f, "notifyInquiry"), notifyNewOrder: formList(f, "notifyNewOrder"), notifyLowStock: formList(f, "notifyLowStock"), notifyWeekly: formList(f, "notifyWeekly") };
   const schema = z.object({
     fromName: z.string().trim().max(80),
     fromEmail: optionalEmail,
@@ -144,4 +145,14 @@ export async function testEmailAction(): Promise<FormState> {
   });
   await audit(user, "settings.email_test", { entityType: "settings", entityId: "email", summary: r.ok ? "Test-E-Mail gesendet" : `Test-E-Mail fehlgeschlagen: ${r.error}` });
   return r.ok ? ok(`Test-E-Mail an ${user.email} gesendet.`) : fail(`Senden fehlgeschlagen: ${r.error}. Prüfen Sie Server, Port, Verschlüsselung und Zugangsdaten.`);
+}
+
+export async function sendDigestAction(): Promise<FormState> {
+  const user = await checkPermission("settings.manage");
+  if (!user) return fail(NO_ACCESS);
+  const cfg = await smtpConfig();
+  if (!cfg.configured) return fail("Es ist noch kein SMTP-Server eingerichtet. Füllen Sie Server und Absender aus und speichern Sie zuerst.");
+  const r = await sendWeeklyDigest(new Date(), [user.email]);
+  await audit(user, "settings.digest_test", { entityType: "settings", entityId: "email", summary: r.ok ? "Wochenbericht testweise gesendet" : `Wochenbericht fehlgeschlagen: ${r.error}` });
+  return r.ok ? ok(`Wochenbericht der letzten Woche an ${user.email} gesendet.`) : fail(`Senden fehlgeschlagen: ${r.error}`);
 }

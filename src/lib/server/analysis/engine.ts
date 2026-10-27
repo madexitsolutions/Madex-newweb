@@ -11,6 +11,7 @@ import { read, update } from "@/lib/server/store";
 import { designReview, insights } from "./ai";
 import { contentChecks, designChecks, googleChecks, mobileChecks, parsePage, preview, seoChecks, speedChecks, techChecks } from "./page";
 import { pagespeedConfigured, runPagespeed, type PsiResult } from "./pagespeed";
+import { indexReport } from "./admin";
 import { claimDomain, releaseDomain } from "./guard";
 import { FetchError, safeFetch } from "./safe-fetch";
 import { lighthouseChecks, scoreChecks } from "./score";
@@ -71,7 +72,9 @@ export async function createReport(url: URL, email: string): Promise<Report | nu
   };
   if (!(await claimDomain(url.hostname, { id: r.id, email, createdAt: r.createdAt }))) return null;
   running.set(r.id, r);
-  void save(r).then(() => run(r));
+  void save(r)
+    .then(() => indexReport(r).catch(() => undefined))
+    .then(() => run(r));
   return r;
 }
 
@@ -108,6 +111,7 @@ export async function findReport(id: string): Promise<Report | null> {
 export async function markEmailSent(r: Report) {
   r.emailSentAt = new Date().toISOString();
   if (!running.has(r.id)) await save(r);
+  await indexReport(r).catch(() => undefined);
 }
 
 export async function setInquiryRef(r: Report, ref: string) {
@@ -270,6 +274,7 @@ async function run(r: Report) {
   r.finishedAt = new Date().toISOString();
   try {
     await save(r);
+    await indexReport(r).catch((e) => console.error("[analyse] Index:", e));
   } finally {
     running.delete(r.id);
   }

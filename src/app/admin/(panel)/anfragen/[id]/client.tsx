@@ -3,7 +3,7 @@
 import { ActionForm, FieldError, Submit } from "@/components/admin/forms";
 import { updateInquiryAction } from "../actions";
 
-export function InquiryForm({ id, status, assignedTo, notes, users }: { id: string; status: string; assignedTo: string; notes: string; users: { id: string; name: string }[] }) {
+export function InquiryForm({ id, status, assignedTo, notes, users, followUp }: { id: string; status: string; assignedTo: string; notes: string; users: { id: string; name: string }[]; followUp: string }) {
   return (
     <ActionForm action={updateInquiryAction} className="iq-form">
       {(state) => (
@@ -14,9 +14,17 @@ export function InquiryForm({ id, status, assignedTo, notes, users }: { id: stri
             <select name="status" defaultValue={status}>
               <option value="new">Neu</option>
               <option value="open">Offen – in Bearbeitung</option>
+              <option value="quoted">Offerte gesendet</option>
               <option value="done">Erledigt</option>
               <option value="spam">Spam</option>
             </select>
+          </label>
+          <label className="a-field">
+            <span>
+              Nachfassen am <em>optional</em>
+            </span>
+            <input type="date" name="followUp" defaultValue={followUp} />
+            <small>Bei «Offerte gesendet» automatisch in 3 Tagen. An diesem Tag erinnert Sie das Dashboard.</small>
           </label>
           <label className="a-field">
             <span>Zuständig</span>

@@ -47,7 +47,7 @@ export const inquiries = pgTable(
     id: uuid("id").primaryKey().defaultRandom(),
     reference: text("reference").notNull(),
     form: text("form").notNull().default("kontakt"),
-    status: text("status", { enum: ["new", "open", "done", "spam"] }).notNull().default("new"),
+    status: text("status", { enum: ["new", "open", "quoted", "done", "spam"] }).notNull().default("new"),
     name: text("name").notNull().default(""),
     email: text("email").notNull().default(""),
     phone: text("phone").notNull().default(""),
@@ -57,6 +57,10 @@ export const inquiries = pgTable(
     /** any further fields the form sent */
     fields: jsonb("fields").$type<Record<string, string>>().notNull().default({}),
     sourceUrl: text("source_url").notNull().default(""),
+    /** remind the team to follow up (e.g. 3 days after sending a quote) */
+    followUpAt: ts("follow_up_at"),
+    /** the reminder for followUpAt went out */
+    followUpNotified: boolean("follow_up_notified").notNull().default(false),
     assignedTo: uuid("assigned_to"),
     notes: text("notes").notNull().default(""),
     ip: text("ip").notNull().default(""),

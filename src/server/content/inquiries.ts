@@ -3,7 +3,7 @@
  * One entry point for the public API and any built-in forms: createInquiry()
  * validates, filters spam, stores, notifies staff and emits inquiry.created.
  */
-import { and, count, desc, eq, gte, ilike, lt, or, sql, type SQL } from "drizzle-orm";
+import { and, count, desc, eq, gte, ilike, inArray, lt, or, sql, type SQL } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/server/db";
 import { inquiries, sequences, users } from "@/server/db/schema";
@@ -21,6 +21,7 @@ export type InquiryStatus = Inquiry["status"];
 export const INQUIRY_STATUS: Record<InquiryStatus, { label: string; pill: string }> = {
   new: { label: "Neu", pill: "warn" },
   open: { label: "Offen", pill: "info" },
+  quoted: { label: "Offerte gesendet", pill: "info" },
   done: { label: "Erledigt", pill: "ok" },
   spam: { label: "Spam", pill: "muted" },
 };
@@ -214,7 +215,7 @@ export function inquiryWhere(f: InquiryFilter, withStatus = true): SQL | undefin
 
 export async function inquiryCounts(f: InquiryFilter) {
   const rows = await db.select({ status: inquiries.status, n: count() }).from(inquiries).where(inquiryWhere(f, false)).groupBy(inquiries.status);
-  const out: Record<InquiryStatus | "all", number> = { new: 0, open: 0, done: 0, spam: 0, all: 0 };
+  const out: Record<InquiryStatus | "all", number> = { new: 0, open: 0, quoted: 0, done: 0, spam: 0, all: 0 };
   for (const r of rows) {
     out[r.status] = r.n;
     if (r.status !== "spam") out.all += r.n;
@@ -277,3 +278,35 @@ export function inquiryCsvRows(rows: Inquiry[]) {
   ]);
   return [head, ...body];
 }
+
+/* ---------- follow-up ---------- */
+
+const OPEN_STATES = ["new", "open", "quoted"] as const;
+
+/** Enquiries whose follow-up date has come (open ones only), oldest first. */
+export async function dueFollowUps(now = new Date(), limit = 20) {
+  return db
+    .select({ id: inquiries.id, reference: inquiries.reference, name: inquiries.name, email: inquiries.email, subject: inquiries.subject, status: inquiries.status, followUpAt: inquiries.followUpAt, assignedTo: inquiries.assignedTo, followUpNotified: inquiries.followUpNotified })
+    .from(inquiries)
+    .where(and(lt(inquiries.followUpAt, now), inArray(inquiries.status, [...OPEN_STATES])))
+    .orderBy(inquiries.followUpAt)
+    .limit(limit);
+}
+
+/** One notification per due follow-up – to the assigned person, otherwise to everyone who handles enquiries. */
+export async function remindFollowUps(now = new Date()) {
+  let sent = 0;
+  for (const q of (await dueFollowUps(now, 100)).filter((x) => !x.followUpNotified)) {
+    await notify({
+      type: "inquiry.follow_up",
+      ...(q.assignedTo ? { userId: q.assignedTo } : { permission: "inquiries.manage" as const }),
+      title: `Nachfassen: ${q.name || q.email}`,
+      body: `${q.reference}${q.status === "quoted" ? " – Offerte gesendet, noch keine Antwort" : ""}${q.subject ? ` · ${q.subject}` : ""}`,
+      href: `/admin/anfragen/${q.id}`,
+    });
+    await db.update(inquiries).set({ followUpNotified: true }).where(eq(inquiries.id, q.id));
+    sent++;
+  }
+  return sent;
+}
+

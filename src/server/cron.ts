@@ -5,11 +5,15 @@
  * - prunes expired rate-limit counters, sessions and one-time tokens
  * - deletes carts that were not touched for 30 days (items cascade)
  * - deletes login events older than 180 days and webhook deliveries older than 90 days
+ * - reminds the team of enquiries whose follow-up date has come
+ * - sends the weekly summary (Mondays from 07:00, see server/digest.ts)
  */
 import { inArray, lt } from "drizzle-orm";
 import { db } from "@/server/db";
 import { cartItems, carts, customerSessions, loginEvents, rateLimits, sessions, tokens, webhookDeliveries } from "@/server/db/schema";
 import { retryDue } from "@/server/events";
+import { remindFollowUps } from "@/server/content/inquiries";
+import { weeklyDigestIfDue } from "@/server/digest";
 
 const DAY = 86_400_000;
 
@@ -23,6 +27,8 @@ export type MaintenanceSummary = {
   cartItemsPruned: number;
   loginEventsPruned: number;
   deliveriesPruned: number;
+  followUpsReminded: number;
+  weeklyDigestSent: boolean;
   durationMs: number;
 };
 
@@ -53,6 +59,8 @@ export async function runMaintenance(now = new Date()): Promise<MaintenanceSumma
     cartItemsPruned,
     loginEventsPruned: le.length,
     deliveriesPruned: wd.length,
+    followUpsReminded: await remindFollowUps(now).catch(() => 0),
+    weeklyDigestSent: await weeklyDigestIfDue(now).catch(() => false),
     durationMs: Date.now() - started,
   };
 }

@@ -11,7 +11,7 @@ export type RailData = {
   maintenance: boolean;
   plugins: { name: string; icon: IconName }[] | null;
   totp: boolean;
-  inquiries: { open: number; latest: { id: string; who: string; subject: string; at: string }[] } | null;
+  inquiries: { open: number; latest: { id: string; who: string; subject: string; at: string }[]; due: { id: string; who: string; subject: string; at: string }[] } | null;
   seo: { avg: number; weak: number; weakest: { path: string; title: string; score: number }[] } | null;
   media: { files: number; bytes: number } | null;
 };
@@ -43,6 +43,25 @@ function More({ href, children }: { href: string; children: ReactNode }) {
       {children}
       <Icon name="arrow" size={14} />
     </Link>
+  );
+}
+
+function FollowUps({ d }: { d: NonNullable<RailData["inquiries"]> }) {
+  if (!d.due.length) return null;
+  return (
+    <Card title={`Nachfassen fällig (${d.due.length})`}>
+      <ul className="a-rail__list">
+        {d.due.map((i) => (
+          <li key={i.id}>
+            <Link href={`/admin/anfragen/${i.id}`}>
+              <strong>{i.who}</strong>
+              <span>{i.subject || "Ohne Betreff"}</span>
+              <small className="a-rail__pts a-rail__pts--warn">seit {new Date(i.at).toLocaleDateString("de-CH", { day: "numeric", month: "short" })}</small>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Card>
   );
 }
 
@@ -167,10 +186,11 @@ export function RailCards({ data }: { data: RailData }) {
 
   if (path === "/admin") {
     // the overview already lists new enquiries in the main column
+    if (data.inquiries) cards.push(<FollowUps key="f" d={data.inquiries} />);
     if (data.seo) cards.push(<Seo key="s" d={data.seo} linkWeakest={false} />);
     cards.push(<Support key="h" />);
   } else if (on("/admin/anfragen")) {
-    if (data.inquiries) cards.push(<Inquiries key="i" d={data.inquiries} />);
+    if (data.inquiries) cards.push(<FollowUps key="f" d={data.inquiries} />, <Inquiries key="i" d={data.inquiries} />);
     cards.push(<Tips key="t" title="Tipps" items={["Anfragen innerhalb von 24 Stunden beantworten – die Chance auf einen Auftrag ist dann am grössten.", "Erledigte Anfragen abschliessen, damit die Liste übersichtlich bleibt."]} />);
   } else if (on("/admin/seo")) {
     if (data.seo) cards.push(<Seo key="s" d={data.seo} linkWeakest />);

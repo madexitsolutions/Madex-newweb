@@ -15,7 +15,8 @@ import { notify } from "@/server/notifications";
 
 const updateSchema = z.object({
   id: z.string().uuid(),
-  status: z.enum(["new", "open", "done", "spam"]),
+  status: z.enum(["new", "open", "quoted", "done", "spam"]),
+  followUp: z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Bitte ein gültiges Datum für «Nachfassen am» wählen.")]),
   assignedTo: z.union([z.literal(""), z.string().uuid()]),
   notes: z.string().max(10_000, "Die Notiz ist zu lang (max. 10'000 Zeichen)."),
 });
@@ -30,7 +31,7 @@ async function guard() {
 export async function updateInquiryAction(_: FormState, f: FormData): Promise<FormState> {
   const user = await guard();
   if (!user) return fail("Keine Berechtigung, Anfragen zu bearbeiten.");
-  const parsed = updateSchema.safeParse({ id: f.get("id"), status: f.get("status"), assignedTo: f.get("assignedTo") ?? "", notes: String(f.get("notes") ?? "") });
+  const parsed = updateSchema.safeParse({ id: f.get("id"), status: f.get("status"), followUp: String(f.get("followUp") ?? ""), assignedTo: f.get("assignedTo") ?? "", notes: String(f.get("notes") ?? "") });
   if (!parsed.success) return fail(parsed.error.issues[0].message);
   const v = parsed.data;
   const [before] = await db.select().from(inquiries).where(eq(inquiries.id, v.id));
@@ -40,14 +41,20 @@ export async function updateInquiryAction(_: FormState, f: FormData): Promise<Fo
     [assignee] = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.id, v.assignedTo));
     if (!assignee) return fail("Die gewählte Person gibt es nicht mehr.");
   }
+  // follow-up: closed enquiries need none; a sent quote gets one in 3 days unless a date was chosen
+  let followUpAt: Date | null = v.followUp ? new Date(`${v.followUp}T08:00:00`) : null;
+  if (v.status === "done" || v.status === "spam") followUpAt = null;
+  else if (v.status === "quoted" && before.status !== "quoted" && !v.followUp) followUpAt = new Date(Date.now() + 3 * 86_400_000);
+  const followUpChanged = (before.followUpAt?.getTime() ?? 0) !== (followUpAt?.getTime() ?? 0);
   await db
     .update(inquiries)
-    .set({ status: v.status, assignedTo: v.assignedTo || null, notes: v.notes.trim(), updatedAt: new Date() })
+    .set({ status: v.status, assignedTo: v.assignedTo || null, notes: v.notes.trim(), followUpAt, ...(followUpChanged ? { followUpNotified: false } : {}), updatedAt: new Date() })
     .where(eq(inquiries.id, v.id));
   const changes: string[] = [];
   if (before.status !== v.status) changes.push(`Status ${INQUIRY_STATUS[before.status].label} → ${INQUIRY_STATUS[v.status].label}`);
   if ((before.assignedTo ?? "") !== v.assignedTo) changes.push(assignee ? `zugewiesen an ${assignee.name}` : "Zuweisung entfernt");
   if (before.notes !== v.notes.trim()) changes.push("Notiz geändert");
+  if (followUpChanged) changes.push(followUpAt ? `Nachfassen am ${followUpAt.toLocaleDateString("de-CH")}` : "Nachfassen entfernt");
   if (changes.length) await audit(user, "inquiry.updated", { entityType: "inquiry", entityId: v.id, summary: `Anfrage ${before.reference}: ${changes.join(", ")}` });
   if (assignee && assignee.id !== user.id && (before.assignedTo ?? "") !== v.assignedTo)
     await notify({ type: "inquiry.assigned", userId: assignee.id, title: `Anfrage ${before.reference} wurde Ihnen zugewiesen`, body: before.subject || before.name, href: `/admin/anfragen/${v.id}` });
@@ -61,9 +68,14 @@ export async function setInquiryStatusAction(f: FormData) {
   const user = await guard();
   if (!user) return;
   const id = String(f.get("id") ?? "");
-  const status = z.enum(["new", "open", "done", "spam"]).safeParse(f.get("status"));
+  const status = z.enum(["new", "open", "quoted", "done", "spam"]).safeParse(f.get("status"));
   if (!status.success || !/^[0-9a-f-]{36}$/i.test(id)) return;
-  const [row] = await db.update(inquiries).set({ status: status.data, updatedAt: new Date() }).where(eq(inquiries.id, id)).returning();
+  const closed = status.data === "done" || status.data === "spam";
+  const [row] = await db
+    .update(inquiries)
+    .set({ status: status.data, ...(closed ? { followUpAt: null } : {}), updatedAt: new Date() })
+    .where(eq(inquiries.id, id))
+    .returning();
   if (row) await audit(user, "inquiry.updated", { entityType: "inquiry", entityId: id, summary: `Anfrage ${row.reference}: Status ${INQUIRY_STATUS[status.data].label}` });
   revalidatePath("/admin/anfragen");
   revalidatePath(`/admin/anfragen/${id}`);

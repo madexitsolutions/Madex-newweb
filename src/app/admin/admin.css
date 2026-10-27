@@ -61,7 +61,7 @@ body:has(.adm) { background: #f3f5f5; }
 .a-side__foot form { margin: 0; }
 .a-side__scrim { display: none; }
 
-.adm .a-main { position: static; z-index: auto; } /* the public site gives <main> its own stacking context */
+.adm .a-main { position: static; z-index: auto; background: none; } /* the public site gives <main> its own stacking context and background */
 .a-body { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; min-width: 0; }
 .a-main { padding: 32px clamp(18px, 3vw, 44px) 64px; max-width: 1440px; width: 100%; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-content: start; min-width: 0; }
 

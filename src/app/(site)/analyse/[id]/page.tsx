@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AnalysisView } from "@/components/analyse/AnalysisView";
+import { markViewed } from "@/lib/server/analysis/admin";
 import { getReport, toView } from "@/lib/server/analysis/engine";
 
 export const dynamic = "force-dynamic";
@@ -12,9 +13,11 @@ export const metadata: Metadata = {
 };
 
 /** Live scan and finished report of one analysis; the token in ?t= is the access key. */
-export default async function AnalysisPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ t?: string }> }) {
-  const [{ id }, { t }] = await Promise.all([params, searchParams]);
+export default async function AnalysisPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ t?: string; intern?: string }> }) {
+  const [{ id }, { t, intern }] = await Promise.all([params, searchParams]);
   const report = t ? await getReport(id, t) : null;
   if (!report || !t) notFound();
+  // shown in the dashboard: did the prospect open the report?
+  if (report.status === "done" && intern !== "1") await markViewed(report.id).catch(() => undefined);
   return <AnalysisView initial={toView(report)} token={t} />;
 }

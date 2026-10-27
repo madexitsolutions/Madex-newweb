@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { ConfirmForm } from "@/components/admin/forms";
 import { Icon, PageHeader, Panel } from "@/components/admin/kit";
-import { dateTime } from "@/lib/format";
+import { date, dateTime } from "@/lib/format";
 import { requireModule } from "@/modules/registry";
 import { requirePermission } from "@/server/auth/session";
 import { db } from "@/server/db";
@@ -10,6 +10,7 @@ import { inquiries, users } from "@/server/db/schema";
 import { INQUIRY_STATUS, assignableUsers, fieldLabel } from "@/server/content/inquiries";
 import { maskIp } from "@/server/lib/request";
 import { getSettings } from "@/server/settings";
+import { PROJECT } from "@/site/project";
 import { deleteInquiryAction, setInquiryStatusAction } from "../actions";
 import { InquiryForm } from "./client";
 import "../../../content.css";
@@ -55,6 +56,9 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
   const greeting = row.name ? `Guten Tag ${row.name}\n\n` : "Guten Tag\n\n";
   const mailto = `mailto:${encodeURIComponent(row.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(greeting + `Vielen Dank für Ihre Anfrage.` + `\n\nFreundliche Grüsse\n${user.name}\n${general.companyName || general.siteName}` + quoted)}`;
   const extra = Object.entries(row.fields);
+  const projectPanel = PROJECT.inquiryPanel ? await PROJECT.inquiryPanel({ reference: row.reference, fields: row.fields }) : null;
+  const followUp = row.followUpAt ? row.followUpAt.toLocaleDateString("en-CA", { timeZone: "Europe/Zurich" }) : "";
+  const followUpDue = row.followUpAt && row.followUpAt.getTime() <= Date.now() && row.status !== "done" && row.status !== "spam";
 
   return (
     <>
@@ -88,6 +92,12 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
       />
       <div className="a-split">
         <div className="a-stack">
+          {followUpDue && (
+            <p className="a-alert a-alert--warn" role="status">
+              Nachfassen fällig seit {date(row.followUpAt)} – melden Sie sich bei {row.name || row.email}.
+            </p>
+          )}
+          {projectPanel}
           <Panel title="Nachricht">
             {row.message ? <p className="a-message">{row.message}</p> : <p className="a-muted">Keine Nachricht – nur Formularfelder.</p>}
           </Panel>
@@ -159,7 +169,7 @@ export default async function InquiryPage({ params }: { params: Promise<{ id: st
         <div className="a-stack">
           {canManage ? (
             <Panel title="Bearbeitung">
-              <InquiryForm id={row.id} status={row.status} assignedTo={row.assignedTo ?? ""} notes={row.notes} users={people} />
+              <InquiryForm id={row.id} status={row.status} assignedTo={row.assignedTo ?? ""} notes={row.notes} users={people} followUp={followUp} />
             </Panel>
           ) : (
             <Panel title="Bearbeitung">

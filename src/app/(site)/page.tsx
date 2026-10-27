@@ -7,7 +7,7 @@ import { ServicesConstellation } from "@/components/sections/ServicesConstellati
 import { Testimonials } from "@/components/sections/Testimonials";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { homeFaq } from "@/content/site";
-import { projects } from "@/content/posts";
+import { getProjects } from "@/lib/server/projects";
 import partners from "@/content/generated/partners.json";
 import { staticSeo, withSeo } from "@/lib/seo";
 import { getGoogleReviews } from "@/lib/server/google-reviews";
@@ -26,7 +26,7 @@ export default async function HomePage() {
       <AiSection />
       <ServicesConstellation />
       <Pricing />
-      <LatestProjects posts={projects.slice(0, 8)} />
+      <LatestProjects posts={(await getProjects()).slice(0, 8)} />
       <Testimonials />
       <FaqSection items={homeFaq} />
     </>

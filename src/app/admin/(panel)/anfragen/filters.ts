@@ -4,6 +4,7 @@ import type { InquiryFilter, InquiryStatus } from "@/server/content/inquiries";
 export const STATUS_TABS: { key: InquiryStatus | "all"; param: string; label: string }[] = [
   { key: "new", param: "", label: "Neu" },
   { key: "open", param: "offen", label: "Offen" },
+  { key: "quoted", param: "offerte", label: "Offerte gesendet" },
   { key: "done", param: "erledigt", label: "Erledigt" },
   { key: "spam", param: "spam", label: "Spam" },
   { key: "all", param: "alle", label: "Alle" },
