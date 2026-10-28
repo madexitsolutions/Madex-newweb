@@ -24,7 +24,7 @@ export const ALLOWED: Record<string, string> = {
 };
 
 export function uploadsDir() {
-  return path.resolve(process.env.UPLOADS_DIR || path.join(process.env.DATA_DIR || ".data", "uploads"));
+  return path.resolve(/*turbopackIgnore: true*/ process.env.UPLOADS_DIR || path.join(process.env.DATA_DIR || ".data", "uploads"));
 }
 
 /** URL path of a stored file, e.g. /uploads/2026/10/ab12-bild.webp */

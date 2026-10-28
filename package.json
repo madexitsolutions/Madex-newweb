@@ -17,7 +17,7 @@
     "db:restore": "tsx scripts/db-restore.ts"
   },
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=22.0.0"
   },
   "dependencies": {
     "@electric-sql/pglite": "0.5.10",

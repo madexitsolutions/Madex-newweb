@@ -10,7 +10,7 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
-const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(process.cwd(), ".data"));
+const DATA_DIR = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR || path.join(process.cwd(), ".data"));
 const MAGIC = "MDXENC1:";
 
 function key(): Buffer | null {
@@ -90,7 +90,7 @@ export async function update<T, R = void>(name: string, fallback: T, fn: (data: 
 /** Names of the collections that start with `prefix` (e.g. every "analyse-<id>"). */
 export async function listCollections(prefix: string): Promise<string[]> {
   try {
-    const files = await fs.readdir(DATA_DIR);
+    const files = await fs.readdir(/*turbopackIgnore: true*/ DATA_DIR);
     return files.filter((f) => f.startsWith(prefix) && f.endsWith(".json")).map((f) => f.slice(0, -5));
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === "ENOENT") return [];

@@ -43,6 +43,9 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["@electric-sql/pglite", "postgres", "@react-pdf/renderer"],
   experimental: {
     serverActions: { bodySizeLimit: "12mb" },
+    // Shared hosts (Hostinger) report many CPUs but limit processes/threads per account:
+    // with the default, `next build` starts one worker per CPU and crashes ("can't spawn worker thread").
+    cpus: Number(process.env.NEXT_BUILD_CPUS) || 2,
   },
   images: {
     formats: ["image/avif", "image/webp"],

@@ -560,7 +560,7 @@ async function EmailsTab({ sp }: { sp: SP }) {
 
 function BackupTab() {
   const embedded = usesEmbeddedDb();
-  const dataDir = path.resolve(process.env.DATA_DIR || ".data");
+  const dataDir = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR || ".data");
   return (
     <Panel title="Datensicherung" description={embedded ? "Die Daten liegen in der eingebauten Datenbank dieser Installation." : "Die Daten liegen auf einem externen PostgreSQL-Server (DATABASE_URL)."}>
       {embedded ? (

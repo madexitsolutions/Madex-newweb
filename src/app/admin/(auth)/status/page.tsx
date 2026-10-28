@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 type Check = { label: string; ok: boolean | null; value: string; hint?: string };
 
 function dataDirWritable() {
-  const dir = path.resolve(process.env.DATA_DIR || ".data");
+  const dir = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR || ".data");
   try {
     mkdirSync(dir, { recursive: true });
     accessSync(dir, constants.W_OK);

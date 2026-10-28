@@ -32,7 +32,7 @@ function create(): DB {
     return drizzlePostgres(client, { schema }) as unknown as DB;
   }
   const dir = embeddedDir();
-  if (!dir.startsWith("memory://")) mkdirSync(path.dirname(path.resolve(dir)), { recursive: true });
+  if (!dir.startsWith("memory://")) mkdirSync(path.dirname(path.resolve(/*turbopackIgnore: true*/ dir)), { recursive: true });
   const client = new PGlite(dir);
   g.__predashPglite = client;
   return drizzlePglite(client, { schema });
