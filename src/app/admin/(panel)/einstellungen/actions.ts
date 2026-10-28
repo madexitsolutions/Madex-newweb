@@ -108,7 +108,8 @@ export async function saveEmailAction(_: FormState, f: FormData): Promise<FormSt
   const user = await checkPermission("settings.manage");
   if (!user) return fail(NO_ACCESS);
   // server and sender come from .env – here only reply-to and recipients
-  const lists = { notifyInquiry: formList(f, "notifyInquiry"), notifyNewOrder: formList(f, "notifyNewOrder"), notifyLowStock: formList(f, "notifyLowStock"), notifyWeekly: formList(f, "notifyWeekly") };
+  const keys = ["notifyInquiry", "notifyContact", "notifyAnalysis", "notifyChat", "notifyFollowUp", "notifyWeekly", "notifyNewOrder", "notifyLowStock"] as const;
+  const lists = Object.fromEntries(keys.map((k) => [k, formList(f, k)])) as Record<(typeof keys)[number], string[]>;
   const replyTo = optionalEmail.safeParse(formString(f, "replyTo"));
   if (!replyTo.success) return fail("Bitte eine gültige E-Mail-Adresse für «Antwort an» eingeben.", { replyTo: "Ungültige Adresse" });
   for (const [k, list] of Object.entries(lists)) {
@@ -119,7 +120,7 @@ export async function saveEmailAction(_: FormState, f: FormData): Promise<FormSt
   const current = await getSettings("email");
   const patch = Object.fromEntries(Object.entries(lists).map(([k, v]) => [k, f.has(k) ? v : current[k as keyof typeof lists]]));
   await saveSettings("email", { replyTo: replyTo.data, ...patch }, user.id);
-  await audit(user, "settings.updated", { entityType: "settings", entityId: "email", summary: "E-Mail-Empfänger gespeichert" });
+  await audit(user, "settings.updated", { entityType: "settings", entityId: "email", summary: "E-Mail-Empfänger gespeichert", data: Object.fromEntries(Object.entries(patch).filter(([, v]) => (v as string[]).length)) });
   revalidatePath(PATH);
   return ok("Gespeichert.");
 }

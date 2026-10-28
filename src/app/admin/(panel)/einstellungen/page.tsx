@@ -193,6 +193,8 @@ async function BrandingTab() {
 async function EmailTab() {
   const [e, cfg, modules] = await Promise.all([getSettingsForForm("email"), smtpConfig(), enabledModules()]);
   const fromEnv = envManaged("email").includes("smtpHost");
+  const envTo = (process.env.CONTACT_TO_EMAIL || "").split(",").map((x) => x.trim()).filter(Boolean).join(", ");
+  const standard = "wie Standard-Empfänger";
   return (
     <div className="s-twocol">
       <Panel className="a-panel--form">
@@ -205,29 +207,19 @@ async function EmailTab() {
               <input name="replyTo" type="email" defaultValue={e.replyTo} placeholder="info@madex-it.ch" />
             </label>
           </FormSection>
-          <FormSection title="Benachrichtigungen" help="Wer bei neuen Ereignissen eine E-Mail bekommt. Eine Adresse pro Zeile; leer = keine E-Mail (die Meldung im Dashboard erscheint trotzdem).">
-            <label className="a-field">
-              <span>Neue Anfrage</span>
-              <textarea name="notifyInquiry" rows={2} defaultValue={e.notifyInquiry.join("\n")} placeholder={process.env.CONTACT_TO_EMAIL || "info@kunde.ch"} />
-              {process.env.CONTACT_TO_EMAIL && !e.notifyInquiry.length && <small>Leer = an {process.env.CONTACT_TO_EMAIL} (CONTACT_TO_EMAIL in .env).</small>}
-            </label>
+          <FormSection title="Wer bekommt welche E-Mails?" help="Mehrere Adressen mit Komma oder je auf einer eigenen Zeile. Leer = an die Standard-Empfänger. Die Meldung im Dashboard erscheint immer.">
+            <RecipientField name="notifyInquiry" label="Standard-Empfänger" value={e.notifyInquiry} placeholder={envTo || "info@madex-it.ch"} hint={envTo && !e.notifyInquiry.length ? `Leer = an ${envTo} (CONTACT_TO_EMAIL in .env).` : "Für alle Anfragen ohne eigene Empfänger unten."} />
+            <RecipientField name="notifyContact" label="Kontaktformular" value={e.notifyContact} placeholder={standard} hint="Anfragen über die Seite Kontakt." />
+            <RecipientField name="notifyAnalysis" label="Website-Analyse" value={e.notifyAnalysis} placeholder={standard} hint="Wer auf der Website eine Gratis-Analyse startet – mit Link zum Bericht." />
+            <RecipientField name="notifyChat" label="Chatbot-Terminanfragen" value={e.notifyChat} placeholder={standard} hint="Termin- und Rückrufwünsche aus dem Chat mit Orion." />
+            <RecipientField name="notifyFollowUp" label="Nachfass-Erinnerungen" value={e.notifyFollowUp} placeholder="nur im Dashboard" hint="Wenn bei einer Anfrage der Nachfass-Termin erreicht ist. Leer = nur Meldung im Dashboard." />
+            <RecipientField name="notifyWeekly" label="Wochenbericht" value={e.notifyWeekly} placeholder="kein Wochenbericht" hint="Jeden Montagmorgen: neue Anfragen, fällige Nachfass-Termine, Besucher und Google-Klicks der letzten Woche." />
             {modules.shop && (
               <>
-                <label className="a-field">
-                  <span>Neue Bestellung</span>
-                  <textarea name="notifyNewOrder" rows={2} defaultValue={e.notifyNewOrder.join("\n")} />
-                </label>
-                <label className="a-field">
-                  <span>Lagerbestand niedrig</span>
-                  <textarea name="notifyLowStock" rows={2} defaultValue={e.notifyLowStock.join("\n")} />
-                </label>
+                <RecipientField name="notifyNewOrder" label="Neue Bestellung" value={e.notifyNewOrder} />
+                <RecipientField name="notifyLowStock" label="Lagerbestand niedrig" value={e.notifyLowStock} />
               </>
             )}
-            <label className="a-field">
-              <span>Wochenbericht</span>
-              <textarea name="notifyWeekly" rows={2} defaultValue={e.notifyWeekly.join("\n")} />
-              <small>Jeden Montagmorgen: neue Anfragen, fällige Nachfass-Termine, Besucher und Google-Klicks der letzten Woche.</small>
-            </label>
           </FormSection>
           <div className="a-savebar">
             <Submit>Speichern</Submit>
@@ -271,5 +263,15 @@ async function EmailTab() {
         </div>
       </Panel>
     </div>
+  );
+}
+
+function RecipientField({ name, label, value, placeholder, hint }: { name: string; label: string; value: string[]; placeholder?: string; hint?: string }) {
+  return (
+    <label className="a-field">
+      <span>{label}</span>
+      <textarea name={name} rows={value.length > 1 ? value.length : 1} defaultValue={value.join("\n")} placeholder={placeholder} spellCheck={false} />
+      {hint && <small>{hint}</small>}
+    </label>
   );
 }

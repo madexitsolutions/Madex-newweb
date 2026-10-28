@@ -143,14 +143,24 @@ export async function createInquiry(raw: unknown, meta: InquiryMeta): Promise<Cr
   return { ok: true, id: row.id, reference, status, spam };
 }
 
+/** Forms with their own recipients (Einstellungen → E-Mail); every other form uses the standard list. */
+export const RECIPIENT_FORMS = { Kontakt: "notifyContact", "Kostenlose Analyse": "notifyAnalysis", Terminanfrage: "notifyChat" } as const;
+
+const envRecipients = () => (process.env.CONTACT_TO_EMAIL || "").split(",").map((s) => s.trim()).filter(Boolean);
+
+/** Who gets the e-mail for a new enquiry: the list of its form, else the standard list, else CONTACT_TO_EMAIL. */
+export async function inquiryRecipients(form: string): Promise<string[]> {
+  const e = await getSettings("email");
+  const own = form in RECIPIENT_FORMS ? e[RECIPIENT_FORMS[form as keyof typeof RECIPIENT_FORMS]] : [];
+  return own.length ? own : e.notifyInquiry.length ? e.notifyInquiry : envRecipients();
+}
+
 /** Staff notification (in-app + e-mail) and webhook for a new, non-spam inquiry. */
 async function announce(row: Inquiry) {
   const href = `/admin/anfragen/${row.id}`;
   const who = row.name || row.email;
   await notify({ type: "inquiry", title: `Neue Anfrage von ${who}`, body: row.subject || row.message.slice(0, 140), href, permission: "inquiries.view" });
-  const configured = (await getSettings("email")).notifyInquiry;
-  // until recipients are set in the dashboard, fall back to CONTACT_TO_EMAIL from the environment
-  const notifyInquiry = configured.length ? configured : (process.env.CONTACT_TO_EMAIL || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const notifyInquiry = await inquiryRecipients(row.form);
   if (notifyInquiry.length) {
     const rows: [string, string][] = [
       ["Referenz", row.reference],
@@ -301,14 +311,26 @@ export async function dueFollowUps(now = new Date(), limit = 20) {
 /** One notification per due follow-up – to the assigned person, otherwise to everyone who handles enquiries. */
 export async function remindFollowUps(now = new Date()) {
   let sent = 0;
+  const mailTo = (await getSettings("email")).notifyFollowUp;
   for (const q of (await dueFollowUps(now, 100)).filter((x) => !x.followUpNotified)) {
-    await notify({
-      type: "inquiry.follow_up",
-      ...(q.assignedTo ? { userId: q.assignedTo } : { permission: "inquiries.manage" as const }),
-      title: `Nachfassen: ${q.name || q.email}`,
-      body: `${q.reference}${q.status === "quoted" ? " – Offerte gesendet, noch keine Antwort" : ""}${q.subject ? ` · ${q.subject}` : ""}`,
-      href: `/admin/anfragen/${q.id}`,
-    });
+    const title = `Nachfassen: ${q.name || q.email}`;
+    const body = `${q.reference}${q.status === "quoted" ? " – Offerte gesendet, noch keine Antwort" : ""}${q.subject ? ` · ${q.subject}` : ""}`;
+    const href = `/admin/anfragen/${q.id}`;
+    await notify({ type: "inquiry.follow_up", ...(q.assignedTo ? { userId: q.assignedTo } : { permission: "inquiries.manage" as const }), title, body, href });
+    // also by e-mail when recipients are set (Einstellungen → E-Mail)
+    if (mailTo.length)
+      await sendMail({
+        to: mailTo,
+        subject: `${title} (${q.reference})`,
+        template: "inquiry.follow_up",
+        related: { type: "inquiry", id: q.id },
+        content: {
+          title: "Heute nachfassen",
+          intro: `Bei ${q.name || q.email} ist der Nachfass-Termin erreicht.${q.status === "quoted" ? " Die Offerte ist gesendet, eine Antwort fehlt noch." : ""}`,
+          rows: [["Referenz", q.reference], ["E-Mail", q.email], ...(q.subject ? ([["Betreff", q.subject]] as [string, string][]) : [])],
+          cta: { label: "Anfrage öffnen", url: appUrl(href) },
+        },
+      }).catch(() => {});
     await db.update(inquiries).set({ followUpNotified: true }).where(eq(inquiries.id, q.id));
     sent++;
   }

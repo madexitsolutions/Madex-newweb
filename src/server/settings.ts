@@ -100,6 +100,12 @@ export const SCHEMAS = {
     notifyLowStock: list(),
     /** weekly summary (Mondays); empty = none */
     notifyWeekly: list(),
+    /** per source of an enquiry (form name); empty = notifyInquiry */
+    notifyContact: list(),
+    notifyAnalysis: list(),
+    notifyChat: list(),
+    /** due follow-ups by e-mail; empty = only the notification in the dashboard */
+    notifyFollowUp: list(),
   }),
   security: z.object({
     require2fa: bool(true),
