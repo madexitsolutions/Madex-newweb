@@ -151,15 +151,21 @@ export async function buildDigest(now = new Date()) {
     .flat()
     .filter((s): s is DigestSection => Boolean(s) && (s!.rows.length > 0 || Boolean(s!.note)));
   const period = `${dayLabel(w.from)} – ${dayLabel(w.to)}`;
+  const F = "font-family:'Helvetica Neue',Helvetica,Arial,sans-serif";
+  const changeColor = (c: string) => (c.startsWith("+") ? "#1f8a5b" : c.startsWith("−") ? "#b3261e" : "#4f6164");
   const html = sections
     .map(
       (s) =>
-        `<h2 style="margin:20px 0 6px;font-size:15px;color:#12262a">${esc(s.title)}</h2><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${s.rows
-          .map(
-            (r) =>
-              `<tr><td style="padding:7px 0;border-bottom:1px solid #e6eceb;color:#5b6b6d;font-size:13px;vertical-align:top;width:42%">${esc(r.label)}</td><td style="padding:7px 0 7px 12px;border-bottom:1px solid #e6eceb;font-size:14px;color:#12262a">${r.href ? `<a href="${esc(r.href)}" style="color:#12262a;text-decoration:none;font-weight:bold">${esc(r.value)}</a>` : `<strong>${esc(r.value)}</strong>`}${r.change ? `<br><span style="font-size:12px;color:#5b6b6d">${esc(r.change)}</span>` : ""}</td></tr>`,
-          )
-          .join("")}</table>${s.note ? `<p style="margin:8px 0 0;font-size:13px;color:#5b6b6d">${esc(s.note)}</p>` : ""}`,
+        `<p style="margin:22px 0 8px;${F};font-size:16px;font-weight:bold;color:#01292d">${esc(s.title)}</p>${
+          s.rows.length
+            ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e3e9e9;border-radius:10px">${s.rows
+                .map(
+                  (r, i) =>
+                    `<tr><td valign="top" width="42%" style="padding:11px 16px;${i ? "border-top:1px solid #e3e9e9;" : ""}${F};font-size:13px;color:#4f6164">${esc(r.label)}</td><td valign="top" style="padding:11px 16px;${i ? "border-top:1px solid #e3e9e9;" : ""}${F};font-size:15px;line-height:1.45;color:#01292d">${r.href ? `<a href="${esc(r.href)}" style="color:#01292d;text-decoration:none;font-weight:bold">${esc(r.value)}</a>` : `<strong>${esc(r.value)}</strong>`}${r.change ? `<br><span style="font-size:12px;font-weight:bold;color:${changeColor(r.change)}">${esc(r.change)}</span>` : ""}</td></tr>`,
+                )
+                .join("")}</table>`
+            : ""
+        }${s.note ? `<p style="margin:8px 0 0;${F};font-size:13px;color:#4f6164">${esc(s.note)}</p>` : ""}`,
     )
     .join("");
   return { week: w, period, sections, html, siteName: general.siteName };
@@ -171,11 +177,12 @@ export async function sendWeeklyDigest(now = new Date(), to?: string[]): Promise
   if (!recipients.length) return { ok: false, error: "Keine Empfänger: Tragen Sie unter Einstellungen → E-Mail → Wochenbericht mindestens eine Adresse ein.", to: [] };
   const d = await buildDigest(now);
   const content = {
+    kicker: "Wochenbericht",
     title: `Ihre Woche: ${d.period}`,
     intro: d.sections.length ? "Das Wichtigste der letzten Woche auf einen Blick." : "Letzte Woche gab es nichts Neues zu berichten.",
     html: d.html,
     cta: { label: "Dashboard öffnen", url: appUrl("/admin") },
-    footnote: "Sie erhalten diese Zusammenfassung jeden Montag. Abbestellen: Einstellungen → E-Mail → Wochenbericht.",
+    reason: "Sie erhalten diese Zusammenfassung jeden Montag. Abbestellen: Einstellungen → E-Mail → Wochenbericht.",
   };
   const r = await sendMail({ to: recipients, subject: `Wochenbericht ${d.siteName}: ${d.period}`, template: "weekly_digest", content });
   return { ...r, to: recipients };

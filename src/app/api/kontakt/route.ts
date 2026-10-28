@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       fields,
       sourceUrl: req.headers.get("referer") ?? "",
     },
-    { ip: ipFromRequest(req) },
+    { ip: ipFromRequest(req), confirm: true },
   );
   if (!r.ok) return NextResponse.json({ ok: false, error: r.message, fieldErrors: r.fieldErrors }, { status: r.code === "rate_limited" ? 429 : 422 });
   return NextResponse.json({ ok: true, reference: r.reference });

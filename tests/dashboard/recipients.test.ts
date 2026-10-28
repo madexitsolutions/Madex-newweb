@@ -37,4 +37,13 @@ describe("who gets which e-mail", () => {
     const mails = await db.select().from(emailLog).where(eq(emailLog.template, "inquiry.follow_up"));
     expect(mails.map((m) => [m.to, m.subject])).toEqual([["chef@madex-it.ch", "Nachfassen: zweite@kunde.ch (A-2026-91002)"]]);
   });
+
+  it("confirms to the sender only when asked and never for spam", async () => {
+    const before = new Date(Date.now() - 60_000);
+    await createInquiry({ form: "Kontakt", name: "Anna Muster", email: "Anna@Muster.ch", message: "Wir möchten eine neue Website." }, { ip: "5.6.7.8", now: before, confirm: true });
+    await createInquiry({ form: "Kostenlose Analyse", email: "lead@firma.ch", message: "Analyse gestartet" }, { ip: "5.6.7.9", now: before });
+    await createInquiry({ form: "Kontakt", name: "Spam", email: "spam@x.ch", message: "Hallo", fields: { website_url: "http://spam" } }, { ip: "5.6.7.10", now: before, confirm: true });
+    const mails = await db.select().from(emailLog).where(eq(emailLog.template, "inquiry.confirmation"));
+    expect(mails.map((m) => [m.to, m.subject])).toEqual([["anna@muster.ch", expect.stringMatching(/^Wir haben Ihre Nachricht erhalten \(A-\d{4}-\d{5}\)$/)]]);
+  });
 });

@@ -187,7 +187,7 @@ export async function POST(req: Request) {
             message: str("message").slice(0, 5000),
             fields,
           },
-          { ip },
+          { ip, confirm: true },
         );
         if (!r.ok) return fail(r.message, r.code === "rate_limited" ? 429 : 400, r.code);
         reference = r.reference;

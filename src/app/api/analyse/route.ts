@@ -45,8 +45,9 @@ export async function POST(req: Request) {
   const ip = clientIp(req);
   const source = req.headers.get("referer") ?? "";
   /** the request always lands in Admin → Anfragen, even when no analysis runs */
-  const lead = (subject: string, message: string, fields: Record<string, string> = {}) =>
-    createInquiry({ form: "Kostenlose Analyse", email: d.email, subject, message, fields, sourceUrl: source }, { ip });
+  // confirm = the person gets a "we'll get back to you" e-mail (when no report is coming)
+  const lead = (subject: string, message: string, fields: Record<string, string> = {}, confirm = true) =>
+    createInquiry({ form: "Kostenlose Analyse", email: d.email, subject, message, fields, sourceUrl: source }, { ip, confirm });
 
   if (!d.website) {
     const r = await lead("Kostenlose Analyse (Startseite)", "Kostenlose Analyse angefragt");
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
   const report = await createReport(url, d.email);
   if (!report) return NextResponse.json({ ok: true, message: `Für ${domain} wird gerade bereits eine Analyse erstellt. Wir melden uns innerhalb von 24 Stunden persönlich.` });
   // the lead lands in Admin → Anfragen with the link to the report
-  const r = await lead(`Website-Analyse für ${domain}`, `Website-Analyse für ${domain} gestartet. Den Bericht finden Sie im Feld «Bericht».`, { Website: url.toString(), Bericht: reportUrl(report) });
+  const r = await lead(`Website-Analyse für ${domain}`, `Website-Analyse für ${domain} gestartet. Den Bericht finden Sie im Feld «Bericht».`, { Website: url.toString(), Bericht: reportUrl(report) }, false);
   if (r.ok) await setInquiryRef(report, r.reference);
   return NextResponse.json({ ok: true, id: report.id, url: `/analyse/${report.id}?t=${encodeURIComponent(report.token)}` });
 }

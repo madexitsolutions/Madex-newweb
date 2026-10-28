@@ -1,43 +1,114 @@
-/** One branded, table-based HTML layout for all e-mails (works in Outlook and Gmail). */
+/**
+ * One Madex layout for all e-mails – the same look as the analysis report
+ * (lib/server/analysis/email.ts): logo on white, Helvetica, petrol and teal,
+ * details in a framed box, a rounded button and the company footer.
+ * Table-based with inline styles, so it looks the same in Outlook, Gmail and Apple Mail.
+ */
+import { site } from "@/content/site";
+import { appUrl } from "@/server/lib/app-url";
 import { getSettings } from "@/server/settings";
 
 export type EmailContent = {
   title: string;
+  /** small line above the title, e.g. "Neue Anfrage" */
+  kicker?: string;
   intro?: string;
   /** label/value rows */
   rows?: [string, string][];
   /** free paragraphs (plain text, newlines kept) */
   paragraphs?: string[];
+  /** a message quoted from someone else (plain text) */
+  quote?: { label: string; text: string };
   /** pre-rendered, trusted HTML block (e.g. an order table built with esc()) */
   html?: string;
   cta?: { label: string; url: string };
   footnote?: string;
+  /** why the recipient gets this e-mail (small print in the footer) */
+  reason?: string;
 };
 
 export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
+const INK = "#01292d";
+const SOFT = "#4f6164";
+const LINE = "#e3e9e9";
+const TEAL = "#027872";
+const FONT = "font-family:'Helvetica Neue',Helvetica,Arial,sans-serif";
+const nl = (s: string) => esc(s).replace(/\n/g, "<br>");
+
 export async function renderEmail(c: EmailContent) {
   const [g, b] = await Promise.all([getSettings("general"), getSettings("branding")]);
-  const brand = b.primaryColor;
-  const header = b.logoUrl && /^https?:\/\//.test(b.logoUrl) ? `<img src="${esc(b.logoUrl)}" alt="${esc(g.siteName)}" height="32" style="display:block;height:32px">` : `<span style="color:#ffffff;font-size:18px;font-weight:bold">${esc(g.siteName)}</span>`;
-  const rows = (c.rows ?? [])
-    .map(([k, v]) => `<tr><td style="padding:8px 12px;color:#5b6b6d;font-size:13px;white-space:nowrap;border-bottom:1px solid #e6eceb;vertical-align:top">${esc(k)}</td><td style="padding:8px 12px;font-size:14px;color:#12262a;border-bottom:1px solid #e6eceb">${esc(v).replace(/\n/g, "<br>")}</td></tr>`)
-    .join("");
-  const paragraphs = (c.paragraphs ?? []).map((p) => `<p style="margin:0 0 12px;font-size:15px;line-height:1.6;color:#12262a">${esc(p).replace(/\n/g, "<br>")}</p>`).join("");
-  const address = [g.companyName || g.siteName, g.street, [g.zip, g.city].filter(Boolean).join(" ")].filter(Boolean).join(" · ");
-  const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(c.title)}</title></head>
-<body style="margin:0;background:#f4f6f6;font-family:Arial,Helvetica,sans-serif">
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f6;padding:24px 0"><tr><td align="center">
-<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden">
-<tr><td style="background:${brand};padding:20px 24px">${header}</td></tr>
-<tr><td style="padding:24px 24px 4px"><h1 style="margin:0 0 10px;font-size:20px;color:#12262a">${esc(c.title)}</h1>${c.intro ? `<p style="margin:0 0 14px;font-size:15px;line-height:1.6;color:#12262a">${esc(c.intro).replace(/\n/g, "<br>")}</p>` : ""}</td></tr>
-${paragraphs ? `<tr><td style="padding:0 24px">${paragraphs}</td></tr>` : ""}
-${c.html ? `<tr><td style="padding:4px 24px 8px">${c.html}</td></tr>` : ""}
-${rows ? `<tr><td style="padding:4px 12px 12px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table></td></tr>` : ""}
-${c.cta ? `<tr><td style="padding:8px 24px 24px"><a href="${esc(c.cta.url)}" style="display:inline-block;background:${brand};color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:6px;font-weight:bold;font-size:15px">${esc(c.cta.label)}</a></td></tr>` : ""}
-${c.footnote ? `<tr><td style="padding:0 24px 20px;color:#5b6b6d;font-size:13px;line-height:1.5">${esc(c.footnote)}</td></tr>` : ""}
-<tr><td style="padding:16px 24px;background:#f8fafa;color:#7d8b8d;font-size:12px">${esc(address)}</td></tr>
+  const name = g.companyName || site.legalName;
+  const street = g.street || site.contact.street;
+  const place = [g.zip || site.contact.postalCode, g.city || site.contact.locality].filter(Boolean).join(" ");
+  const email = g.email || site.contact.email;
+  const url = g.siteUrl || site.url;
+  const logo = b.logoUrl && /^https?:\/\//.test(b.logoUrl) ? b.logoUrl : appUrl("/brand/logo.png");
+
+  const rows = (c.rows ?? []).filter(([, v]) => v);
+  const rowsHtml = rows.length
+    ? `<tr><td style="padding:6px 32px 4px"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-radius:10px">${rows
+        .map(
+          ([k, v], i) =>
+            `<tr><td valign="top" width="34%" style="padding:11px 16px;${i ? `border-top:1px solid ${LINE};` : ""}${FONT};font-size:13px;color:${SOFT}">${esc(k)}</td><td valign="top" style="padding:11px 16px;${i ? `border-top:1px solid ${LINE};` : ""}${FONT};font-size:14px;line-height:1.5;color:${INK};font-weight:bold;word-break:break-word">${linkify(v)}</td></tr>`,
+        )
+        .join("")}</table></td></tr>`
+    : "";
+  const paragraphs = (c.paragraphs ?? []).map((p) => `<p style="margin:0 0 14px;${FONT};font-size:15px;line-height:1.6;color:${INK}">${nl(p)}</p>`).join("");
+  const quote = c.quote?.text
+    ? `<tr><td style="padding:6px 32px 14px"><p style="margin:0 0 6px;${FONT};font-size:12px;font-weight:bold;color:${SOFT}">${esc(c.quote.label)}</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td style="padding:14px 16px;background:#eef7f6;border-left:3px solid ${TEAL};border-radius:0 8px 8px 0;${FONT};font-size:15px;line-height:1.6;color:${INK}">${nl(c.quote.text)}</td></tr></table></td></tr>`
+    : "";
+
+  const html = `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><meta name="color-scheme" content="light"><title>${esc(c.title)}</title></head>
+<body style="margin:0;padding:0;background:#eef2f2">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef2f2;padding:28px 12px"><tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden">
+
+<tr><td style="padding:26px 32px 22px;border-bottom:1px solid ${LINE}"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+<td><a href="${esc(url)}"><img src="${esc(logo)}" width="150" height="32" alt="${esc(site.name)}" style="display:block;width:150px;height:auto;border:0"></a></td>
+${c.kicker ? `<td align="right" style="${FONT};font-size:12px;line-height:1.4;color:${SOFT}">${esc(c.kicker)}</td>` : ""}
+</tr></table></td></tr>
+
+<tr><td style="padding:28px 32px 6px">
+<h1 style="margin:0 0 10px;${FONT};font-size:22px;line-height:1.3;font-weight:bold;color:${INK}">${esc(c.title)}</h1>
+${c.intro ? `<p style="margin:0 0 14px;${FONT};font-size:15px;line-height:1.6;color:${SOFT}">${nl(c.intro)}</p>` : ""}
+${paragraphs}
+</td></tr>
+${quote}
+${c.html ? `<tr><td style="padding:4px 32px 8px">${c.html}</td></tr>` : ""}
+${rowsHtml}
+${c.cta ? `<tr><td style="padding:22px 32px 6px"><a href="${esc(c.cta.url)}" style="display:inline-block;background:${TEAL};color:#ffffff;text-decoration:none;padding:13px 24px;border-radius:999px;${FONT};font-size:15px;font-weight:bold">${esc(c.cta.label)}</a></td></tr>` : ""}
+${c.footnote ? `<tr><td style="padding:14px 32px 0;${FONT};font-size:13px;line-height:1.55;color:${SOFT}">${nl(c.footnote)}</td></tr>` : ""}
+<tr><td style="padding:0 0 28px;font-size:0;line-height:0">&nbsp;</td></tr>
+
+<tr><td style="padding:20px 32px;background:#f6f8f8;border-top:1px solid ${LINE}">
+<p style="margin:0;${FONT};font-size:12px;line-height:1.6;color:${SOFT}"><strong style="color:${INK}">${esc(name)}</strong>${street ? ` · ${esc(street)}` : ""}${place ? ` · ${esc(place)}` : ""}<br>${email ? `<a href="mailto:${esc(email)}" style="color:${SOFT}">${esc(email)}</a> · ` : ""}<a href="${esc(url)}" style="color:${SOFT}">${esc(url.replace(/^https?:\/\//, "").replace(/\/$/, ""))}</a></p>
+${c.reason ? `<p style="margin:8px 0 0;${FONT};font-size:11px;line-height:1.5;color:#8a9a9c">${esc(c.reason)}</p>` : ""}
+</td></tr>
+
 </table></td></tr></table></body></html>`;
-  const text = [c.title, c.intro, ...(c.paragraphs ?? []), ...(c.rows ?? []).map(([k, v]) => `${k}: ${v}`), c.cta ? `${c.cta.label}: ${c.cta.url}` : "", c.footnote, address].filter(Boolean).join("\n\n");
+
+  const text = [
+    c.title,
+    c.intro,
+    ...(c.paragraphs ?? []),
+    c.quote?.text ? `${c.quote.label}:\n${c.quote.text}` : "",
+    rows.map(([k, v]) => `${k}: ${v}`).join("\n"),
+    c.cta ? `${c.cta.label}: ${c.cta.url}` : "",
+    c.footnote,
+    [name, street, place].filter(Boolean).join(", "),
+    c.reason,
+  ]
+    .filter(Boolean)
+    .join("\n\n");
   return { html, text };
+}
+
+/** Plain value, or a link for e-mail addresses, phone numbers and URLs. */
+function linkify(v: string) {
+  const s = v.trim();
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s)) return `<a href="mailto:${esc(s)}" style="color:${TEAL};text-decoration:none">${esc(s)}</a>`;
+  if (/^https?:\/\/\S+$/.test(s)) return `<a href="${esc(s)}" style="color:${TEAL};text-decoration:none">${esc(s.replace(/^https?:\/\//, ""))}</a>`;
+  if (/^(\+|0)[\d\s()/-]{7,}$/.test(s) && !/^\d{4}-\d{2}-\d{2}$/.test(s)) return `<a href="tel:${esc(s.replace(/[^\d+]/g, ""))}" style="color:${TEAL};text-decoration:none">${esc(s)}</a>`;
+  return nl(s);
 }

@@ -14,6 +14,7 @@ import { notify } from "@/server/notifications";
 import { appUrl } from "@/server/lib/app-url";
 import { getSettings } from "@/server/settings";
 import { dayStart, addDays } from "@/lib/tz";
+import { site } from "@/content/site";
 
 export type Inquiry = typeof inquiries.$inferSelect;
 export type InquiryStatus = Inquiry["status"];
@@ -67,7 +68,12 @@ export const inquiryInput = z.object({
 });
 
 export type InquiryInput = z.input<typeof inquiryInput>;
-export type InquiryMeta = { ip: string; now?: Date };
+export type InquiryMeta = {
+  ip: string;
+  now?: Date;
+  /** send the person a confirmation that the enquiry arrived (website forms; not for spam) */
+  confirm?: boolean;
+};
 
 /** Counts links in a text (http(s)://, www., [url=…]). */
 export function countLinks(s: string) {
@@ -140,6 +146,7 @@ export async function createInquiry(raw: unknown, meta: InquiryMeta): Promise<Cr
     .returning();
 
   if (status === "new") await announce(row);
+  if (status === "new" && meta.confirm) await confirmToSender(row);
   return { ok: true, id: row.id, reference, status, spam };
 }
 
@@ -155,6 +162,42 @@ export async function inquiryRecipients(form: string): Promise<string[]> {
   return own.length ? own : e.notifyInquiry.length ? e.notifyInquiry : envRecipients();
 }
 
+/** "Danke, wir melden uns": confirmation to the person who sent the enquiry. Replies go to the team. */
+async function confirmToSender(row: Inquiry) {
+  const first = row.name.trim().split(/\s+/)[0];
+  const hello = first ? `, ${first}` : "";
+  const phone = site.contact.phonePrimary.label;
+  const domain = row.fields.Website ? row.fields.Website.replace(/^https?:\/\//, "").replace(/\/$/, "") : "";
+  const kind = row.form === "Terminanfrage" ? "termin" : row.form === "Kostenlose Analyse" ? "analyse" : "kontakt";
+  const text = {
+    termin: { subject: "Ihr Terminwunsch ist angekommen", title: `Danke für Ihren Terminwunsch${hello}`, intro: "Wir prüfen den Termin und bestätigen ihn Ihnen persönlich – in der Regel innerhalb von 24 Stunden." },
+    analyse: { subject: "Ihre Anfrage für eine Website-Analyse", title: `Danke für Ihr Interesse${hello}`, intro: `Wir sehen uns ${domain || "Ihre Website"} persönlich an und melden uns innerhalb von 24 Stunden mit den Ergebnissen und konkreten Vorschlägen.` },
+    kontakt: { subject: "Wir haben Ihre Nachricht erhalten", title: `Danke für Ihre Nachricht${hello}`, intro: "Wir melden uns in der Regel innerhalb von 24 Stunden – an Werktagen oft schon am selben Tag." },
+  }[kind];
+  const rows: [string, string][] = [["Referenz", row.reference]];
+  const readable = (v: string) => (/^\d{4}-\d{2}-\d{2}$/.test(v) ? new Date(`${v}T12:00:00Z`).toLocaleDateString("de-CH", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }) : v);
+  for (const k of ["Leistung", "Paket", "Wunschdatum", "Zeitfenster", "Website"]) if (row.fields[k]) rows.push([k, readable(row.fields[k])]);
+  const e = await getSettings("email");
+  const replyTo = e.replyTo || (await inquiryRecipients(row.form))[0];
+  await sendMail({
+    to: row.email,
+    subject: `${text.subject} (${row.reference})`,
+    template: "inquiry.confirmation",
+    replyTo,
+    related: { type: "inquiry", id: row.id },
+    content: {
+      kicker: `Ihre Anfrage ${row.reference}`,
+      title: text.title,
+      intro: text.intro,
+      quote: row.message && kind !== "analyse" ? { label: "Ihre Nachricht", text: row.message.length > 1200 ? `${row.message.slice(0, 1200)} …` : row.message } : undefined,
+      rows,
+      cta: { label: "Unsere Projekte ansehen", url: appUrl("/website-portfolio") },
+      footnote: `Möchten Sie etwas ergänzen? Antworten Sie einfach auf diese E-Mail. Ist es dringend, erreichen Sie uns unter ${phone}.`,
+      reason: `Sie erhalten diese E-Mail, weil Sie auf ${site.url.replace(/^https?:\/\//, "")} eine Anfrage gesendet haben.`,
+    },
+  }).catch(() => {});
+}
+
 /** Staff notification (in-app + e-mail) and webhook for a new, non-spam inquiry. */
 async function announce(row: Inquiry) {
   const href = `/admin/anfragen/${row.id}`;
@@ -163,14 +206,11 @@ async function announce(row: Inquiry) {
   const notifyInquiry = await inquiryRecipients(row.form);
   if (notifyInquiry.length) {
     const rows: [string, string][] = [
-      ["Referenz", row.reference],
-      ["Formular", row.form],
       ["Name", row.name],
       ["E-Mail", row.email],
     ];
     if (row.phone) rows.push(["Telefon", row.phone]);
     if (row.company) rows.push(["Firma", row.company]);
-    if (row.subject) rows.push(["Betreff", row.subject]);
     for (const [k, v] of Object.entries(row.fields)) rows.push([k, v]);
     if (row.sourceUrl) rows.push(["Seite", row.sourceUrl]);
     await sendMail({
@@ -180,12 +220,13 @@ async function announce(row: Inquiry) {
       replyTo: row.email,
       related: { type: "inquiry", id: row.id },
       content: {
-        title: "Neue Anfrage eingegangen",
-        intro: `${who} hat über das Formular «${row.form}» eine Anfrage gesendet.`,
-        paragraphs: row.message ? [row.message] : [],
+        kicker: `${row.form} · ${row.reference}`,
+        title: `Neue Anfrage von ${who}`,
+        intro: row.subject || `Über das Formular «${row.form}».`,
+        quote: row.message ? { label: "Nachricht", text: row.message } : undefined,
         rows,
         cta: { label: "Im Dashboard öffnen", url: appUrl(href) },
-        footnote: "Sie können direkt auf diese E-Mail antworten – die Antwort geht an die anfragende Person.",
+        footnote: "Antworten Sie direkt auf diese E-Mail – die Antwort geht an die anfragende Person.",
       },
     }).catch(() => {});
   }
@@ -325,6 +366,7 @@ export async function remindFollowUps(now = new Date()) {
         template: "inquiry.follow_up",
         related: { type: "inquiry", id: q.id },
         content: {
+          kicker: "Nachfass-Erinnerung",
           title: "Heute nachfassen",
           intro: `Bei ${q.name || q.email} ist der Nachfass-Termin erreicht.${q.status === "quoted" ? " Die Offerte ist gesendet, eine Antwort fehlt noch." : ""}`,
           rows: [["Referenz", q.reference], ["E-Mail", q.email], ...(q.subject ? ([["Betreff", q.subject]] as [string, string][]) : [])],
