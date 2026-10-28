@@ -11,6 +11,7 @@ import { QuickDraft } from "./quick-draft";
 import { change } from "@/server/analytics/sales";
 import { bucketLabel } from "@/server/analytics/range";
 import { ga4Visitors } from "@/server/analytics/ga4";
+import { searchConsolePages } from "@/server/analytics/search-console";
 import { INQUIRY_STATUS } from "@/server/content/inquiries";
 import { getSettings } from "@/server/settings";
 import { markReadAction } from "./overview-actions";
@@ -53,11 +54,19 @@ export default async function Overview() {
   const showVisitors = modules.analytics && can("analytics.view");
   const isAdmin = can("settings.manage");
 
-  const [sales, open, newInq, visitors, todos, checks, orders, inqs, notes] = await Promise.all([
+  const siteHost = (() => {
+    try {
+      return new URL(general.siteUrl || process.env.NEXT_PUBLIC_SITE_URL || "").host;
+    } catch {
+      return "";
+    }
+  })();
+  const [sales, open, newInq, visitors, gsc, todos, checks, orders, inqs, notes] = await Promise.all([
     showSales ? revenueKpis(now) : null,
     showSales ? openOrderCount() : 0,
     showInquiries ? newInquiryCount() : 0,
     showVisitors ? ga4Visitors() : null,
+    can("seo.manage") && siteHost ? searchConsolePages(siteHost) : null,
     modules.shop ? shopTodos(user, now) : [],
     isAdmin ? setupChecks(modules) : [],
     showSales ? latestOrders(6) : [],
@@ -154,7 +163,7 @@ export default async function Overview() {
         </section>
       )}
 
-      {(sales || showInquiries || visitors) && (
+      {(sales || showInquiries || visitors || (gsc && "report" in gsc)) && (
         <div className="a-kpis ov-kpis">
           {sales && (
             <>
@@ -170,8 +179,13 @@ export default async function Overview() {
             ("error" in visitors ? (
               <Kpi label="Besucher 7 Tage" value="–" hint={<span title={visitors.error}>Google Analytics: Fehler</span>} href="/admin/statistiken" />
             ) : (
-              <Kpi label="Besucher 7 Tage" value={number(visitors.users)} delta={change(visitors.users, visitors.previous)} hint="vs. Vorwoche" href="/admin/statistiken#besucher" />
+              <>
+                <Kpi label="Besucher 7 Tage" value={number(visitors.users)} delta={change(visitors.users, visitors.previous)} hint="vs. Vorwoche" href="/admin/statistiken#besucher" />
+                <Kpi label="Sitzungen 7 Tage" value={number(visitors.sessions)} delta={change(visitors.sessions, visitors.prevSessions)} hint="vs. Vorwoche" href="/admin/statistiken#besucher" />
+                <Kpi label="Seitenaufrufe 7 Tage" value={number(visitors.views)} delta={change(visitors.views, visitors.prevViews)} hint="vs. Vorwoche" href="/admin/statistiken#besucher" />
+              </>
             ))}
+          {gsc && "report" in gsc && <Kpi label="Google-Klicks 28 Tage" value={number(gsc.report.totals.clicks)} hint={`${number(gsc.report.totals.impressions)}× in der Suche gezeigt`} href="/admin/seo?sort=klicks" />}
         </div>
       )}
 

@@ -136,11 +136,7 @@ export async function SitePagesView({
         <p className="sx-note">
           <Icon name="search" size={15} />
           <span>
-            Klicks und Position bei Google erscheinen hier, sobald die Search Console verbunden ist: Dienstkonto unter{" "}
-            <Link href="/admin/plugins/analytics" className="a-link">
-              Plugins → Statistiken
-            </Link>{" "}
-            hinterlegen und seine E-Mail-Adresse in der Search Console als Nutzer hinzufügen.
+            Klicks und Position bei Google erscheinen hier, sobald die Search Console verbunden ist: das Dienstkonto von Google Analytics in .env eintragen (<code>GOOGLE_SERVICE_ACCOUNT_EMAIL</code>, <code>GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY</code>) und seine E-Mail-Adresse in der Search Console als Nutzer hinzufügen.
           </span>
         </p>
       )}

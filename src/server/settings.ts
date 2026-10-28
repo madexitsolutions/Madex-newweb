@@ -185,7 +185,54 @@ export function defaults<K extends SettingsKey>(key: K): Settings[K] {
   return SCHEMAS[key].parse({}) as Settings[K];
 }
 
+/* ---------- values from the environment (.env / Coolify) ---------- */
+
+const env = (name: string) => process.env[name]?.trim() || "";
+/** "Madex IT Solutions <website@madex-it.ch>" → name and address */
+function mailFrom() {
+  const m = env("MAIL_FROM").match(/^\s*"?([^"<]*?)"?\s*<([^>]+)>\s*$/);
+  return { name: m?.[1].trim() ?? "", email: env("MAIL_FROM_EMAIL") || m?.[2].trim() || env("CONTACT_FROM_EMAIL") };
+}
+
+/** Settings that come from environment variables. Set there, they win over the database and have no field in the dashboard. */
+function fromEnv(key: SettingsKey): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const set = (field: string, value: unknown) => {
+    if (value !== "" && value !== undefined) out[field] = value;
+  };
+  if (key === "general") set("siteUrl", env("NEXT_PUBLIC_SITE_URL"));
+  if (key === "email" && env("SMTP_HOST")) {
+    const from = mailFrom();
+    set("smtpHost", env("SMTP_HOST"));
+    set("smtpPort", Number(env("SMTP_PORT") || 587));
+    set("smtpSecure", env("SMTP_SECURE") === "true");
+    set("smtpUser", env("SMTP_USER"));
+    set("smtpPassword", env("SMTP_PASSWORD"));
+    set("fromEmail", from.email);
+    set("fromName", from.name);
+  }
+  if (key === "analytics") {
+    set("ga4MeasurementId", env("NEXT_PUBLIC_GA4_ID"));
+    set("ga4PropertyId", env("GA4_PROPERTY_ID"));
+    set("serviceAccountEmail", env("GOOGLE_SERVICE_ACCOUNT_EMAIL"));
+    set("serviceAccountKey", env("GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY") || env("GOOGLE_SERVICE_ACCOUNT_KEY"));
+  }
+  return out;
+}
+
+/** Fields of a group that are set by environment variables (shown read-only in the dashboard). */
+export function envManaged(key: SettingsKey): string[] {
+  return Object.keys(fromEnv(key));
+}
+
 export async function getSettings<K extends SettingsKey>(key: K): Promise<Settings[K]> {
+  const stored = await storedSettings(key);
+  const overlay = fromEnv(key);
+  return (Object.keys(overlay).length ? { ...stored, ...overlay } : stored) as Settings[K];
+}
+
+/** Only what the dashboard saved (without environment values). */
+async function storedSettings<K extends SettingsKey>(key: K): Promise<Settings[K]> {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < TTL) return hit.value as Settings[K];
   const [row] = await db.select().from(settingsTable).where(eq(settingsTable.key, key));
@@ -210,7 +257,7 @@ export async function getSettings<K extends SettingsKey>(key: K): Promise<Settin
  * their stored value (forms never receive secrets, so empty means "unchanged").
  */
 export async function saveSettings<K extends SettingsKey>(key: K, patch: Partial<Settings[K]>, userId?: string, opts: { replace?: boolean } = {}): Promise<Settings[K]> {
-  const current = await getSettings(key);
+  const current = await storedSettings(key);
   const secrets = (SECRET_FIELDS[key] ?? []) as string[];
   // replace: write the value as given (to remove keys of a record group)
   const merged: Record<string, unknown> = opts.replace ? { ...patch } : { ...current, ...patch };
@@ -228,7 +275,7 @@ export async function saveSettings<K extends SettingsKey>(key: K, patch: Partial
 
 /** Clears a secret explicitly (forms use a "remove" checkbox for that). */
 export async function clearSecret<K extends SettingsKey>(key: K, field: keyof Settings[K], userId?: string) {
-  const current = (await getSettings(key)) as Record<string, unknown>;
+  const current = { ...(await storedSettings(key)) } as Record<string, unknown>;
   current[field as string] = "";
   const stored: Record<string, unknown> = { ...current };
   for (const f of (SECRET_FIELDS[key] ?? []) as string[]) if (stored[f]) stored[f] = encrypt(String(stored[f]));

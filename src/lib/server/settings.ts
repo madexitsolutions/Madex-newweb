@@ -63,7 +63,8 @@ export const defaultSettings: Settings = {
 export async function getSettings(): Promise<Settings> {
   const s = await read<Partial<Settings>>("settings", {});
   return {
-    chatbot: { ...defaultSettings.chatbot, ...s.chatbot },
+    // the AI model is set in .env (OPENAI_MODEL) – it wins over an older value from the dashboard
+    chatbot: { ...defaultSettings.chatbot, ...s.chatbot, ...(process.env.OPENAI_MODEL?.trim() ? { model: process.env.OPENAI_MODEL.trim() } : {}) },
     security: { ...defaultSettings.security, ...s.security },
     analytics: { ...defaultSettings.analytics, ...s.analytics },
     seo: s.seo ?? {},
@@ -93,10 +94,10 @@ export function companyProfile(s: ChatbotSettings) {
   return s.companyProfile.trim() ? s.companyProfile : DEFAULT_COMPANY_PROFILE;
 }
 
-/** Effective analytics IDs: admin settings win, env vars are the fallback. */
+/** Effective tracking IDs: set in .env (NEXT_PUBLIC_GA4_ID / NEXT_PUBLIC_GTM_ID); an older dashboard value is the fallback. */
 export function analyticsIds(a: AnalyticsSettings) {
   return {
-    ga4Id: (a.ga4Id || process.env.NEXT_PUBLIC_GA4_ID || "").trim(),
-    gtmId: (a.gtmId || process.env.NEXT_PUBLIC_GTM_ID || "").trim(),
+    ga4Id: (process.env.NEXT_PUBLIC_GA4_ID || a.ga4Id || "").trim(),
+    gtmId: (process.env.NEXT_PUBLIC_GTM_ID || a.gtmId || "").trim(),
   };
 }

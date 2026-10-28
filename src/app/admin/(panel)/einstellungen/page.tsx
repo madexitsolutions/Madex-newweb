@@ -3,7 +3,8 @@ import { ActionForm, Submit } from "@/components/admin/forms";
 import { FormSection, Icon, PageHeader, Panel, Tabs, one } from "@/components/admin/kit";
 import { requirePermission } from "@/server/auth/session";
 import { smtpConfig } from "@/server/mail/mailer";
-import { getSettings, getSettingsForForm } from "@/server/settings";
+import { envManaged, getSettings, getSettingsForForm } from "@/server/settings";
+import { enabledModules } from "@/modules/registry";
 import { saveBrandingAction, saveEmailAction, saveGeneralAction, sendDigestAction, testEmailAction } from "./actions";
 import { BrandingFields } from "./branding-fields";
 import { SETTINGS_TABS } from "./tabs";
@@ -19,7 +20,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const tab = OWN_TABS.includes(one(sp.tab)) ? one(sp.tab) : "allgemein";
   return (
     <>
-      <PageHeader title="Einstellungen" description="Firmendaten, Erscheinungsbild, E-Mail-Versand, Kontaktformular, SEO und Google Analytics." />
+      <PageHeader title="Einstellungen" description="Firmendaten, Erscheinungsbild und wer welche E-Mails bekommt. Google, E-Mail-Server und KI sind in den Umgebungsvariablen (.env) eingerichtet." />
       <Tabs items={SETTINGS_TABS} active={tab} label="Einstellungen" />
       {tab === "allgemein" && <GeneralTab />}
       {tab === "branding" && <BrandingTab />}
@@ -38,12 +39,21 @@ async function GeneralTab() {
             <span>Name</span>
             <input name="siteName" defaultValue={g.siteName} required maxLength={80} />
           </label>
-          <label className="a-field">
-            <span>
-              Adresse der Website <em>optional</em>
-            </span>
-            <input name="siteUrl" type="url" defaultValue={g.siteUrl} placeholder="https://www.kunde.ch" inputMode="url" />
-          </label>
+          {envManaged("general").includes("siteUrl") ? (
+            <div className="a-field">
+              <span>Adresse der Website</span>
+              <p className="s-envvalue">
+                {g.siteUrl} <small>aus .env (NEXT_PUBLIC_SITE_URL)</small>
+              </p>
+            </div>
+          ) : (
+            <label className="a-field">
+              <span>
+                Adresse der Website <em>optional</em>
+              </span>
+              <input name="siteUrl" type="url" defaultValue={g.siteUrl} placeholder="https://www.kunde.ch" inputMode="url" />
+            </label>
+          )}
         </FormSection>
         <FormSection title="Firma" help="Erscheint als Absender auf Rechnungen, Lieferscheinen und in der Fusszeile der E-Mails.">
           <label className="a-field">
@@ -181,81 +191,38 @@ async function BrandingTab() {
 }
 
 async function EmailTab() {
-  const [e, cfg] = await Promise.all([getSettingsForForm("email"), smtpConfig()]);
-  const envSmtp = !e.smtpHost && Boolean(process.env.SMTP_HOST);
+  const [e, cfg, modules] = await Promise.all([getSettingsForForm("email"), smtpConfig(), enabledModules()]);
+  const fromEnv = envManaged("email").includes("smtpHost");
   return (
     <div className="s-twocol">
       <Panel className="a-panel--form">
         <ActionForm action={saveEmailAction} className="a-form">
-          <FormSection title="Absender" help="So erscheinen E-Mails im Posteingang der Empfänger. Die Adresse muss über den SMTP-Server versendet werden dürfen.">
-            <div className="a-fields2">
-              <label className="a-field">
-                <span>Absendername</span>
-                <input name="fromName" defaultValue={e.fromName} placeholder="Muster AG" />
-              </label>
-              <label className="a-field">
-                <span>Absender-Adresse</span>
-                <input name="fromEmail" type="email" defaultValue={e.fromEmail} placeholder="noreply@kunde.ch" />
-              </label>
-            </div>
+          <FormSection title="Antworten" help="Antwortet ein Empfänger auf eine E-Mail der Website, landet die Antwort hier.">
             <label className="a-field">
               <span>
                 Antwort an <em>optional</em>
               </span>
-              <input name="replyTo" type="email" defaultValue={e.replyTo} placeholder="info@kunde.ch" />
+              <input name="replyTo" type="email" defaultValue={e.replyTo} placeholder="info@madex-it.ch" />
             </label>
-          </FormSection>
-          <FormSection title="SMTP-Server" help={envSmtp ? "Leer lassen, um den Server aus den Umgebungsvariablen (SMTP_*) zu verwenden." : "Zugangsdaten Ihres E-Mail-Anbieters (z. B. Infomaniak, Microsoft 365, Postmark)."}>
-            <div className="a-fields2--main a-fields2">
-              <label className="a-field">
-                <span>Server</span>
-                <input name="smtpHost" defaultValue={e.smtpHost} placeholder="mail.infomaniak.com" spellCheck={false} />
-              </label>
-              <label className="a-field">
-                <span>Port</span>
-                <input name="smtpPort" type="number" min={1} max={65535} defaultValue={e.smtpPort} />
-              </label>
-            </div>
-            <label className="a-check">
-              <input type="checkbox" name="smtpSecure" defaultChecked={e.smtpSecure} />
-              <span>
-                SSL/TLS von Anfang an (Port 465)
-                <small>Aus lassen für STARTTLS auf Port 587.</small>
-              </span>
-            </label>
-            <div className="a-fields2">
-              <label className="a-field">
-                <span>Benutzername</span>
-                <input name="smtpUser" defaultValue={e.smtpUser} autoComplete="off" spellCheck={false} />
-              </label>
-              <div className="s-secretfield">
-                <label className="a-field">
-                  <span>Passwort</span>
-                  <input name="smtpPassword" type="password" autoComplete="new-password" placeholder={e._secrets.smtpPassword ? `Gespeichert (${e._secrets.smtpPassword})` : ""} />
-                </label>
-                {e._secrets.smtpPassword && (
-                  <label className="a-check">
-                    <input type="checkbox" name="remove_smtpPassword" />
-                    <span>Gespeichertes Passwort entfernen</span>
-                  </label>
-                )}
-                <small className="s-hint">{e._secrets.smtpPassword ? "Leer lassen, um das gespeicherte Passwort zu behalten." : "Wird verschlüsselt gespeichert."}</small>
-              </div>
-            </div>
           </FormSection>
           <FormSection title="Benachrichtigungen" help="Wer bei neuen Ereignissen eine E-Mail bekommt. Eine Adresse pro Zeile; leer = keine E-Mail (die Meldung im Dashboard erscheint trotzdem).">
             <label className="a-field">
               <span>Neue Anfrage</span>
-              <textarea name="notifyInquiry" rows={2} defaultValue={e.notifyInquiry.join("\n")} placeholder="info@kunde.ch" />
+              <textarea name="notifyInquiry" rows={2} defaultValue={e.notifyInquiry.join("\n")} placeholder={process.env.CONTACT_TO_EMAIL || "info@kunde.ch"} />
+              {process.env.CONTACT_TO_EMAIL && !e.notifyInquiry.length && <small>Leer = an {process.env.CONTACT_TO_EMAIL} (CONTACT_TO_EMAIL in .env).</small>}
             </label>
-            <label className="a-field">
-              <span>Neue Bestellung</span>
-              <textarea name="notifyNewOrder" rows={2} defaultValue={e.notifyNewOrder.join("\n")} />
-            </label>
-            <label className="a-field">
-              <span>Lagerbestand niedrig</span>
-              <textarea name="notifyLowStock" rows={2} defaultValue={e.notifyLowStock.join("\n")} />
-            </label>
+            {modules.shop && (
+              <>
+                <label className="a-field">
+                  <span>Neue Bestellung</span>
+                  <textarea name="notifyNewOrder" rows={2} defaultValue={e.notifyNewOrder.join("\n")} />
+                </label>
+                <label className="a-field">
+                  <span>Lagerbestand niedrig</span>
+                  <textarea name="notifyLowStock" rows={2} defaultValue={e.notifyLowStock.join("\n")} />
+                </label>
+              </>
+            )}
             <label className="a-field">
               <span>Wochenbericht</span>
               <textarea name="notifyWeekly" rows={2} defaultValue={e.notifyWeekly.join("\n")} />
@@ -267,19 +234,35 @@ async function EmailTab() {
           </div>
         </ActionForm>
       </Panel>
-      <Panel title="Verbindung prüfen" description="Sendet eine Test-E-Mail an Ihre eigene Adresse.">
+      <Panel title="Versand" description="Server und Absender kommen aus den Umgebungsvariablen (.env bzw. Coolify).">
         <div className="a-stack">
-          <p className="s-statusline">
-            <Icon name={cfg.configured ? "check" : "alert"} size={16} />
-            {cfg.configured ? (
+          {cfg.configured ? (
+            <dl className="s-envlist">
+              <div>
+                <dt>Server</dt>
+                <dd>
+                  {cfg.host}:{cfg.port}
+                </dd>
+              </div>
+              <div>
+                <dt>Absender</dt>
+                <dd>{cfg.from}</dd>
+              </div>
+              {!fromEnv && (
+                <div>
+                  <dt>Quelle</dt>
+                  <dd>ältere Dashboard-Einstellung – bitte nach .env übertragen</dd>
+                </div>
+              )}
+            </dl>
+          ) : (
+            <p className="s-statusline">
+              <Icon name="alert" size={16} />
               <span>
-                Versand über <strong>{cfg.host}</strong>
-                {envSmtp ? " (Umgebungsvariablen)" : ""}
+                Noch nicht eingerichtet – E-Mails werden nur protokolliert. In .env eintragen: <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASSWORD</code> und <code>MAIL_FROM</code>.
               </span>
-            ) : (
-              <span>Noch nicht eingerichtet – E-Mails werden nur protokolliert, nicht versendet.</span>
-            )}
-          </p>
+            </p>
+          )}
           <ActionButton action={testEmailAction} label="Test-E-Mail senden" small={false} pending="Wird gesendet …" icon={<Icon name="mail" size={16} />} />
           <ActionButton action={sendDigestAction} label="Wochenbericht an mich senden" variant="ghost" small={false} pending="Wird zusammengestellt …" icon={<Icon name="chart" size={16} />} />
           <p className="a-footnote" style={{ margin: 0 }}>

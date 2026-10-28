@@ -61,7 +61,7 @@ export default async function StatsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const user = await requirePermission("analytics.view");
+  await requirePermission("analytics.view");
   await requireModule("shop", "analytics");
   const modules = await enabledModules();
   const sp = await searchParams;
@@ -398,20 +398,13 @@ export default async function StatsPage({
                     für Properties das Dienstkonto als «Betrachter» hinzufügen.
                   </li>
                   <li>
-                    Property-ID (nur Ziffern), E-Mail und Schlüssel des
-                    Dienstkontos in den Einstellungen eintragen.
+                    In den Umgebungsvariablen (.env bzw. Coolify) eintragen:{" "}
+                    <code>GA4_PROPERTY_ID</code> (nur Ziffern),{" "}
+                    <code>GOOGLE_SERVICE_ACCOUNT_EMAIL</code> und{" "}
+                    <code>GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY</code> – dann
+                    die App neu starten.
                   </li>
                 </ol>
-                {user.permissions.has("settings.manage") && (
-                  <p>
-                    <Link
-                      href="/admin/plugins/analytics"
-                      className="a-btn a-btn--ghost a-btn--sm"
-                    >
-                      Google Analytics verbinden
-                    </Link>
-                  </p>
-                )}
               </div>
             </Panel>
           ) : !ga4.ok ? (

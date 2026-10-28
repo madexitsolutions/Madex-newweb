@@ -8,7 +8,7 @@ import { audit } from "@/server/audit";
 import { checkPermission } from "@/server/auth/session";
 import { sendMail, smtpConfig } from "@/server/mail/mailer";
 import { mediaPath, saveUpload } from "@/server/media/store";
-import { clearSecret, getSettings, saveSettings, type Settings } from "@/server/settings";
+import { getSettings, saveSettings, type Settings } from "@/server/settings";
 import { sendWeeklyDigest } from "@/server/digest";
 
 const PATH = "/admin/einstellungen";
@@ -107,28 +107,21 @@ export async function saveBrandingAction(_: FormState, f: FormData): Promise<For
 export async function saveEmailAction(_: FormState, f: FormData): Promise<FormState> {
   const user = await checkPermission("settings.manage");
   if (!user) return fail(NO_ACCESS);
+  // server and sender come from .env – here only reply-to and recipients
   const lists = { notifyInquiry: formList(f, "notifyInquiry"), notifyNewOrder: formList(f, "notifyNewOrder"), notifyLowStock: formList(f, "notifyLowStock"), notifyWeekly: formList(f, "notifyWeekly") };
-  const schema = z.object({
-    fromName: z.string().trim().max(80),
-    fromEmail: optionalEmail,
-    replyTo: optionalEmail,
-    smtpHost: z.string().trim().max(200).regex(/^[a-zA-Z0-9.-]*$/, "Nur den Servernamen eingeben, z. B. mail.infomaniak.com."),
-    smtpPort: z.coerce.number().int().min(1, "Port zwischen 1 und 65535.").max(65535, "Port zwischen 1 und 65535."),
-    smtpUser: z.string().trim().max(200),
-  });
-  const parsed = schema.safeParse({ fromName: formString(f, "fromName"), fromEmail: formString(f, "fromEmail"), replyTo: formString(f, "replyTo"), smtpHost: formString(f, "smtpHost"), smtpPort: formString(f, "smtpPort") || "587", smtpUser: formString(f, "smtpUser") });
-  if (!parsed.success) return fail("Bitte prüfen Sie die markierten Felder.", zodFieldErrors(parsed.error.issues));
+  const replyTo = optionalEmail.safeParse(formString(f, "replyTo"));
+  if (!replyTo.success) return fail("Bitte eine gültige E-Mail-Adresse für «Antwort an» eingeben.", { replyTo: "Ungültige Adresse" });
   for (const [k, list] of Object.entries(lists)) {
     const bad = list.find((e) => !z.string().email().safeParse(e).success);
     if (bad) return fail(`«${bad}» ist keine gültige E-Mail-Adresse.`, { [k]: "Ungültige Adresse" });
   }
-  if (parsed.data.smtpHost && !parsed.data.fromEmail) return fail("Mit eigenem SMTP-Server braucht es eine Absender-Adresse.", { fromEmail: "Pflichtfeld" });
-  const password = String(f.get("smtpPassword") ?? "");
-  await saveSettings("email", { ...parsed.data, smtpSecure: formBool(f, "smtpSecure"), smtpPassword: password, ...lists }, user.id);
-  if (!password && formBool(f, "remove_smtpPassword")) await clearSecret("email", "smtpPassword", user.id);
-  await audit(user, "settings.updated", { entityType: "settings", entityId: "email", summary: "E-Mail-Einstellungen gespeichert", data: { smtpHost: parsed.data.smtpHost, passwordChanged: Boolean(password) } });
+  // fields the page doesn't show (shop without the shop plugin) keep their value
+  const current = await getSettings("email");
+  const patch = Object.fromEntries(Object.entries(lists).map(([k, v]) => [k, f.has(k) ? v : current[k as keyof typeof lists]]));
+  await saveSettings("email", { replyTo: replyTo.data, ...patch }, user.id);
+  await audit(user, "settings.updated", { entityType: "settings", entityId: "email", summary: "E-Mail-Empfänger gespeichert" });
   revalidatePath(PATH);
-  return ok("Gespeichert. Senden Sie eine Test-E-Mail, um die Verbindung zu prüfen.");
+  return ok("Gespeichert.");
 }
 
 export async function testEmailAction(): Promise<FormState> {

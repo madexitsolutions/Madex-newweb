@@ -196,21 +196,6 @@ export function ChatbotSettingsForm({
               <legend>Antworten</legend>
               <div className="cb-row">
                 <label className="a-field">
-                  <span>KI-Modell</span>
-                  <input
-                    name="model"
-                    defaultValue={s.model}
-                    maxLength={60}
-                    className="a-mono"
-                    aria-invalid={state?.fieldErrors?.model ? true : undefined}
-                  />
-                  <small>
-                    Wird auch für die Texte der Website-Analyse verwendet.
-                    Standard: gpt-4o-mini.
-                  </small>
-                  <FieldError state={state} name="model" />
-                </label>
-                <label className="a-field">
                   <span>Kreativität (0–1)</span>
                   <input
                     name="temperature"

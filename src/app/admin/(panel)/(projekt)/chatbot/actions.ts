@@ -90,7 +90,6 @@ export async function saveChatbotSettingsAction(
     teaserMessage: formString(f, "teaserMessage"),
     teaserDelay: formString(f, "teaserDelay"),
     teaserMobile: formBool(f, "teaserMobile"),
-    model: formString(f, "model"),
     temperature: formString(f, "temperature"),
     directive: formString(f, "directive"),
     companyProfile: formString(f, "companyProfile"),
@@ -101,7 +100,7 @@ export async function saveChatbotSettingsAction(
   await audit(user, "chatbot.settings_updated", {
     entityType: "settings",
     entityId: "chatbot",
-    summary: `Chatbot-Einstellungen geändert (${parsed.data.enabled ? "aktiv" : "ausgeschaltet"}, Modell ${parsed.data.model})`,
+    summary: `Chatbot-Einstellungen geändert (${parsed.data.enabled ? "aktiv" : "ausgeschaltet"}, Kreativität ${parsed.data.temperature})`,
   });
   revalidatePath("/admin/chatbot");
   revalidatePath("/", "layout");

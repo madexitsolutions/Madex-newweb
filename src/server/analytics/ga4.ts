@@ -187,13 +187,13 @@ export async function ga4Report(range: { fromDay: string; toDay: string; prev: {
 }
 
 /** Visitors of the last 7 days and the 7 days before (overview card). */
-export async function ga4Visitors(): Promise<{ users: number; previous: number } | { error: string } | null> {
+export async function ga4Visitors(): Promise<{ users: number; previous: number; sessions: number; prevSessions: number; views: number; prevViews: number } | { error: string } | null> {
   const c = await ga4Config();
   if (!c.configured) return null;
   const today = zurichDay(new Date());
   try {
     const r = await ga4Report({ fromDay: addDays(today, -6), toDay: today, prev: { fromDay: addDays(today, -13), toDay: addDays(today, -7) } });
-    return { users: r.totals.users, previous: r.previous.users };
+    return { users: r.totals.users, previous: r.previous.users, sessions: r.totals.sessions, prevSessions: r.previous.sessions, views: r.totals.views, prevViews: r.previous.views };
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Fehler" };
   }

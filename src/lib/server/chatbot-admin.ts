@@ -39,7 +39,6 @@ export const settingsInput = z.object({
   teaserMessage: z.string().trim().max(300),
   teaserDelay: z.coerce.number().int().min(0, "Mindestens 0 Sekunden.").max(120, "Höchstens 120 Sekunden."),
   teaserMobile: z.boolean(),
-  model: z.string().trim().regex(/^[a-z0-9.\-:]+$/i, "Bitte einen gültigen Modellnamen eingeben, z. B. gpt-4o-mini.").max(60),
   temperature: z.coerce.number().min(0, "Zwischen 0 und 1.").max(1, "Zwischen 0 und 1."),
   directive: z.string().max(4000, "Die Zusatzanweisungen sind zu lang (max. 4'000 Zeichen)."),
   companyProfile: z.string().max(30_000, "Das Firmenprofil ist zu lang (max. 30'000 Zeichen)."),
