@@ -4,7 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Link } from "./Transition";
 
-type Config = { ga4Id: string; gtmId: string; metaPixelId?: string; requireConsent: boolean };
+type Config = { ga4Id: string; gtmId: string; metaPixelId?: string; adsId?: string; adsLeadLabel?: string; requireConsent: boolean };
+
+/** Google Ads conversion target ("AW-123/abcDEF"), set once the tags are loaded. */
+let adsLead = "";
 const KEY = "madex-consent";
 
 declare global {
@@ -49,30 +52,44 @@ function injectMeta(id: string) {
 export function trackLead(id?: string, form?: string) {
   window.fbq?.("track", "Lead", form ? { content_name: form } : {}, id ? { eventID: id } : undefined);
   window.gtag?.("event", "generate_lead", form ? { form } : {});
+  // Google Ads conversion; transaction_id keeps a reload from counting twice
+  if (adsLead) window.gtag?.("event", "conversion", { send_to: adsLead, ...(id ? { transaction_id: id } : {}) });
 }
 
-function inject(c: Config) {
+/** `consented`: the visitor clicked «Zulassen» – then Google Ads may use its cookies too. */
+function inject(c: Config, consented: boolean) {
   if (c.metaPixelId) injectMeta(c.metaPixelId);
-  if (!c.ga4Id && !c.gtmId) return;
+  if (!c.ga4Id && !c.gtmId && !c.adsId) return;
   if (document.getElementById("mdx-analytics")) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() {
     // eslint-disable-next-line prefer-rest-params
     window.dataLayer!.push(arguments);
   };
-  window.gtag("consent", "default", { ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied", analytics_storage: "granted" });
-  const s = document.createElement("script");
-  s.id = "mdx-analytics";
-  s.async = true;
+  const ads = consented && c.adsId ? "granted" : "denied";
+  window.gtag("consent", "default", { ad_storage: ads, ad_user_data: ads, ad_personalization: ads, analytics_storage: "granted" });
+  const load = (id: string, src: string) => {
+    const s = document.createElement("script");
+    s.id = id;
+    s.async = true;
+    s.src = src;
+    document.head.appendChild(s);
+  };
   if (c.gtmId) {
     window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
-    s.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(c.gtmId)}`;
-  } else {
-    s.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(c.ga4Id)}`;
-    window.gtag("js", new Date());
-    window.gtag("config", c.ga4Id, { anonymize_ip: true });
+    load("mdx-analytics", `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(c.gtmId)}`);
   }
-  document.head.appendChild(s);
+  // gtag.js for GA4 (without Tag Manager) and for the Google Ads tag (AW-…)
+  const tagId = (!c.gtmId && c.ga4Id) || c.adsId;
+  if (tagId) {
+    load(c.gtmId ? "mdx-gtag" : "mdx-analytics", `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(tagId)}`);
+    window.gtag("js", new Date());
+    if (!c.gtmId && c.ga4Id) window.gtag("config", c.ga4Id, { anonymize_ip: true });
+    if (c.adsId) {
+      window.gtag("config", c.adsId);
+      if (c.adsLeadLabel) adsLead = `${c.adsId}/${c.adsLeadLabel}`;
+    }
+  }
 }
 
 /** Loads Google Analytics / Tag Manager – only after consent when the admin requires it. */
@@ -96,14 +113,14 @@ export function Analytics() {
       .then((r) => r.json())
       .then((j: { analytics: Config }) => {
         const c = j.analytics;
-        if (!c.ga4Id && !c.gtmId && !c.metaPixelId) return;
+        if (!c.ga4Id && !c.gtmId && !c.metaPixelId && !c.adsId) return;
         setCfg(c);
         let choice: string | null = null;
         try {
           choice = localStorage.getItem(KEY);
         } catch {}
         if (choice === "yes") rememberConsent(true);
-        if (!c.requireConsent || choice === "yes") inject(c);
+        if (!c.requireConsent || choice === "yes") inject(c, choice === "yes");
         else if (choice !== "no") setAsk(true);
       })
       .catch(() => {});
@@ -115,15 +132,15 @@ export function Analytics() {
     } catch {}
     rememberConsent(yes);
     setAsk(false);
-    if (yes && cfg) inject(cfg);
+    if (yes && cfg) inject(cfg, true);
   };
 
   if (!ask) return null;
   return (
     <div className="consent" role="dialog" aria-label="Cookie-Einstellungen">
       <p>
-        {cfg?.metaPixelId
-          ? "Wir möchten mit Google Analytics messen, wie unsere Website genutzt wird, und mit dem Meta-Pixel die Wirkung unserer Werbung auf Facebook und Instagram. Sie entscheiden, ob Sie dem zustimmen."
+        {cfg?.metaPixelId || cfg?.adsId
+          ? `Wir möchten mit Google Analytics messen, wie unsere Website genutzt wird, und die Wirkung unserer Werbung auf ${[cfg.adsId && "Google", cfg.metaPixelId && "Facebook und Instagram"].filter(Boolean).join(", ")}. Sie entscheiden, ob Sie dem zustimmen.`
           : "Wir möchten mit Google Analytics anonym messen, wie unsere Website genutzt wird. Sie entscheiden, ob Sie dem zustimmen."}{" "}
         <Link href="/datenschutz">Mehr erfahren</Link>
       </p>

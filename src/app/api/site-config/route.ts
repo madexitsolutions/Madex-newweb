@@ -6,6 +6,9 @@ import { getSettings as getDashboardSettings } from "@/server/settings";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/** Google Ads tag (AW-…) and the conversion label for enquiries – both public by nature. */
+const googleAds = () => ({ adsId: process.env.NEXT_PUBLIC_GOOGLE_ADS_ID?.trim() || "", adsLeadLabel: process.env.NEXT_PUBLIC_GOOGLE_ADS_LEAD_LABEL?.trim() || "" });
+
 /** Public, non-secret runtime config for the chat widget and the analytics loader. */
 export async function GET() {
   const s = await getSettings();
@@ -24,7 +27,7 @@ export async function GET() {
         teaserDelay: c.teaserDelay,
         teaserMobile: c.teaserMobile,
       },
-      analytics: { ...ids, ga4Id: ga4 || ids.ga4Id, metaPixelId: metaPixelId(), requireConsent: s.analytics.requireConsent },
+      analytics: { ...ids, ga4Id: ga4 || ids.ga4Id, metaPixelId: metaPixelId(), ...googleAds(), requireConsent: s.analytics.requireConsent },
     },
     { headers: { "Cache-Control": "public, max-age=60" } },
   );

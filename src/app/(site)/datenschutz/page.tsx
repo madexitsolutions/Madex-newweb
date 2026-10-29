@@ -55,6 +55,12 @@ export default function PrivacyPage() {
             gekürzte IP-Adresse, aufgerufene Seiten, Gerät und Browser) an Google übermittelt. Ihre Entscheidung wird in Ihrem Browser gespeichert; Sie können sie jederzeit ändern, indem Sie die Website-Daten in Ihrem
             Browser löschen.
           </p>
+          {process.env.NEXT_PUBLIC_GOOGLE_ADS_ID && (
+            <p>
+              Wenn Sie zustimmen, verwenden wir zudem das Conversion-Tracking von Google Ads (Google Ireland Ltd. bzw. Google LLC, USA), um zu messen, ob eine Anfrage über eine unserer Anzeigen bei Google
+              zustande kam. Dabei werden Cookies gesetzt und Angaben zu Ihrem Besuch an Google übermittelt.
+            </p>
+          )}
           {metaPixelId() && (
             <p>
               Wenn Sie zustimmen, verwenden wir zudem das Meta-Pixel und die Conversions API (Meta Platforms Ireland Ltd. bzw. Meta Platforms Inc., USA), um die Wirkung unserer Werbung auf Facebook und Instagram
