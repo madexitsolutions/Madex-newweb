@@ -1,6 +1,6 @@
 /**
  * Staff accounts: invitations, role changes, status, 2FA reset, password reset
- * and the own-account functions behind /admin/konto.
+ * and the own-account functions behind /madexadm/konto.
  *
  * Every function takes the acting user explicitly and never reads request
  * headers itself (the IP is passed in), so the rules are testable without a
@@ -169,7 +169,7 @@ async function issueInvite(user: { id: string; email: string; name: string }, ac
     createdBy: actor.id,
     expiresAt: new Date(Date.now() + INVITE_DAYS * 86_400_000),
   });
-  const url = appUrl(`/admin/einladung/${token}`);
+  const url = appUrl(`/madexadm/einladung/${token}`);
   devLink(`Einladung für ${user.email}`, url);
   const general = await getSettings("general");
   const mail = await sendMail({
@@ -352,7 +352,7 @@ export async function requestPasswordReset(emailRaw: string, ip: string): Promis
   await db.delete(tokens).where(and(eq(tokens.userId, u.id), eq(tokens.type, "password_reset"), isNull(tokens.usedAt)));
   const token = randomToken();
   await db.insert(tokens).values({ id: sha256(token), type: "password_reset", userId: u.id, email: u.email, data: { ip }, expiresAt: new Date(Date.now() + RESET_MINUTES * 60_000) });
-  const url = appUrl(`/admin/passwort-zuruecksetzen/${token}`);
+  const url = appUrl(`/madexadm/passwort-zuruecksetzen/${token}`);
   devLink(`Passwort zurücksetzen für ${u.email}`, url);
   const general = await getSettings("general");
   await sendMail({
@@ -492,7 +492,7 @@ export async function confirmTwoFactorSetup(actor: Actor & { sessionId?: string 
   if (!verifyTotp(payload.s, code)) return err("Der Code stimmt nicht. Prüfen Sie die Uhrzeit Ihres Geräts und versuchen Sie es erneut.");
   const { codes, hashes } = makeRecoveryCodes();
   await db.update(users).set({ totpSecret: encrypt(payload.s), totpEnabled: true, recoveryCodes: hashes, updatedAt: new Date() }).where(eq(users.id, actor.id));
-  // codes are shown once on /admin/wiederherstellungscodes (same mechanism as at sign-in)
+  // codes are shown once on /madexadm/wiederherstellungscodes (same mechanism as at sign-in)
   if (actor.sessionId) await db.update(sessions).set({ pendingSecret: encrypt(JSON.stringify(codes)) }).where(eq(sessions.id, actor.sessionId));
   await audit(actor, "user.2fa_enabled", { entityType: "user", entityId: actor.id, summary: "Zwei-Faktor-Anmeldung eingerichtet" });
   return { ok: true };

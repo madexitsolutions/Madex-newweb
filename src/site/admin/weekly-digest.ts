@@ -10,7 +10,7 @@ import { ratedPages } from "@/server/content/seo";
 import { change, type DigestSection, type DigestWeek } from "@/server/digest";
 import { appUrl } from "@/server/lib/app-url";
 
-const LEADS = `/admin/anfragen?status=alle&formular=${encodeURIComponent("Kostenlose Analyse")}`;
+const LEADS = `/madexadm/anfragen?status=alle&formular=${encodeURIComponent("Kostenlose Analyse")}`;
 
 const inRange = (iso: string | undefined, a: Date, b: Date) => {
   const t = iso ? Date.parse(iso) : NaN;
@@ -32,7 +32,7 @@ export async function madexDigest(w: DigestWeek): Promise<DigestSection[]> {
       rows: [
         { label: "Analysen gestartet", value: number(week.length), change: change(week.length, prev.length), href: appUrl(LEADS) },
         { label: "Bericht nicht geöffnet", value: number(unopened), href: appUrl(LEADS) },
-        ...weak.slice(0, 3).map((a) => ({ label: "Grosses Potenzial", value: `${a.domain} (${a.score} Punkte)`, href: appUrl(`/admin/anfragen?status=alle&q=${encodeURIComponent(a.domain)}`) })),
+        ...weak.slice(0, 3).map((a) => ({ label: "Grosses Potenzial", value: `${a.domain} (${a.score} Punkte)`, href: appUrl(`/madexadm/anfragen?status=alle&q=${encodeURIComponent(a.domain)}`) })),
       ],
     });
   }
@@ -43,9 +43,9 @@ export async function madexDigest(w: DigestWeek): Promise<DigestSection[]> {
     out.push({
       title: "Chatbot Orion",
       rows: [
-        { label: "Gespräche", value: number(chatWeek.length), change: change(chatWeek.length, chats.filter((c) => inRange(c.createdAt, w.prevStart, w.start)).length), href: appUrl("/admin/chatbot") },
+        { label: "Gespräche", value: number(chatWeek.length), change: change(chatWeek.length, chats.filter((c) => inRange(c.createdAt, w.prevStart, w.start)).length), href: appUrl("/madexadm/chatbot") },
         { label: "Daraus Anfragen", value: number(chatWeek.filter((c) => c.requestRef).length) },
-        ...(unanswered ? [{ label: "Ohne Antwort", value: `${number(unanswered)} – Wissen ergänzen`, href: appUrl("/admin/chatbot?tab=wissen") }] : []),
+        ...(unanswered ? [{ label: "Ohne Antwort", value: `${number(unanswered)} – Wissen ergänzen`, href: appUrl("/madexadm/chatbot?tab=wissen") }] : []),
       ],
     });
   }
@@ -56,8 +56,8 @@ export async function madexDigest(w: DigestWeek): Promise<DigestSection[]> {
     out.push({
       title: "SEO",
       rows: [
-        { label: "Ø Bewertung", value: `${avg} von 100`, href: appUrl("/admin/seo") },
-        ...(weak ? [{ label: "Seiten mit Verbesserungsbedarf", value: number(weak), href: appUrl("/admin/seo?ansicht=verbessern&sort=bewertung") }] : []),
+        { label: "Ø Bewertung", value: `${avg} von 100`, href: appUrl("/madexadm/seo") },
+        ...(weak ? [{ label: "Seiten mit Verbesserungsbedarf", value: number(weak), href: appUrl("/madexadm/seo?ansicht=verbessern&sort=bewertung") }] : []),
       ],
     });
   }

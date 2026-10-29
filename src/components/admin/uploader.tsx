@@ -4,7 +4,7 @@ import { useRef, useState, type DragEvent } from "react";
 import { Icon } from "./kit";
 import type { MediaRef } from "@/server/media/library";
 
-export const UPLOAD_URL = "/admin/medien/hochladen";
+export const UPLOAD_URL = "/madexadm/medien/hochladen";
 const MAX = 10 * 1024 * 1024;
 const TYPES: Record<string, string> = { "image/jpeg": "JPG", "image/png": "PNG", "image/webp": "WebP", "image/gif": "GIF", "image/avif": "AVIF", "image/svg+xml": "SVG", "application/pdf": "PDF" };
 

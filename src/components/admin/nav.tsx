@@ -24,7 +24,7 @@ export function AdminNav({ groups, user, brand, siteUrl, signOut }: { groups: Na
   return (
     <aside className={`a-side${open ? " is-open" : ""}`}>
       <div className="a-side__bar">
-        <Link href="/admin" className="a-side__brand" aria-label="Übersicht">
+        <Link href="/madexadm" className="a-side__brand" aria-label="Übersicht">
           {brand}
         </Link>
         <button type="button" className="a-side__toggle" aria-expanded={open} aria-controls="a-side-menu" onClick={() => setOpenOn(open ? null : path)}>
@@ -39,7 +39,7 @@ export function AdminNav({ groups, user, brand, siteUrl, signOut }: { groups: Na
             <div key={g.group} className="a-nav__group">
               <p className="a-nav__label">{g.group}</p>
               {g.items.map((i) => {
-                const active = i.href === "/admin" ? path === "/admin" : path === i.href || path.startsWith(i.href + "/");
+                const active = i.href === "/madexadm" ? path === "/madexadm" : path === i.href || path.startsWith(i.href + "/");
                 return (
                   <Link key={i.href} href={i.href} className={active ? "is-active" : undefined} aria-current={active ? "page" : undefined}>
                     <Icon name={i.icon} />
@@ -56,7 +56,7 @@ export function AdminNav({ groups, user, brand, siteUrl, signOut }: { groups: Na
           ))}
         </nav>
         <div className="a-side__foot">
-          <Link href="/admin/konto" className="a-side__link a-side__user">
+          <Link href="/madexadm/konto" className="a-side__link a-side__user">
             <Icon name="user" size={16} />
             <span>
               <strong>{user.name}</strong>

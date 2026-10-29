@@ -13,7 +13,7 @@ export const PROJECT: {
   websiteEditing: boolean;
   /** every page of the website with its built-in SEO – the SEO page in the dashboard lists and rates them */
   seoPages?: () => Promise<SitePage[]>;
-  /** extra dashboard pages of this project (src/app/admin/(panel)/(projekt)/…), added to a navigation group */
+  /** extra dashboard pages of this project (src/app/madexadm/(panel)/(projekt)/…), added to a navigation group */
   nav?: { group: string; after?: string; items: NavItem[] }[];
   /** extra panel on top of an enquiry in the dashboard (e.g. the website analysis behind it) */
   inquiryPanel?: (inquiry: { reference: string; fields: Record<string, string> }) => Promise<ReactNode>;
@@ -28,9 +28,9 @@ export const PROJECT: {
     {
       group: "Vertrieb",
       after: "Übersicht",
-      items: [{ href: "/admin/chatbot", label: "Chatbot Orion", icon: "bot", permission: "inquiries.view" }],
+      items: [{ href: "/madexadm/chatbot", label: "Chatbot Orion", icon: "bot", permission: "inquiries.view" }],
     },
-    { group: "Website", items: [{ href: "/admin/projekte", label: "Projekte", icon: "file", permission: "content.view" }] },
+    { group: "Website", items: [{ href: "/madexadm/projekte", label: "Projekte", icon: "file", permission: "content.view" }] },
   ],
   inquiryPanel: async (inquiry) => (await import("@/site/admin/inquiry-analysis")).InquiryAnalysis(inquiry),
   weeklyDigest: async (week) => (await import("@/site/admin/weekly-digest")).madexDigest(week),

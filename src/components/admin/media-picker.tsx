@@ -12,7 +12,7 @@
  * Read it on the server with f.get("coverId") or f.getAll("imageIds").
  */
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import { pickerListAction } from "@/app/admin/media-actions";
+import { pickerListAction } from "@/app/madexadm/media-actions";
 import type { MediaRef } from "@/server/media/library";
 import { Icon } from "./kit";
 import { Uploader } from "./uploader";

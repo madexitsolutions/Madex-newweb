@@ -52,7 +52,7 @@ function FollowUps({ d }: { d: NonNullable<RailData["inquiries"]> }) {
       <ul className="a-rail__list">
         {d.due.map((i) => (
           <li key={i.id}>
-            <Link href={`/admin/anfragen/${i.id}`}>
+            <Link href={`/madexadm/anfragen/${i.id}`}>
               <strong>{i.who}</strong>
               <span>{i.subject || "Ohne Betreff"}</span>
               <small className="a-rail__pts a-rail__pts--warn">seit {new Date(i.at).toLocaleDateString("de-CH", { day: "numeric", month: "short" })}</small>
@@ -66,12 +66,12 @@ function FollowUps({ d }: { d: NonNullable<RailData["inquiries"]> }) {
 
 function Inquiries({ d }: { d: NonNullable<RailData["inquiries"]> }) {
   return (
-    <Card title={d.open ? `Neue Anfragen (${d.open})` : "Anfragen"} action={<More href="/admin/anfragen">Alle Anfragen</More>}>
+    <Card title={d.open ? `Neue Anfragen (${d.open})` : "Anfragen"} action={<More href="/madexadm/anfragen">Alle Anfragen</More>}>
       {d.latest.length ? (
         <ul className="a-rail__list">
           {d.latest.map((i) => (
             <li key={i.id}>
-              <Link href={`/admin/anfragen/${i.id}`}>
+              <Link href={`/madexadm/anfragen/${i.id}`}>
                 <strong>{i.who}</strong>
                 <span>{i.subject || "Ohne Betreff"}</span>
                 <small>{ago(i.at)}</small>
@@ -88,7 +88,7 @@ function Inquiries({ d }: { d: NonNullable<RailData["inquiries"]> }) {
 
 function Seo({ d, linkWeakest }: { d: NonNullable<RailData["seo"]>; linkWeakest: boolean }) {
   return (
-    <Card title="SEO auf einen Blick" action={!linkWeakest ? <More href="/admin/seo">Zur SEO-Übersicht</More> : undefined}>
+    <Card title="SEO auf einen Blick" action={!linkWeakest ? <More href="/madexadm/seo">Zur SEO-Übersicht</More> : undefined}>
       <div className={`a-rail__score a-rail__score--${tone(d.avg)}`}>
         <strong>{d.avg}</strong>
         <span>
@@ -102,7 +102,7 @@ function Seo({ d, linkWeakest }: { d: NonNullable<RailData["seo"]>; linkWeakest:
           <ul className="a-rail__list">
             {d.weakest.map((p) => (
               <li key={p.path}>
-                <Link href={`/admin/seo?bearbeiten=${encodeURIComponent(p.path)}`} scroll={false}>
+                <Link href={`/madexadm/seo?bearbeiten=${encodeURIComponent(p.path)}`} scroll={false}>
                   <strong>{p.title || p.path}</strong>
                   <span className="a-mono-path">{p.path}</span>
                   <small className={`a-rail__pts a-rail__pts--${tone(p.score)}`}>{p.score}</small>
@@ -160,19 +160,19 @@ function Support() {
 
 /** Which cards a page gets – the most useful first, the website state always last. */
 export function RailCards({ data }: { data: RailData }) {
-  const path = usePathname() ?? "/admin";
+  const path = usePathname() ?? "/madexadm";
   const on = (p: string) => path === p || path.startsWith(`${p}/`);
   const cards: ReactNode[] = [];
 
-  if (path === "/admin") {
+  if (path === "/madexadm") {
     // the overview already lists new enquiries in the main column
     if (data.inquiries) cards.push(<FollowUps key="f" d={data.inquiries} />);
     if (data.seo) cards.push(<Seo key="s" d={data.seo} linkWeakest={false} />);
     cards.push(<Support key="h" />);
-  } else if (on("/admin/anfragen")) {
+  } else if (on("/madexadm/anfragen")) {
     if (data.inquiries) cards.push(<FollowUps key="f" d={data.inquiries} />, <Inquiries key="i" d={data.inquiries} />);
     cards.push(<Tips key="t" title="Tipps" items={["Anfragen innerhalb von 24 Stunden beantworten – die Chance auf einen Auftrag ist dann am grössten.", "Erledigte Anfragen abschliessen, damit die Liste übersichtlich bleibt."]} />);
-  } else if (on("/admin/seo")) {
+  } else if (on("/madexadm/seo")) {
     if (data.seo) cards.push(<Seo key="s" d={data.seo} linkWeakest />);
     cards.push(
       <Tips
@@ -181,10 +181,10 @@ export function RailCards({ data }: { data: RailData }) {
         items={["Titel mit Leistung und Ort, z. B. «Webdesign Schaffhausen».", "Beschreibung mit Nutzen und Aufruf – sie entscheidet, ob jemand klickt.", "Änderungen erscheinen bei Google meist nach einigen Tagen."]}
       />,
     );
-  } else if (on("/admin/medien")) {
+  } else if (on("/madexadm/medien")) {
     if (data.media) cards.push(<Card key="m" title="Mediathek"><p className="a-rail__big"><strong>{data.media.files.toLocaleString("de-CH")}</strong> Dateien · {mb(data.media.bytes)}</p></Card>);
     cards.push(<Tips key="t" title="Bilder für die Website" items={["Fotos mit höchstens 2000 px Breite hochladen – die Website verkleinert sie automatisch.", "Alt-Text beschreibt das Bild für Google und Screenreader."]} />);
-  } else if (on("/admin/benutzer") || on("/admin/sicherheit") || on("/admin/konto")) {
+  } else if (on("/madexadm/benutzer") || on("/madexadm/sicherheit") || on("/madexadm/konto")) {
     cards.push(
       <Card key="sec" title="Ihr Konto">
         <p className="a-rail__status">

@@ -128,7 +128,7 @@ describe("Kasse", () => {
     const events = await db.select().from(orderEvents).where(eq(orderEvents.orderId, o.id));
     expect(events.map((e) => e.type)).toEqual(expect.arrayContaining(["created", "status", "email"]));
     const notes = await db.select().from(notifications).where(eq(notifications.type, "order.created"));
-    expect(notes.some((n) => n.href === `/admin/bestellungen/${o.id}`)).toBe(true);
+    expect(notes.some((n) => n.href === `/madexadm/bestellungen/${o.id}`)).toBe(true);
   });
 
   it("Doppelklick: ein Warenkorb ergibt genau eine Bestellung", async () => {

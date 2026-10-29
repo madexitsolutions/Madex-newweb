@@ -1,5 +1,5 @@
 /**
- * SEO overrides for the public website, managed in the dashboard (/admin/seo).
+ * SEO overrides for the public website, managed in the dashboard (/madexadm/seo).
  * Never throws: without a database (e.g. during the build) the page defaults apply.
  */
 import { eq } from "drizzle-orm";

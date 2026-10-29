@@ -47,7 +47,7 @@ export async function shopTodos(user: CurrentUser, now = new Date()): Promise<To
   if (user.permissions.has("orders.view")) {
     const [toShip] = await db.select({ n: count() }).from(orders).where(inArray(orders.status, ["processing", "on_hold"]));
     if (toShip.n)
-      out.push({ key: "fulfil", tone: "warn", icon: "cart", title: `${toShip.n} Bestellung${toShip.n === 1 ? "" : "en"} zu bearbeiten`, text: "In Bearbeitung oder zurückgestellt – bereit zum Versand?", href: "/admin/bestellungen?status=offen", action: "Bestellungen" });
+      out.push({ key: "fulfil", tone: "warn", icon: "cart", title: `${toShip.n} Bestellung${toShip.n === 1 ? "" : "en"} zu bearbeiten`, text: "In Bearbeitung oder zurückgestellt – bereit zum Versand?", href: "/madexadm/bestellungen?status=offen", action: "Bestellungen" });
     const { invoiceDueDays } = await getSettings("payments");
     const due = new Date(now.getTime() - invoiceDueDays * 86_400_000);
     const [unpaid] = await db
@@ -61,7 +61,7 @@ export async function shopTodos(user: CurrentUser, now = new Date()): Promise<To
         icon: "card",
         title: `${unpaid.n} Rechnung${unpaid.n === 1 ? "" : "en"} überfällig`,
         text: `Älter als ${invoiceDueDays} Tage und noch nicht bezahlt – Zahlung prüfen oder mahnen.`,
-        href: "/admin/bestellungen?zahlung=offen",
+        href: "/madexadm/bestellungen?zahlung=offen",
         action: "Ansehen",
       });
   }
@@ -73,7 +73,7 @@ export async function shopTodos(user: CurrentUser, now = new Date()): Promise<To
       .innerJoin(products, eq(productVariants.productId, products.id))
       .where(and(eq(productVariants.trackInventory, true), eq(productVariants.active, true), lte(productVariants.stock, lowStockThreshold), ne(products.status, "archived")));
     if (low.n)
-      out.push({ key: "stock", tone: "warn", icon: "box", title: `${low.n} Variante${low.n === 1 ? "" : "n"} mit tiefem Lagerbestand`, text: `Bestand ${lowStockThreshold} oder weniger – nachbestellen oder Bestand anpassen.`, href: "/admin/produkte?lager=tief", action: "Lager" });
+      out.push({ key: "stock", tone: "warn", icon: "box", title: `${low.n} Variante${low.n === 1 ? "" : "n"} mit tiefem Lagerbestand`, text: `Bestand ${lowStockThreshold} oder weniger – nachbestellen oder Bestand anpassen.`, href: "/madexadm/produkte?lager=tief", action: "Lager" });
   }
   return out;
 }
@@ -89,25 +89,25 @@ export async function setupChecks(modules: { shop: boolean; storefront: boolean 
     db.select({ n: count() }).from(apiKeys).where(isNull(apiKeys.revokedAt)),
   ]);
   const checks: Check[] = [
-    { key: "smtp", ok: smtp.configured, title: "E-Mail-Versand eingerichtet", text: smtp.configured ? "Benachrichtigungen werden verschickt." : "Ohne SMTP gehen keine Bestätigungen und Hinweise raus.", href: "/admin/einstellungen?tab=email" },
+    { key: "smtp", ok: smtp.configured, title: "E-Mail-Versand eingerichtet", text: smtp.configured ? "Benachrichtigungen werden verschickt." : "Ohne SMTP gehen keine Bestätigungen und Hinweise raus.", href: "/madexadm/einstellungen?tab=email" },
   ];
   if (modules.shop) {
     const anyPay = pay.stripeEnabled || pay.payrexxEnabled || pay.invoiceEnabled || pay.bankTransferEnabled || pay.pickupPaymentEnabled;
-    checks.push({ key: "payment", ok: anyPay, title: "Zahlungsart aktiviert", text: anyPay ? "Kundinnen und Kunden können bezahlen." : "Aktivieren Sie mindestens eine Zahlungsart.", href: "/admin/shop-einstellungen?tab=zahlung" });
+    checks.push({ key: "payment", ok: anyPay, title: "Zahlungsart aktiviert", text: anyPay ? "Kundinnen und Kunden können bezahlen." : "Aktivieren Sie mindestens eine Zahlungsart.", href: "/madexadm/shop-einstellungen?tab=zahlung" });
   }
   const [general, legal] = await Promise.all([getSettings("general"), db.select({ slug: pages.slug }).from(pages).where(and(inArray(pages.slug, ["impressum", "datenschutz"]), eq(pages.status, "published")))]);
   const company = Boolean(general.companyName && general.email && general.city);
-  checks.unshift({ key: "company", ok: company, title: "Firmendaten erfasst", text: company ? "Erscheinen in Fusszeile, Impressum, E-Mails und Rechnungen." : "Name, Adresse und E-Mail für Fusszeile, Impressum und Rechnungen.", href: "/admin/einstellungen" });
-  if (websiteEditing) checks.push({ key: "legal", ok: legal.length === 2, title: "Impressum und Datenschutz veröffentlicht", text: legal.length === 2 ? "Beide Seiten sind online – bitte Texte prüfen." : "Gesetzlich nötig. Vorlagen liegen unter Website → Seiten.", href: "/admin/seiten" });
-  checks.push({ key: "logo", ok: Boolean(brand.logoUrl), title: "Logo hinterlegt", text: brand.logoUrl ? "Erscheint im Dashboard und in E-Mails." : "Für Dashboard, E-Mails und Rechnungen.", href: "/admin/einstellungen?tab=branding" });
+  checks.unshift({ key: "company", ok: company, title: "Firmendaten erfasst", text: company ? "Erscheinen in Fusszeile, Impressum, E-Mails und Rechnungen." : "Name, Adresse und E-Mail für Fusszeile, Impressum und Rechnungen.", href: "/madexadm/einstellungen" });
+  if (websiteEditing) checks.push({ key: "legal", ok: legal.length === 2, title: "Impressum und Datenschutz veröffentlicht", text: legal.length === 2 ? "Beide Seiten sind online – bitte Texte prüfen." : "Gesetzlich nötig. Vorlagen liegen unter Website → Seiten.", href: "/madexadm/seiten" });
+  checks.push({ key: "logo", ok: Boolean(brand.logoUrl), title: "Logo hinterlegt", text: brand.logoUrl ? "Erscheint im Dashboard und in E-Mails." : "Für Dashboard, E-Mails und Rechnungen.", href: "/madexadm/einstellungen?tab=branding" });
   checks.push({
     key: "2fa",
     ok: unsecured[0].n === 0,
     title: "Alle Benutzer mit 2FA",
     text: unsecured[0].n === 0 ? "Alle aktiven Konten sind zusätzlich geschützt." : `${unsecured[0].n} aktive${unsecured[0].n === 1 ? "s Konto" : " Konten"} ohne Zwei-Faktor-Anmeldung.`,
-    href: "/admin/benutzer",
+    href: "/madexadm/benutzer",
   });
-  if (!modules.storefront) checks.push({ key: "apikey", ok: keys[0].n > 0, title: "API-Schlüssel erstellt", text: keys[0].n > 0 ? "Die Website ist verbunden." : "Ohne Schlüssel kann die Website keine Daten abrufen.", href: "/admin/integrationen" });
+  if (!modules.storefront) checks.push({ key: "apikey", ok: keys[0].n > 0, title: "API-Schlüssel erstellt", text: keys[0].n > 0 ? "Die Website ist verbunden." : "Ohne Schlüssel kann die Website keine Daten abrufen.", href: "/madexadm/integrationen" });
   return checks;
 }
 

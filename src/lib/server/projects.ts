@@ -86,7 +86,7 @@ export const projectInput = z.object({
 });
 
 /** Slugs the website uses itself – a project must not take them. */
-const RESERVED = new Set(["admin", "api", "analyse", "kontakt", "agb", "datenschutz", "portfolio", "website-portfolio", "partners", "karriere", "das-team", "uber-uns", "marketing-solutions", "kostenlose-prufung", "graphic-design-portfolio", "werbevideos-portfolio", "uploads", "media"]);
+const RESERVED = new Set(["admin", "madexadm", "api", "analyse", "kontakt", "agb", "datenschutz", "portfolio", "website-portfolio", "partners", "karriere", "das-team", "uber-uns", "marketing-solutions", "kostenlose-prufung", "graphic-design-portfolio", "werbevideos-portfolio", "uploads", "media"]);
 
 export type SaveResult = { ok: true; slug: string } | { ok: false; field: string; message: string };
 

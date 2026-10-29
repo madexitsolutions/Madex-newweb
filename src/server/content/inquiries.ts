@@ -200,7 +200,7 @@ async function confirmToSender(row: Inquiry) {
 
 /** Staff notification (in-app + e-mail) and webhook for a new, non-spam inquiry. */
 async function announce(row: Inquiry) {
-  const href = `/admin/anfragen/${row.id}`;
+  const href = `/madexadm/anfragen/${row.id}`;
   const who = row.name || row.email;
   await notify({ type: "inquiry", title: `Neue Anfrage von ${who}`, body: row.subject || row.message.slice(0, 140), href, permission: "inquiries.view" });
   const notifyInquiry = await inquiryRecipients(row.form);
@@ -356,7 +356,7 @@ export async function remindFollowUps(now = new Date()) {
   for (const q of (await dueFollowUps(now, 100)).filter((x) => !x.followUpNotified)) {
     const title = `Nachfassen: ${q.name || q.email}`;
     const body = `${q.reference}${q.status === "quoted" ? " – Offerte gesendet, noch keine Antwort" : ""}${q.subject ? ` · ${q.subject}` : ""}`;
-    const href = `/admin/anfragen/${q.id}`;
+    const href = `/madexadm/anfragen/${q.id}`;
     await notify({ type: "inquiry.follow_up", ...(q.assignedTo ? { userId: q.assignedTo } : { permission: "inquiries.manage" as const }), title, body, href });
     // also by e-mail when recipients are set (Einstellungen → E-Mail)
     if (mailTo.length)

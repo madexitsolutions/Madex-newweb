@@ -64,18 +64,18 @@ export async function mediaUsage(m: Pick<Media, "id" | "path">): Promise<MediaUs
     getSettings("branding"),
   ]);
   const out: MediaUsage[] = [];
-  for (const p of imgs) out.push({ kind: "product", label: `Produkt «${p.name}»`, href: `/admin/produkte/${p.id}` });
-  for (const v of variants) out.push({ kind: "variant", label: `Variante «${v.title || "Standard"}» von «${v.name}»`, href: `/admin/produkte/${v.id}` });
-  for (const c of cats) out.push({ kind: "category", label: `Kategorie «${c.name}»`, href: `/admin/kategorien?bearbeiten=${c.id}` });
-  for (const p of covers) out.push({ kind: "post", label: `Titelbild von «${p.title}»`, href: `/admin/beitraege/${p.id}` });
-  for (const p of bodies) out.push({ kind: "post_body", label: `Im Text von «${p.title}»`, href: `/admin/beitraege/${p.id}` });
-  for (const s of seo) out.push({ kind: "seo", label: `Vorschaubild der Seite ${s.path}`, href: `/admin/seo?bearbeiten=${encodeURIComponent(s.path)}` });
+  for (const p of imgs) out.push({ kind: "product", label: `Produkt «${p.name}»`, href: `/madexadm/produkte/${p.id}` });
+  for (const v of variants) out.push({ kind: "variant", label: `Variante «${v.title || "Standard"}» von «${v.name}»`, href: `/madexadm/produkte/${v.id}` });
+  for (const c of cats) out.push({ kind: "category", label: `Kategorie «${c.name}»`, href: `/madexadm/kategorien?bearbeiten=${c.id}` });
+  for (const p of covers) out.push({ kind: "post", label: `Titelbild von «${p.title}»`, href: `/madexadm/beitraege/${p.id}` });
+  for (const p of bodies) out.push({ kind: "post_body", label: `Im Text von «${p.title}»`, href: `/madexadm/beitraege/${p.id}` });
+  for (const s of seo) out.push({ kind: "seo", label: `Vorschaubild der Seite ${s.path}`, href: `/madexadm/seo?bearbeiten=${encodeURIComponent(s.path)}` });
   const brandFields: [keyof typeof branding, string][] = [
     ["logoUrl", "Logo"],
     ["logoDarkUrl", "Logo (dunkler Hintergrund)"],
     ["faviconUrl", "Favicon"],
   ];
-  for (const [k, label] of brandFields) if (String(branding[k] ?? "").includes(url)) out.push({ kind: "branding", label: `Branding: ${label}`, href: "/admin/einstellungen" });
+  for (const [k, label] of brandFields) if (String(branding[k] ?? "").includes(url)) out.push({ kind: "branding", label: `Branding: ${label}`, href: "/madexadm/einstellungen" });
   return out;
 }
 

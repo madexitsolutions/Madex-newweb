@@ -72,7 +72,7 @@ export async function InquiryAnalysis({
             {a.status === "done" && (
               <>
                 <a
-                  href={`/admin/analysen/${a.id}/bericht`}
+                  href={`/madexadm/analysen/${a.id}/bericht`}
                   target="_blank"
                   rel="noopener"
                   className="a-btn a-btn--ghost a-btn--sm"
@@ -81,7 +81,7 @@ export async function InquiryAnalysis({
                   Bericht ansehen
                 </a>
                 <a
-                  href={`/admin/analysen/${a.id}/bericht?pdf=1`}
+                  href={`/madexadm/analysen/${a.id}/bericht?pdf=1`}
                   className="a-btn a-btn--quiet a-btn--sm"
                 >
                   <Icon name="download" size={15} />

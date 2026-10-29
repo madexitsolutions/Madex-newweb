@@ -38,7 +38,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   trailingSlash: false,
   poweredByHeader: false,
-  // dashboard (src/server, /admin): native/wasm database drivers stay outside the bundle
+  // dashboard (src/server, /madexadm): native/wasm database drivers stay outside the bundle
   // PDF report (website analysis): renders with its own layout engine on the server
   serverExternalPackages: ["@electric-sql/pglite", "postgres", "@react-pdf/renderer"],
   experimental: {
@@ -75,7 +75,7 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/admin/:path*",
+        source: "/madexadm/:path*",
         headers: [
           { key: "Cache-Control", value: "no-store" },
           { key: "X-Robots-Tag", value: "noindex, nofollow" },

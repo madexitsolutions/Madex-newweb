@@ -22,8 +22,8 @@ Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablag
 | Variable | Zweck |
 |---|---|
 | `NEXT_PUBLIC_SITE_URL` | Basis-URL für Canonicals, Sitemap, Open Graph, Links in E-Mails |
-| `DATABASE_URL`, `APP_SECRET`, `APP_URL` | Neues Dashboard `/admin` (PostgreSQL, Verschlüsselung, öffentliche Adresse) |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Optional: Inhaber-Konto für `/admin` bei leerer Datenbank anlegen (sonst Ersteinrichtung unter `/admin`) |
+| `DATABASE_URL`, `APP_SECRET`, `APP_URL` | Neues Dashboard `/madexadm` (PostgreSQL, Verschlüsselung, öffentliche Adresse) |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Optional: Inhaber-Konto für `/madexadm` bei leerer Datenbank anlegen (sonst Ersteinrichtung unter `/madexadm`) |
 | `DATA_DIR`, `DATA_ENCRYPTION_KEY` | Ablage und Verschlüsselung von Anfragen, Chats, Einstellungen |
 | `SMTP_*`, `MAIL_FROM`, `CONTACT_TO_EMAIL` | E-Mail-Benachrichtigung bei neuen Anfragen |
 | `OPENAI_API_KEY`, `OPENAI_MODEL` | KI-Chatbot «Orion» und die Texte der Website-Analyse |
@@ -39,20 +39,20 @@ Alle Variablen mit Erklärung stehen in `.env.example` (Admin-Zugang, Datenablag
 2. **Persistenten Speicher anlegen** (Storages → Volume) z. B. auf `/app/.data` und `DATA_DIR=/app/.data` setzen. Ohne Volume gehen Anfragen, Chats und Einstellungen bei jedem Deploy verloren.
 3. `DATA_ENCRYPTION_KEY` einmal erzeugen (`openssl rand -base64 32`) und nie mehr ändern – sonst sind bestehende Daten nicht mehr lesbar.
 
-## Neues Dashboard (`/admin`)
+## Neues Dashboard (`/madexadm`)
 
 Die Website enthält das wiederverwendbare Dashboard aus der Vorlage `madexitsolutions/predashboard` (Shop, Beiträge,
-Mediathek, SEO, Anfragen, Statistiken, Benutzer und Rollen). Beim ersten Aufruf von `/admin` wird das Inhaber-Konto
+Mediathek, SEO, Anfragen, Statistiken, Benutzer und Rollen). Beim ersten Aufruf von `/madexadm` wird das Inhaber-Konto
 angelegt. Es braucht zusätzlich `DATABASE_URL`, `APP_SECRET` und `APP_URL` (siehe `.env.example`); lokal genügt `npm run dev`
-(eingebettete Datenbank). Der Kern liegt in `src/app/admin`, `src/server`, `src/components/admin`, `src/modules`,
+(eingebettete Datenbank). Der Kern liegt in `src/app/madexadm`, `src/server`, `src/components/admin`, `src/modules`,
 `src/app/api/{v1,payments,cron}`, `src/app/uploads` und `tests/dashboard` – Änderungen daran zuerst in der Vorlage machen.
 
-## Anmeldung im Dashboard (`/admin`)
+## Anmeldung im Dashboard (`/madexadm`)
 
 Anmeldung mit **E-Mail-Adresse** und Passwort, danach Zwei-Faktor-Code (Authenticator-App). Das erste Konto entsteht
-über die Ersteinrichtung unter `/admin` oder automatisch aus `ADMIN_EMAIL` + `ADMIN_PASSWORD` (solange noch kein Benutzer existiert).
+über die Ersteinrichtung unter `/madexadm` oder automatisch aus `ADMIN_EMAIL` + `ADMIN_PASSWORD` (solange noch kein Benutzer existiert).
 
-- **Status:** `/admin/status` zeigt Datenbank, Datenordner, Schlüssel, Konto und HTTPS – angemeldeten Admins; mit
+- **Status:** `/madexadm/status` zeigt Datenbank, Datenordner, Schlüssel, Konto und HTTPS – angemeldeten Admins; mit
   `STATUS_PAGE_PUBLIC=true` vorübergehend auch ohne Anmeldung (z. B. wenn die Anmeldung selbst nicht klappt).
 - **Notfallzugang:** `ADMIN_RESET=true` setzen und neu starten (Konto `ADMIN_EMAIL` bekommt `ADMIN_PASSWORD`, 2FA wird neu eingerichtet),
   danach entfernen. Oder im Terminal bei gestoppter App: `npm run admin:reset -- name@firma.ch`.
@@ -62,7 +62,7 @@ Anmeldung mit **E-Mail-Adresse** und Passwort, danach Zwei-Faktor-Code (Authenti
 - **Sicherung:** Sicherheit → Datensicherung lädt die Datenbank herunter; Wiederherstellen bei gestoppter App mit
   `npm run db:restore -- datei.tar.gz`. Den Ordner `DATA_DIR` (Uploads, `.app-secret`) zusätzlich sichern.
 
-Kontakt-, Analyse- und Chat-Terminanfragen landen unter `/admin/anfragen`; Empfänger unter Einstellungen → E-Mail (bis dahin `CONTACT_TO_EMAIL`).
+Kontakt-, Analyse- und Chat-Terminanfragen landen unter `/madexadm/anfragen`; Empfänger unter Einstellungen → E-Mail (bis dahin `CONTACT_TO_EMAIL`).
 
 ## KI-Chatbot «Orion»
 

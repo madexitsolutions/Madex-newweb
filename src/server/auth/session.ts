@@ -113,7 +113,7 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
 /** Top of every admin page / server action. Redirects to the login when signed out. */
 export async function requireUser(): Promise<CurrentUser> {
   const u = await getCurrentUser();
-  if (!u) redirect("/admin/login");
+  if (!u) redirect("/madexadm/login");
   return u;
 }
 
@@ -124,7 +124,7 @@ export function can(user: CurrentUser | null, permission: Permission) {
 /** Like requireUser, but also checks a permission (shows the "no access" page otherwise). */
 export async function requirePermission(...needed: Permission[]): Promise<CurrentUser> {
   const u = await requireUser();
-  if (!needed.every((p) => u.permissions.has(p))) redirect("/admin/kein-zugriff");
+  if (!needed.every((p) => u.permissions.has(p))) redirect("/madexadm/kein-zugriff");
   return u;
 }
 

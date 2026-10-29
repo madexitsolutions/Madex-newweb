@@ -8,7 +8,7 @@ export async function register() {
     ensureSecret();
     await runMigrations();
   } catch (e) {
-    // keep the server up so /admin/status can show what is wrong
+    // keep the server up so /madexadm/status can show what is wrong
     const msg = e instanceof Error ? e.message : String(e);
     (globalThis as { __startupError?: string }).__startupError = msg;
     console.error("[db] Start fehlgeschlagen:", msg);

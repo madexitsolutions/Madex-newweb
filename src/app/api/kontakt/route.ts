@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 
 /**
  * Contact form and free analysis. Each request lands in the dashboard inbox
- * (/admin/anfragen) and is e-mailed to the configured recipients.
+ * (/madexadm/anfragen) and is e-mailed to the configured recipients.
  */
 export async function POST(req: Request) {
   let body: unknown;

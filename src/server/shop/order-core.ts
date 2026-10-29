@@ -123,7 +123,7 @@ export async function checkLowStock(variantIds: string[]) {
       type: "stock.low",
       title: v.stock <= 0 ? `Ausverkauft: ${name}` : `Lagerbestand niedrig: ${name}`,
       body: `Noch ${v.stock} Stück${v.sku ? ` · SKU ${v.sku}` : ""}`,
-      href: `/admin/produkte/${v.productId}`,
+      href: `/madexadm/produkte/${v.productId}`,
       permission: "products.manage",
     });
   }
@@ -276,5 +276,5 @@ export async function recordExternalRefund(orderId: string, input: { provider: s
 export async function notifyStaffNewOrder(o: OrderRow) {
   const label = await orderLabel(o);
   const name = [o.billingAddress.firstName, o.billingAddress.lastName].filter(Boolean).join(" ") || o.email;
-  await notify({ type: "order.created", title: `Neue Bestellung ${label}`, body: `${name} · ${money(o.total)} · ${paymentMethodLabel(o.paymentMethod)}`, href: `/admin/bestellungen/${o.id}`, permission: "orders.view" });
+  await notify({ type: "order.created", title: `Neue Bestellung ${label}`, body: `${name} · ${money(o.total)} · ${paymentMethodLabel(o.paymentMethod)}`, href: `/madexadm/bestellungen/${o.id}`, permission: "orders.view" });
 }

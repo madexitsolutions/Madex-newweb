@@ -400,7 +400,7 @@ export async function notifyLowStock(changes: StockChange[]) {
       type: "stock.low",
       title: r.stock <= 0 ? `Ausverkauft: ${label}` : `Lagerbestand niedrig: ${label}`,
       body: `Noch ${r.stock} an Lager${r.sku ? ` (Art.-Nr. ${r.sku})` : ""}.`,
-      href: `/admin/produkte/${r.productId}`,
+      href: `/madexadm/produkte/${r.productId}`,
       permission: "products.manage",
     });
   }

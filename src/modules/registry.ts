@@ -40,7 +40,7 @@ export const PLUGINS: Plugin[] = [
     description: "Online-Shop mit Produkten, Varianten, Lager, Bestellungen, Kunden, Gutscheinen, Versand, Steuern und Zahlungsarten (Stripe, Payrexx, Rechnung mit QR, Vorauskasse).",
     dashboard: ["Bestellungen", "Produkte", "Kategorien", "Kunden", "Gutscheine", "Shop-Einstellungen", "Umsatz-Statistiken"],
     website: ["/shop", "/produkt/…", "/warenkorb", "/kasse", "/bestellung/…"],
-    setup: { href: "/admin/shop-einstellungen", label: "Shop einrichten" },
+    setup: { href: "/madexadm/shop-einstellungen", label: "Shop einrichten" },
   },
   {
     key: "blog",
@@ -50,7 +50,7 @@ export const PLUGINS: Plugin[] = [
     description: "News und Blog mit Entwürfen, geplanter Veröffentlichung, Titelbild und SEO je Beitrag.",
     dashboard: ["Beiträge"],
     website: ["/beitraege", "/beitraege/…"],
-    setup: { href: "/admin/beitraege", label: "Ersten Beitrag schreiben" },
+    setup: { href: "/madexadm/beitraege", label: "Ersten Beitrag schreiben" },
   },
   {
     key: "inquiries",
@@ -60,7 +60,7 @@ export const PLUGINS: Plugin[] = [
     description: "Kontaktformular auf der Website. Anfragen landen im Dashboard und per E-Mail bei Ihnen, mit Status und Notizen.",
     dashboard: ["Anfragen"],
     website: ["/kontakt"],
-    setup: { href: "/admin/plugins/inquiries", label: "Formular einrichten" },
+    setup: { href: "/madexadm/plugins/inquiries", label: "Formular einrichten" },
   },
   {
     key: "seo",
@@ -70,7 +70,7 @@ export const PLUGINS: Plugin[] = [
     description: "Titel und Beschreibung je Seite, Vorschau in Google, sitemap.xml und robots.txt, Bestätigung für die Google Search Console.",
     dashboard: ["SEO"],
     website: ["/sitemap.xml", "/robots.txt"],
-    setup: { href: "/admin/plugins/seo", label: "SEO einrichten" },
+    setup: { href: "/madexadm/plugins/seo", label: "SEO einrichten" },
   },
   {
     key: "analytics",
@@ -80,7 +80,7 @@ export const PLUGINS: Plugin[] = [
     description: "Misst Besucher auf der Website (GA4) und zeigt Besucher, Seitenaufrufe, Quellen und Geräte direkt im Dashboard.",
     dashboard: ["Statistiken", "Besucher auf der Übersicht"],
     website: ["Messcode auf allen Seiten"],
-    setup: { href: "/admin/plugins/analytics", label: "Google Analytics verbinden" },
+    setup: { href: "/madexadm/plugins/analytics", label: "Google Analytics verbinden" },
   },
   {
     key: "cookies",
@@ -90,7 +90,7 @@ export const PLUGINS: Plugin[] = [
     description: "Fragt Besucher nach ihrer Einwilligung (revDSG/DSGVO). Google Analytics und eigener Code mit Einwilligungspflicht laden erst nach Zustimmung.",
     dashboard: [],
     website: ["Hinweis unten auf allen Seiten"],
-    setup: { href: "/admin/plugins/cookies", label: "Texte anpassen" },
+    setup: { href: "/madexadm/plugins/cookies", label: "Texte anpassen" },
   },
   {
     key: "redirects",
@@ -100,7 +100,7 @@ export const PLUGINS: Plugin[] = [
     description: "Leitet alte Adressen auf neue weiter (301/302) und zeigt, welche Seiten Besucher nicht gefunden haben (404).",
     dashboard: ["Weiterleitungen"],
     website: [],
-    setup: { href: "/admin/weiterleitungen", label: "Weiterleitungen verwalten" },
+    setup: { href: "/madexadm/weiterleitungen", label: "Weiterleitungen verwalten" },
   },
   {
     key: "announcement",
@@ -110,7 +110,7 @@ export const PLUGINS: Plugin[] = [
     description: "Schmale Leiste über der Website für Aktionen, Ferien oder Neuigkeiten – mit Link und Zeitraum.",
     dashboard: [],
     website: ["Leiste oben auf allen Seiten"],
-    setup: { href: "/admin/plugins/announcement", label: "Text festlegen" },
+    setup: { href: "/madexadm/plugins/announcement", label: "Text festlegen" },
   },
   {
     key: "maintenance",
@@ -120,7 +120,7 @@ export const PLUGINS: Plugin[] = [
     description: "Zeigt Besuchern eine «Bald zurück»-Seite. Angemeldete Benutzer sehen die Website weiterhin normal.",
     dashboard: [],
     website: ["Wartungsseite statt Website"],
-    setup: { href: "/admin/plugins/maintenance", label: "Wartungsseite anpassen" },
+    setup: { href: "/madexadm/plugins/maintenance", label: "Wartungsseite anpassen" },
   },
   {
     key: "customCode",
@@ -130,7 +130,7 @@ export const PLUGINS: Plugin[] = [
     description: "Code von Drittanbietern einbinden (z. B. Meta-Pixel, Chat-Widget, Bestätigungs-Tags) – im <head> oder am Ende der Seite.",
     dashboard: [],
     website: ["Code auf allen Seiten"],
-    setup: { href: "/admin/plugins/customCode", label: "Code einfügen" },
+    setup: { href: "/madexadm/plugins/customCode", label: "Code einfügen" },
   },
 ];
 
@@ -147,49 +147,49 @@ export const NAV: { group: string; items: NavItem[] }[] = [
   {
     group: "Übersicht",
     items: [
-      { href: "/admin", label: "Übersicht", icon: "home", permission: "dashboard.view" },
-      { href: "/admin/statistiken", label: "Statistiken", icon: "chart", permission: "analytics.view", module: ["shop", "analytics"] },
+      { href: "/madexadm", label: "Übersicht", icon: "home", permission: "dashboard.view" },
+      { href: "/madexadm/statistiken", label: "Statistiken", icon: "chart", permission: "analytics.view", module: ["shop", "analytics"] },
     ],
   },
   {
     group: "Vertrieb",
-    items: [{ href: "/admin/anfragen", label: "Anfragen", icon: "inbox", permission: "inquiries.view", module: "inquiries", badge: "inquiries" }],
+    items: [{ href: "/madexadm/anfragen", label: "Anfragen", icon: "inbox", permission: "inquiries.view", module: "inquiries", badge: "inquiries" }],
   },
   {
     group: "Shop",
     items: [
-      { href: "/admin/bestellungen", label: "Bestellungen", icon: "cart", permission: "orders.view", module: "shop", badge: "orders" },
-      { href: "/admin/produkte", label: "Produkte", icon: "box", permission: "products.view", module: "shop" },
-      { href: "/admin/kategorien", label: "Kategorien", icon: "layers", permission: "products.manage", module: "shop" },
-      { href: "/admin/kunden", label: "Kunden", icon: "users", permission: "customers.view", module: "shop" },
-      { href: "/admin/gutscheine", label: "Gutscheine", icon: "percent", permission: "discounts.manage", module: "shop" },
-      { href: "/admin/shop-einstellungen", label: "Shop-Einstellungen", icon: "store", permission: "shop.settings", module: "shop" },
+      { href: "/madexadm/bestellungen", label: "Bestellungen", icon: "cart", permission: "orders.view", module: "shop", badge: "orders" },
+      { href: "/madexadm/produkte", label: "Produkte", icon: "box", permission: "products.view", module: "shop" },
+      { href: "/madexadm/kategorien", label: "Kategorien", icon: "layers", permission: "products.manage", module: "shop" },
+      { href: "/madexadm/kunden", label: "Kunden", icon: "users", permission: "customers.view", module: "shop" },
+      { href: "/madexadm/gutscheine", label: "Gutscheine", icon: "percent", permission: "discounts.manage", module: "shop" },
+      { href: "/madexadm/shop-einstellungen", label: "Shop-Einstellungen", icon: "store", permission: "shop.settings", module: "shop" },
     ],
   },
   {
     group: "Website",
     items: [
-      { website: true, href: "/admin/seiten", label: "Seiten", icon: "pages", permission: "website.manage" },
-      { website: true, href: "/admin/texte", label: "Texte & Bilder", icon: "type", permission: "website.manage" },
-      { website: true, href: "/admin/menues", label: "Menüs", icon: "menuedit", permission: "website.manage" },
-      { href: "/admin/beitraege", label: "Beiträge", icon: "file", permission: "content.view", module: "blog" },
-      { href: "/admin/medien", label: "Mediathek", icon: "image", permission: "media.manage" },
+      { website: true, href: "/madexadm/seiten", label: "Seiten", icon: "pages", permission: "website.manage" },
+      { website: true, href: "/madexadm/texte", label: "Texte & Bilder", icon: "type", permission: "website.manage" },
+      { website: true, href: "/madexadm/menues", label: "Menüs", icon: "menuedit", permission: "website.manage" },
+      { href: "/madexadm/beitraege", label: "Beiträge", icon: "file", permission: "content.view", module: "blog" },
+      { href: "/madexadm/medien", label: "Mediathek", icon: "image", permission: "media.manage" },
     ],
   },
   {
     group: "Marketing",
     items: [
-      { href: "/admin/seo", label: "SEO", icon: "search", permission: "seo.manage", module: "seo" },
-      { href: "/admin/weiterleitungen", label: "Weiterleitungen", icon: "shuffle", permission: "seo.manage", module: "redirects" },
+      { href: "/madexadm/seo", label: "SEO", icon: "search", permission: "seo.manage", module: "seo" },
+      { href: "/madexadm/weiterleitungen", label: "Weiterleitungen", icon: "shuffle", permission: "seo.manage", module: "redirects" },
     ],
   },
   {
     group: "System",
     items: [
-      { href: "/admin/benutzer", label: "Benutzer & Rollen", icon: "users", permission: "users.view" },
-      { href: "/admin/integrationen", label: "Integrationen", icon: "key", permission: "integrations.manage" },
-      { href: "/admin/einstellungen", label: "Einstellungen", icon: "gear", permission: "settings.manage" },
-      { href: "/admin/sicherheit", label: "Sicherheit & Protokoll", icon: "shield", permission: "audit.view" },
+      { href: "/madexadm/benutzer", label: "Benutzer & Rollen", icon: "users", permission: "users.view" },
+      { href: "/madexadm/integrationen", label: "Integrationen", icon: "key", permission: "integrations.manage" },
+      { href: "/madexadm/einstellungen", label: "Einstellungen", icon: "gear", permission: "settings.manage" },
+      { href: "/madexadm/sicherheit", label: "Sicherheit & Protokoll", icon: "shield", permission: "audit.view" },
     ],
   },
 ];

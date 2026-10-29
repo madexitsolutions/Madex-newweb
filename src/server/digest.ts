@@ -67,10 +67,10 @@ async function inquirySection(w: DigestWeek, now: Date): Promise<DigestSection> 
   return {
     title: "Anfragen",
     rows: [
-      { label: "Neue Anfragen", value: number(cur), change: change(cur, prev), href: appUrl("/admin/anfragen") },
-      { label: "Noch offen", value: number(open[0].n), href: appUrl("/admin/anfragen") },
-      { label: "Offerte gesendet", value: number(quoted[0].n), href: appUrl("/admin/anfragen?status=offerte") },
-      ...due.slice(0, 5).map((q) => ({ label: "Nachfassen fällig", value: `${q.name || q.email}${q.subject ? ` – ${q.subject}` : ""}`, href: appUrl(`/admin/anfragen/${q.id}`) })),
+      { label: "Neue Anfragen", value: number(cur), change: change(cur, prev), href: appUrl("/madexadm/anfragen") },
+      { label: "Noch offen", value: number(open[0].n), href: appUrl("/madexadm/anfragen") },
+      { label: "Offerte gesendet", value: number(quoted[0].n), href: appUrl("/madexadm/anfragen?status=offerte") },
+      ...due.slice(0, 5).map((q) => ({ label: "Nachfassen fällig", value: `${q.name || q.email}${q.subject ? ` – ${q.subject}` : ""}`, href: appUrl(`/madexadm/anfragen/${q.id}`) })),
     ],
     note: due.length > 5 ? `Und ${due.length - 5} weitere Anfragen zum Nachfassen.` : undefined,
   };
@@ -83,7 +83,7 @@ async function shopSection(w: DigestWeek): Promise<DigestSection> {
   return {
     title: "Shop",
     rows: [
-      { label: "Umsatz", value: money(cur.revenue), change: change(cur.revenue, prev.revenue, "pct"), href: appUrl("/admin/statistiken") },
+      { label: "Umsatz", value: money(cur.revenue), change: change(cur.revenue, prev.revenue, "pct"), href: appUrl("/madexadm/statistiken") },
       { label: "Bezahlte Bestellungen", value: number(cur.orders), change: change(cur.orders, prev.orders) },
     ],
   };
@@ -97,7 +97,7 @@ async function visitorSection(w: DigestWeek): Promise<DigestSection | null> {
     return {
       title: "Besucher",
       rows: [
-        { label: "Besucher", value: number(r.totals.users), change: change(r.totals.users, r.previous.users, "pct"), href: appUrl("/admin/statistiken") },
+        { label: "Besucher", value: number(r.totals.users), change: change(r.totals.users, r.previous.users, "pct"), href: appUrl("/madexadm/statistiken") },
         { label: "Seitenaufrufe", value: number(r.totals.views), change: change(r.totals.views, r.previous.views, "pct") },
         ...(top.length ? [{ label: "Meistbesucht", value: top.join(", ") }] : []),
       ],
@@ -117,7 +117,7 @@ async function googleSection(host: string): Promise<DigestSection | null> {
   return {
     title: "Google-Suche (letzte 28 Tage)",
     rows: [
-      { label: "Klicks", value: number(r.report.totals.clicks), href: appUrl("/admin/seo?sort=klicks") },
+      { label: "Klicks", value: number(r.report.totals.clicks), href: appUrl("/madexadm/seo?sort=klicks") },
       { label: "Gezeigt", value: number(r.report.totals.impressions) },
       { label: "Ø Position", value: r.report.totals.position.toLocaleString("de-CH", { maximumFractionDigits: 1 }) },
       ...(top.length ? [{ label: "Meiste Klicks", value: top.join(", ") }] : []),
@@ -181,7 +181,7 @@ export async function sendWeeklyDigest(now = new Date(), to?: string[]): Promise
     title: `Ihre Woche: ${d.period}`,
     intro: d.sections.length ? "Das Wichtigste der letzten Woche auf einen Blick." : "Letzte Woche gab es nichts Neues zu berichten.",
     html: d.html,
-    cta: { label: "Dashboard öffnen", url: appUrl("/admin") },
+    cta: { label: "Dashboard öffnen", url: appUrl("/madexadm") },
     reason: "Sie erhalten diese Zusammenfassung jeden Montag. Abbestellen: Einstellungen → E-Mail → Wochenbericht.",
   };
   const r = await sendMail({ to: recipients, subject: `Wochenbericht ${d.siteName}: ${d.period}`, template: "weekly_digest", content });

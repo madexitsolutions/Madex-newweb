@@ -104,7 +104,7 @@ export async function sendNewOrderNotice(orderId: string) {
         ["Lieferadresse", addressLines(o.shippingAddress ?? o.billingAddress).join("\n")],
         ...(o.customerNote ? ([["Bemerkung", o.customerNote]] as [string, string][]) : []),
       ],
-      cta: { label: "Im Dashboard öffnen", url: appUrl(`/admin/bestellungen/${o.id}`) },
+      cta: { label: "Im Dashboard öffnen", url: appUrl(`/madexadm/bestellungen/${o.id}`) },
     },
   });
   return logSend(o, "new_notice", "Neue Bestellung (Shop)", to.join(", "), res);
@@ -172,7 +172,7 @@ export async function sendLowStockEmail(list: { name: string; sku: string | null
       title: "Lagerbestand niedrig",
       intro: "Diese Artikel sollten nachbestellt werden:",
       rows: list.map((v) => [v.name + (v.sku ? ` (${v.sku})` : ""), v.stock <= 0 ? "ausverkauft" : `${v.stock} Stück`]),
-      cta: { label: "Produkte öffnen", url: appUrl("/admin/produkte") },
+      cta: { label: "Produkte öffnen", url: appUrl("/madexadm/produkte") },
     },
   });
 }

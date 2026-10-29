@@ -14,6 +14,6 @@ export async function allowRescanAction(_: FormState, f: FormData): Promise<Form
   const domain = formString(f, "domain");
   await allowRescan(id);
   await audit(user, "analysis.rescan_allowed", { entityType: "analysis", entityId: id, summary: `Neue Analyse für ${domain} erlaubt` });
-  revalidatePath("/admin/anfragen", "layout");
+  revalidatePath("/madexadm/anfragen", "layout");
   return ok(`${domain} kann auf der Startseite wieder analysiert werden.`);
 }

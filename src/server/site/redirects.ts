@@ -22,7 +22,7 @@ export async function listRedirects() {
 export async function saveRedirect(input: { id?: string | null; from: string; to: string; permanent: boolean }): Promise<{ ok: true; redirect: Redirect } | { ok: false; error: string; field?: string }> {
   const from = normalizePath(input.from);
   if (!from || from === "/") return { ok: false, error: "Geben Sie die alte Adresse als Pfad ein, z. B. /alte-seite.", field: "from" };
-  if (from.startsWith("/admin") || from.startsWith("/api")) return { ok: false, error: "Adressen unter /admin und /api lassen sich nicht weiterleiten.", field: "from" };
+  if (from.startsWith("/madexadm") || from.startsWith("/api")) return { ok: false, error: "Adressen unter /madexadm und /api lassen sich nicht weiterleiten.", field: "from" };
   const to = cleanTarget(input.to);
   if (!to) return { ok: false, error: "Geben Sie das Ziel als Pfad (/neue-seite) oder vollständige Adresse (https://…) ein.", field: "to" };
   if (to === from) return { ok: false, error: "Ziel und alte Adresse sind gleich – das ergäbe eine Endlosschleife.", field: "to" };
