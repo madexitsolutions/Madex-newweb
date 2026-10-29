@@ -25,7 +25,20 @@ describe("Meta Conversions API", () => {
     expect(JSON.stringify(p)).not.toContain("muster.ch");
   });
 
-  it("sends only with consent from the cookie banner", async () => {
+  it("without the banner sends unless the visitor objected", async () => {
+    vi.stubEnv("NEXT_PUBLIC_META_PIXEL_ID", "123456789");
+    vi.stubEnv("META_CONVERSIONS_API_TOKEN", "token");
+    const fetch = vi.fn(async () => new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetch);
+    const req = (cookie: string) => new Request("https://madex-it.ch/api/kontakt", { method: "POST", headers: { cookie } });
+    metaLeadFromRequest(req("madex-consent=no"), { reference: "A-0", email: "a@b.ch", form: "Kontakt" });
+    expect(fetch).not.toHaveBeenCalled();
+    metaLeadFromRequest(req(""), { reference: "A-0", email: "a@b.ch", form: "Kontakt" });
+    await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+  });
+
+  it("with the banner sends only after «Zulassen»", async () => {
+    vi.stubEnv("CONSENT_BANNER", "true");
     vi.stubEnv("NEXT_PUBLIC_META_PIXEL_ID", "123456789");
     vi.stubEnv("META_CONVERSIONS_API_TOKEN", "token");
     const fetch = vi.fn(async () => new Response("{}", { status: 200 }));

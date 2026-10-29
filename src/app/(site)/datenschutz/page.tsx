@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/sections/PageHero";
 import { site } from "@/content/site";
-import { metaPixelId } from "@/server/analytics/meta";
+import { TrackingChoice } from "@/components/layout/TrackingChoice";
+import { consentBannerEnabled, metaPixelId } from "@/server/analytics/meta";
 import { staticSeo, withSeo } from "@/lib/seo";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/datenschutz", ...staticSeo["/datenschutz"] });
 
 export default function PrivacyPage() {
+  const banner = consentBannerEnabled();
+  const use = banner ? "Wenn Sie zustimmen, verwenden wir" : "Wir verwenden";
   const c = site.contact;
   return (
     <>
@@ -47,27 +50,34 @@ export default function PrivacyPage() {
 
           <h2>Cookies und Tracking</h2>
           <p>
-            Ohne Ihre Zustimmung setzt diese Website keine Tracking- oder Marketing-Cookies. Für Komfortfunktionen (z. B. ob die Startanimation bereits gezeigt wurde oder Ihre bisherigen Chat-Gespräche) wird der lokale
-            Speicher Ihres Browsers genutzt.
+            {banner
+              ? "Ohne Ihre Zustimmung setzt diese Website keine Tracking- oder Marketing-Cookies."
+              : "Diese Website verwendet die unten genannten Dienste, um die Nutzung der Website und die Wirkung unserer Werbung zu messen. Sie können dem jederzeit widersprechen (siehe unten)."}{" "}
+            Für Komfortfunktionen (z. B. ob die Startanimation bereits gezeigt wurde oder Ihre bisherigen Chat-Gespräche) wird der lokale Speicher Ihres Browsers genutzt.
           </p>
           <p>
-            Wenn Sie zustimmen, verwenden wir Google Analytics (Google Ireland Ltd. bzw. Google LLC, USA), um anonymisiert zu messen, wie unsere Website genutzt wird. Dabei werden Cookies gesetzt und Nutzungsdaten (z. B.
-            gekürzte IP-Adresse, aufgerufene Seiten, Gerät und Browser) an Google übermittelt. Ihre Entscheidung wird in Ihrem Browser gespeichert; Sie können sie jederzeit ändern, indem Sie die Website-Daten in Ihrem
-            Browser löschen.
+            {use} Google Analytics (Google Ireland Ltd. bzw. Google LLC, USA), um zu messen, wie unsere Website genutzt wird. Dabei werden Cookies gesetzt und Nutzungsdaten (z. B. gekürzte IP-Adresse,
+            aufgerufene Seiten, Gerät und Browser) an Google übermittelt.
           </p>
           {process.env.NEXT_PUBLIC_GOOGLE_ADS_ID && (
             <p>
-              Wenn Sie zustimmen, verwenden wir zudem das Conversion-Tracking von Google Ads (Google Ireland Ltd. bzw. Google LLC, USA), um zu messen, ob eine Anfrage über eine unserer Anzeigen bei Google
-              zustande kam. Dabei werden Cookies gesetzt und Angaben zu Ihrem Besuch an Google übermittelt.
+              {use} zudem das Conversion-Tracking von Google Ads (Google Ireland Ltd. bzw. Google LLC, USA), um zu messen, ob eine Anfrage über eine unserer Anzeigen bei Google zustande kam. Dabei werden
+              Cookies gesetzt und Angaben zu Ihrem Besuch an Google übermittelt.
             </p>
           )}
           {metaPixelId() && (
             <p>
-              Wenn Sie zustimmen, verwenden wir zudem das Meta-Pixel und die Conversions API (Meta Platforms Ireland Ltd. bzw. Meta Platforms Inc., USA), um die Wirkung unserer Werbung auf Facebook und Instagram
-              zu messen. Dabei werden Cookies gesetzt und Angaben zu aufgerufenen Seiten an Meta übermittelt. Senden Sie uns eine Anfrage, übermitteln wir Meta zusätzlich Ihre E-Mail-Adresse und Telefonnummer – nur
-              verschlüsselt (gehasht), damit Meta die Anfrage einer Werbeanzeige zuordnen kann. Ohne Ihre Zustimmung findet keine Übermittlung an Meta statt.
+              {use} zudem das Meta-Pixel und die Conversions API (Meta Platforms Ireland Ltd. bzw. Meta Platforms Inc., USA), um die Wirkung unserer Werbung auf Facebook und Instagram zu messen. Dabei
+              werden Cookies gesetzt und Angaben zu aufgerufenen Seiten an Meta übermittelt. Senden Sie uns eine Anfrage, übermitteln wir Meta zusätzlich Ihre E-Mail-Adresse und Telefonnummer – nur verschlüsselt
+              (gehasht), damit Meta die Anfrage einer Werbeanzeige zuordnen kann.
             </p>
           )}
+          <p>
+            {banner
+              ? "Ihre Entscheidung wird in Ihrem Browser gespeichert. Sie können sie hier jederzeit ändern:"
+              : "Möchten Sie nicht erfasst werden, können Sie das Tracking für diesen Browser hier deaktivieren. Ihre Entscheidung wird in Ihrem Browser gespeichert; danach übermitteln wir keine Daten mehr an Google oder Meta."}
+          </p>
+          <TrackingChoice banner={banner} />
 
           <h2>Schriften und Medien</h2>
           <p>Schriftarten, Bilder und Videos werden direkt von unserem Server ausgeliefert. Es findet dabei keine Verbindung zu Drittanbietern statt.</p>

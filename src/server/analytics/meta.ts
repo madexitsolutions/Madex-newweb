@@ -1,8 +1,8 @@
 /**
  * Meta (Facebook/Instagram) Conversions API: sends conversions from the server,
  * in addition to the Meta Pixel in the browser. Same event_id on both sides, so
- * Meta counts each conversion once. Only for visitors who agreed in the cookie
- * banner (cookie "madex-consent=yes"); e-mail and phone are SHA-256 hashed.
+ * Meta counts each conversion once. Only for visitors who may be tracked (see
+ * consentBannerEnabled); e-mail and phone are SHA-256 hashed.
  *
  *   NEXT_PUBLIC_META_PIXEL_ID   – pixel (data set) ID, also used by the browser pixel
  *   META_CONVERSIONS_API_TOKEN  – access token from Events Manager → Settings → Conversions API
@@ -12,6 +12,16 @@ import { createHash } from "node:crypto";
 
 const GRAPH = "https://graph.facebook.com/v23.0";
 export const CONSENT_COOKIE = "madex-consent";
+
+/**
+ * CONSENT_BANNER=true: tracking (GA4, Google Ads, Meta) only after «Zulassen» in the banner.
+ * Off (default, like the old website): tracking runs right away; visitors can object in the
+ * privacy policy («Tracking deaktivieren»), which sets the cookie to "no".
+ */
+export const consentBannerEnabled = () => /^(true|1|on|yes|ja)$/i.test(process.env.CONSENT_BANNER?.trim() ?? "");
+
+/** May this visitor be tracked? With the banner only after "yes", without it unless they objected. */
+export const trackingAllowed = (cookie: string | undefined) => (consentBannerEnabled() ? cookie === "yes" : cookie !== "no");
 
 export const metaPixelId = () => process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || "";
 export const metaConfigured = () => Boolean(metaPixelId() && process.env.META_CONVERSIONS_API_TOKEN?.trim());
@@ -91,7 +101,7 @@ export async function sendMetaEvent(e: MetaEvent): Promise<boolean> {
 export function metaLeadFromRequest(req: Request, lead: { reference: string; email: string; phone?: string; name?: string; form: string }) {
   if (!metaConfigured()) return;
   const cookies = Object.fromEntries((req.headers.get("cookie") ?? "").split(/;\s*/).map((c) => [c.split("=")[0], decodeURIComponent(c.split("=").slice(1).join("="))]));
-  if (cookies[CONSENT_COOKIE] !== "yes") return;
+  if (!trackingAllowed(cookies[CONSENT_COOKIE])) return;
   const forwarded = process.env.TRUST_PROXY !== "false" ? req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") : null;
   // not awaited: the visitor gets the answer right away
   void sendMetaEvent({

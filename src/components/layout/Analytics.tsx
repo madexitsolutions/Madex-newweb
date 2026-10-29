@@ -20,7 +20,10 @@ declare global {
 }
 
 /** The choice also goes into a cookie, so the server only sends Meta conversions with consent. */
-function rememberConsent(yes: boolean) {
+export function rememberConsent(yes: boolean) {
+  try {
+    localStorage.setItem(KEY, yes ? "yes" : "no");
+  } catch {}
   document.cookie = `${KEY}=${yes ? "yes" : "no"}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
 }
 
@@ -120,16 +123,18 @@ export function Analytics() {
           choice = localStorage.getItem(KEY);
         } catch {}
         if (choice === "yes") rememberConsent(true);
-        if (!c.requireConsent || choice === "yes") inject(c, choice === "yes");
+        // without the banner tracking runs unless the visitor objected (privacy policy)
+        if (!c.requireConsent) {
+          if (choice !== "no") inject(c, true);
+          return;
+        }
+        if (choice === "yes") inject(c, true);
         else if (choice !== "no") setAsk(true);
       })
       .catch(() => {});
   }, []);
 
   const decide = (yes: boolean) => {
-    try {
-      localStorage.setItem(KEY, yes ? "yes" : "no");
-    } catch {}
     rememberConsent(yes);
     setAsk(false);
     if (yes && cfg) inject(cfg, true);
