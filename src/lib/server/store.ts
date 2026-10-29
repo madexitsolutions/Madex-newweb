@@ -9,8 +9,9 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { dataDir as dataFolder } from "@/server/lib/data-dir";
 
-const DATA_DIR = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR || path.join(process.cwd(), ".data"));
+const DATA_DIR = dataFolder();
 const MAGIC = "MDXENC1:";
 
 function key(): Buffer | null {

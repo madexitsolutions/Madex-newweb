@@ -12,7 +12,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { db } from "@/server/db";
-import { loginEvents, roles, sessions, users } from "@/server/db/schema";
+import { loginEvents, roles, sessions, totpDevices, users } from "@/server/db/schema";
 import { decrypt, encrypt, hashPassword, randomToken, recoveryCode, sha256, verifyPassword } from "@/server/lib/crypto";
 import { ipMatches } from "@/server/lib/ip";
 import { isIpBlocked } from "@/server/lib/ip-blocks";
@@ -211,6 +211,16 @@ export async function verifySecondFactor(codeRaw: string): Promise<{ ok: true } 
   if (!user || !limit.allowed) return { ok: false, error: "Zu viele Versuche. Bitte melden Sie sich erneut an." };
   const code = codeRaw.trim().replace(/\s/g, "").toUpperCase();
   let ok = Boolean(user.totpSecret && /^\d{6}$/.test(code) && verifyTotp(decrypt(user.totpSecret), code));
+  // additional devices (e.g. a co-worker's phone on the same account)
+  if (!ok && /^\d{6}$/.test(code)) {
+    for (const d of await db.select().from(totpDevices).where(eq(totpDevices.userId, user.id))) {
+      if (verifyTotp(decrypt(d.secret), code)) {
+        ok = true;
+        await db.update(totpDevices).set({ lastUsedAt: new Date() }).where(eq(totpDevices.id, d.id));
+        break;
+      }
+    }
+  }
   if (!ok && /^[A-Z0-9]{5}-?[A-Z0-9]{5}$/.test(code)) {
     const h = sha256(code.replace(/^(.{5})-?/, "$1-"));
     if (user.recoveryCodes.includes(h)) {

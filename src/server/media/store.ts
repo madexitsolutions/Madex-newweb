@@ -10,6 +10,7 @@ import { db } from "@/server/db";
 import { media } from "@/server/db/schema";
 import { slugify } from "@/lib/format";
 import { appUrl } from "@/server/lib/app-url";
+import { dataDir } from "@/server/lib/data-dir";
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
@@ -24,7 +25,7 @@ export const ALLOWED: Record<string, string> = {
 };
 
 export function uploadsDir() {
-  return path.resolve(/*turbopackIgnore: true*/ process.env.UPLOADS_DIR || path.join(process.env.DATA_DIR || ".data", "uploads"));
+  return path.resolve(/*turbopackIgnore: true*/ process.env.UPLOADS_DIR || path.join(dataDir(), "uploads"));
 }
 
 /** URL path of a stored file, e.g. /uploads/2026/10/ab12-bild.webp */

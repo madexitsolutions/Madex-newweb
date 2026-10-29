@@ -12,7 +12,7 @@
  */
 import { and, desc, eq, gt, inArray, isNull, ne, sql } from "drizzle-orm";
 import { db } from "@/server/db";
-import { loginEvents, roles, sessions, tokens, users } from "@/server/db/schema";
+import { loginEvents, roles, sessions, tokens, totpDevices, users } from "@/server/db/schema";
 import { audit } from "@/server/audit";
 import { isPermission, type Permission } from "@/server/auth/permissions";
 import { newSecret, verifyTotp } from "@/server/auth/totp";
@@ -308,6 +308,7 @@ export async function resetUserTwoFactor(actor: Actor, userId: string): Promise<
   const g = await guardTarget(actor, userId, "2fa");
   if ("error" in g) return err(g.error!);
   await db.update(users).set({ totpEnabled: false, totpSecret: null, recoveryCodes: [], updatedAt: new Date() }).where(eq(users.id, userId));
+  await db.delete(totpDevices).where(eq(totpDevices.userId, userId));
   await revokeSessions(userId);
   await audit(actor, "user.2fa_reset", { entityType: "user", entityId: userId, summary: `Zwei-Faktor-Anmeldung von ${g.target.user.email} zurückgesetzt` });
   return { ok: true };
@@ -458,6 +459,7 @@ export async function disableOwnTwoFactor(actor: Actor, password: string): Promi
   const check = await checkOwnPassword(actor.id, password);
   if ("error" in check) return err(check.error!);
   await db.update(users).set({ totpEnabled: false, totpSecret: null, recoveryCodes: [], updatedAt: new Date() }).where(eq(users.id, actor.id));
+  await db.delete(totpDevices).where(eq(totpDevices.userId, actor.id));
   await audit(actor, "user.2fa_disabled", { entityType: "user", entityId: actor.id, summary: "Zwei-Faktor-Anmeldung ausgeschaltet" });
   return { ok: true };
 }
@@ -524,4 +526,50 @@ export async function sessionCount(userId: string) {
     .from(sessions)
     .where(and(eq(sessions.userId, userId), eq(sessions.stage, "active"), gt(sessions.expiresAt, new Date())));
   return row?.n ?? 0;
+}
+
+/* ---------- additional authenticator devices (e.g. a co-worker on the same account) ---------- */
+
+export type TotpDevice = { id: string; name: string; createdAt: Date; lastUsedAt: Date | null };
+
+export async function listTotpDevices(userId: string): Promise<TotpDevice[]> {
+  return db
+    .select({ id: totpDevices.id, name: totpDevices.name, createdAt: totpDevices.createdAt, lastUsedAt: totpDevices.lastUsedAt })
+    .from(totpDevices)
+    .where(eq(totpDevices.userId, userId))
+    .orderBy(totpDevices.createdAt);
+}
+
+/** Adds a device after the code from its app matched (sealed envelope from beginTwoFactorSetup). */
+export async function addTotpDevice(actor: Actor, sealed: string, code: string, name: string): Promise<Result> {
+  const label = name.trim().slice(0, 60);
+  if (label.length < 2) return err("Bitte dem Gerät einen Namen geben, z. B. «iPhone Anna».");
+  let payload: { u: string; s: string; t: number };
+  try {
+    payload = JSON.parse(decrypt(sealed));
+  } catch {
+    return err("Die Einrichtung ist ungültig. Bitte laden Sie die Seite neu.");
+  }
+  if (payload.u !== actor.id || Date.now() - payload.t > 10 * 60_000) return err("Die Einrichtung ist abgelaufen. Bitte laden Sie die Seite neu und scannen Sie den neuen QR-Code.");
+  const [me] = await db.select({ totpEnabled: users.totpEnabled }).from(users).where(eq(users.id, actor.id));
+  if (!me?.totpEnabled) return err("Richten Sie zuerst die Zwei-Faktor-Anmeldung für das Konto ein.");
+  const limit = await hit(`account:2fa:${actor.id}`, 10, 15 * 60_000);
+  if (!limit.allowed) return err("Zu viele Versuche. Bitte warten Sie 15 Minuten.");
+  if (!verifyTotp(payload.s, code)) return err("Der Code stimmt nicht. Prüfen Sie die Uhrzeit des Geräts und versuchen Sie es erneut.");
+  if ((await listTotpDevices(actor.id)).length >= 10) return err("Höchstens 10 weitere Geräte. Entfernen Sie zuerst ein Gerät, das nicht mehr gebraucht wird.");
+  const [row] = await db.insert(totpDevices).values({ userId: actor.id, name: label, secret: encrypt(payload.s) }).returning({ id: totpDevices.id });
+  await audit(actor, "user.2fa_device_added", { entityType: "user", entityId: actor.id, summary: `Weiteres 2FA-Gerät «${label}» hinzugefügt`, data: { deviceId: row.id } });
+  return { ok: true };
+}
+
+export async function removeTotpDevice(actor: Actor, deviceId: string, password: string): Promise<Result> {
+  const check = await checkOwnPassword(actor.id, password);
+  if ("error" in check) return err(check.error!);
+  const [gone] = await db
+    .delete(totpDevices)
+    .where(and(eq(totpDevices.id, deviceId), eq(totpDevices.userId, actor.id)))
+    .returning({ name: totpDevices.name });
+  if (!gone) return err("Dieses Gerät gibt es nicht mehr.");
+  await audit(actor, "user.2fa_device_removed", { entityType: "user", entityId: actor.id, summary: `2FA-Gerät «${gone.name}» entfernt` });
+  return { ok: true };
 }

@@ -27,6 +27,7 @@ import { PRODUCT_STATUS, PRODUCT_TYPES, variantKey, type ProductOption, type Pro
 import { buildTree, ensureCategoryPath } from "./categories";
 import { productPayload, saveProduct, validateProduct, type ProductInput, type VariantInput } from "./catalog";
 import { InputError } from "./errors";
+import { dataDir } from "@/server/lib/data-dir";
 
 /* ================================================================ helpers */
 
@@ -961,7 +962,7 @@ export async function runImport(text: string, actor: Actor, opts: { downloadImag
 
 /** Uploaded import files wait here between preview and import (deleted after 24 h). */
 function importDir() {
-  return path.resolve(process.env.DATA_DIR || ".data", "imports");
+  return path.join(dataDir(), "imports");
 }
 
 export async function storeImportFile(text: string) {

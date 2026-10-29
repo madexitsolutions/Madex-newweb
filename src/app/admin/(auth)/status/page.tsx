@@ -1,11 +1,11 @@
 import { accessSync, constants, mkdirSync } from "node:fs";
-import path from "node:path";
 import { count, sql } from "drizzle-orm";
 import Link from "next/link";
 import { db, embeddedDir, usesEmbeddedDb } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { secretSource } from "@/server/lib/crypto";
 import { requestInfo } from "@/server/lib/request";
+import { dataDir, dataDirInsideApp } from "@/server/lib/data-dir";
 
 export const metadata = { title: "Status" };
 export const dynamic = "force-dynamic";
@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 type Check = { label: string; ok: boolean | null; value: string; hint?: string };
 
 function dataDirWritable() {
-  const dir = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR || ".data");
+  const dir = dataDir();
   try {
     mkdirSync(dir, { recursive: true });
     accessSync(dir, constants.W_OK);
@@ -60,9 +60,15 @@ export default async function StatusPage() {
     },
     {
       label: "Datenordner",
-      ok: data.ok,
+      ok: data.ok && !dataDirInsideApp(),
       value: data.dir,
-      hint: data.ok ? (process.env.DATA_DIR ? undefined : "DATA_DIR ist nicht gesetzt – setzen Sie einen Ordner, der Neuinstallationen übersteht.") : "Der Ordner ist nicht beschreibbar. DATA_DIR auf einen beschreibbaren, dauerhaften Ordner setzen.",
+      hint: !data.ok
+        ? "Der Ordner ist nicht beschreibbar. DATA_DIR auf einen beschreibbaren, dauerhaften Ordner setzen."
+        : dataDirInsideApp()
+          ? "Der Ordner liegt im App-Ordner – jeder Deploy löscht Datenbank, Uploads und die 2FA-Einrichtung. DATA_DIR auf einen Ordner ausserhalb setzen (z. B. /home/benutzer/madex-data)."
+          : process.env.DATA_DIR
+            ? undefined
+            : "DATA_DIR ist nicht gesetzt – verwendet wird der Ordner madex-data im Home-Verzeichnis.",
     },
     {
       label: "Verschlüsselungsschlüssel",

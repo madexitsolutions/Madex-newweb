@@ -14,6 +14,7 @@ import { LOGIN_REASONS, PER_PAGE, auditEntry, auditFilterOptions, emailStatusCou
 import { getSettings } from "@/server/settings";
 import { createBlockAction, deleteBlockAction, savePolicyAction } from "./actions";
 import "../../system.css";
+import { dataDir as dataFolder } from "@/server/lib/data-dir";
 
 export const metadata = { title: "Sicherheit & Protokoll" };
 
@@ -560,7 +561,7 @@ async function EmailsTab({ sp }: { sp: SP }) {
 
 function BackupTab() {
   const embedded = usesEmbeddedDb();
-  const dataDir = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR || ".data");
+  const dataDir = dataFolder();
   return (
     <Panel title="Datensicherung" description={embedded ? "Die Daten liegen in der eingebauten Datenbank dieser Installation." : "Die Daten liegen auf einem externen PostgreSQL-Server (DATABASE_URL)."}>
       {embedded ? (

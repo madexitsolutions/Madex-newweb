@@ -188,3 +188,15 @@
 .s-envlist dd { margin: 0; font-weight: 600; color: var(--a-ink); overflow-wrap: anywhere; }
 .s-envvalue { margin: 0; padding: 8px 11px; border-radius: 8px; background: var(--a-subtle); border: 1px solid var(--a-line); font-weight: 600; color: var(--a-ink); overflow-wrap: anywhere; }
 .s-envvalue small { display: block; font-weight: 400; font-size: 12.5px; color: var(--a-soft); }
+
+/* account: additional 2FA devices */
+.s-devices { display: grid; gap: 12px; padding: 14px 0; border-top: 1px solid var(--a-line-2); }
+.s-devices > div > strong { display: block; }
+.s-devices > div > small { color: var(--a-soft); font-size: 13px; }
+.s-devicelist { list-style: none; margin: 0; padding: 0; border: 1px solid var(--a-line); border-radius: 10px; }
+.s-devicelist li { display: flex; justify-content: space-between; align-items: center; gap: 10px 16px; flex-wrap: wrap; padding: 10px 14px; }
+.s-devicelist li + li { border-top: 1px solid var(--a-line-2); }
+.s-devicelist li > span { display: grid; gap: 2px; }
+.s-devicelist small { color: var(--a-soft); font-size: 12.5px; }
+.s-adddevice > summary { cursor: pointer; display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; color: var(--a-teal-ink); }
+.s-adddevice[open] > summary { margin-bottom: 8px; }

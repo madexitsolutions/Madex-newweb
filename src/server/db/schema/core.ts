@@ -47,6 +47,26 @@ export const users = pgTable(
   (t) => [uniqueIndex("users_email_idx").on(t.email)],
 );
 
+/**
+ * Additional authenticator devices of a user (e.g. a co-worker sharing the account).
+ * The first device stays in users.totp_secret; any device's code is accepted at sign-in.
+ */
+export const totpDevices = pgTable(
+  "totp_devices",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    /** encrypted TOTP secret */
+    secret: text("secret").notNull(),
+    createdAt: created(),
+    lastUsedAt: ts("last_used_at"),
+  },
+  (t) => [index("totp_devices_user_idx").on(t.userId)],
+);
+
 export const sessions = pgTable(
   "sessions",
   {

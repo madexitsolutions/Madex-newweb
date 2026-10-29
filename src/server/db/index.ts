@@ -13,6 +13,7 @@ import { drizzle as drizzlePglite, type PgliteDatabase } from "drizzle-orm/pglit
 import { drizzle as drizzlePostgres } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
+import { dataDir } from "@/server/lib/data-dir";
 
 export type DB = PgliteDatabase<typeof schema>;
 export type Tx = Parameters<Parameters<DB["transaction"]>[0]>[0];
@@ -22,7 +23,7 @@ const g = globalThis as unknown as { __predashDb?: DB; __predashPglite?: PGlite 
 export const usesEmbeddedDb = () => !process.env.DATABASE_URL;
 
 export function embeddedDir() {
-  return process.env.PGLITE_DIR || path.join(process.env.DATA_DIR || ".data", "pglite");
+  return process.env.PGLITE_DIR || path.join(dataDir(), "pglite");
 }
 
 function create(): DB {

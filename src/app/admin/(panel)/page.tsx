@@ -17,6 +17,7 @@ import { getSettings } from "@/server/settings";
 import { markReadAction } from "./overview-actions";
 import { ORDER_STATUS, type OrderStatus } from "@/lib/orders";
 import "../content.css";
+import { dataDirInsideApp } from "@/server/lib/data-dir";
 
 export const metadata = { title: "Übersicht" };
 
@@ -107,6 +108,15 @@ export default async function Overview() {
         }
       />
 
+      {isAdmin && dataDirInsideApp() && (
+        <p className="a-alert a-alert--error" role="alert">
+          <Icon name="alert" size={16} />
+          <span>
+            Der Datenordner liegt im App-Ordner – beim nächsten Deploy gehen Datenbank, Anfragen, Uploads und die 2FA-Einrichtung verloren. Setzen Sie DATA_DIR auf einen Ordner ausserhalb der App und
+            prüfen Sie es unter /admin/status.
+          </span>
+        </p>
+      )}
       {showWelcome && (
         <section className="ov-welcome" aria-labelledby="ov-welcome-title">
           <div className="ov-welcome__intro">

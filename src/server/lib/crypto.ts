@@ -3,6 +3,7 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes, scrypt as sc
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
+import { dataDir } from "./data-dir";
 
 const scrypt = promisify(scryptCb) as (password: string, salt: Buffer, keylen: number, options: { N: number; r: number; p: number; maxmem: number }) => Promise<Buffer>;
 
@@ -33,7 +34,7 @@ export function ensureSecret() {
 }
 
 export function secretFile() {
-  return path.resolve(process.env.DATA_DIR || ".data", ".app-secret");
+  return path.join(dataDir(), ".app-secret");
 }
 
 /** Where the encryption secret comes from (for the status page). */

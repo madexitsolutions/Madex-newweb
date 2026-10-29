@@ -1,10 +1,14 @@
 /** Idempotent defaults every installation needs: built-in roles, Swiss VAT classes, a shipping zone. */
+import { createHash } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { SYSTEM_ROLES } from "@/server/auth/permissions";
 import type { DB } from "./index";
 import { hashPassword } from "@/server/lib/crypto";
-import { pages, roles, sessions, settings, shippingMethods, shippingZones, taxClasses, users } from "./schema";
+import { pages, roles, sessions, settings, shippingMethods, shippingZones, taxClasses, totpDevices, users } from "./schema";
 import { STARTER_PAGES } from "@/server/site/pages";
+
+/** settings row that remembers which ADMIN_RESET was already applied */
+const RESET_MARKER = "adminResetApplied";
 
 export async function bootstrap(db: DB) {
   for (const r of SYSTEM_ROLES) {
@@ -63,6 +67,7 @@ export async function resetOwner(db: DB, emailRaw: string, password: string, nam
       .set({ passwordHash, roleId: owner.id, status: "active", failedLogins: 0, lockedUntil: null, totpEnabled: false, totpSecret: null, recoveryCodes: [], passwordChangedAt: new Date(), updatedAt: new Date() })
       .where(eq(users.id, existing.id));
     await db.delete(sessions).where(eq(sessions.userId, existing.id));
+    await db.delete(totpDevices).where(eq(totpDevices.userId, existing.id));
     return "reset" as const;
   }
   await db.insert(users).values({ email, name: name?.trim() || "Inhaber", passwordHash, roleId: owner.id, passwordChangedAt: new Date() });
@@ -73,7 +78,8 @@ export async function resetOwner(db: DB, emailRaw: string, password: string, nam
  * Owner account from the environment:
  * - ADMIN_EMAIL (or an e-mail in ADMIN_USERNAME) + ADMIN_PASSWORD (min. 12 characters) create the
  *   owner on an empty database;
- * - with ADMIN_RESET=true the account is reset on every start (remove the variable afterwards!).
+ * - with ADMIN_RESET=true the account is reset once per e-mail/password (for another reset change the
+ *   password); remove the variable afterwards.
  */
 export async function ownerFromEnv(db: DB) {
   const email = (process.env.ADMIN_EMAIL || (process.env.ADMIN_USERNAME?.includes("@") ? process.env.ADMIN_USERNAME : "") || "").trim().toLowerCase();
@@ -84,7 +90,15 @@ export async function ownerFromEnv(db: DB) {
     return;
   }
   if (process.env.ADMIN_RESET === "true") {
+    // only once per e-mail/password: a forgotten ADMIN_RESET=true must not wipe the 2FA on every restart
+    const marker = createHash("sha256").update(`${email}\n${password}`).digest("hex");
+    const [done] = await db.select().from(settings).where(eq(settings.key, RESET_MARKER));
+    if ((done?.value as { marker?: string } | undefined)?.marker === marker) {
+      console.warn(`[setup] ADMIN_RESET ist noch gesetzt, das Konto ${email} wurde mit diesen Zugangsdaten bereits zurückgesetzt – übersprungen. Entfernen Sie ADMIN_RESET.`);
+      return;
+    }
     const r = await resetOwner(db, email, password, process.env.ADMIN_NAME);
+    await db.insert(settings).values({ key: RESET_MARKER, value: { marker } }).onConflictDoUpdate({ target: settings.key, set: { value: { marker }, updatedAt: new Date() } });
     console.warn(`[setup] ADMIN_RESET: Konto ${email} ${r === "reset" ? "zurückgesetzt" : "angelegt"}. Entfernen Sie ADMIN_RESET jetzt wieder.`);
     return;
   }

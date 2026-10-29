@@ -6,7 +6,7 @@ import { z } from "zod";
 import { fail, ok, zodFieldErrors, type FormState } from "@/lib/form-state";
 import { getCurrentUser, regenerateRecoveryCodes, revokeSessions } from "@/server/auth/session";
 import { audit } from "@/server/audit";
-import { changeOwnPassword, confirmTwoFactorSetup, disableOwnTwoFactor, revokeOwnSession, updateProfile, verifyOwnPassword } from "@/server/users";
+import { addTotpDevice, changeOwnPassword, confirmTwoFactorSetup, disableOwnTwoFactor, removeTotpDevice, revokeOwnSession, updateProfile, verifyOwnPassword } from "@/server/users";
 
 const PATH = "/admin/konto";
 const SIGNED_OUT = "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.";
@@ -89,4 +89,24 @@ export async function revokeOtherSessionsAction(): Promise<FormState> {
   await audit(me, "user.sessions_revoked", { entityType: "user", entityId: me.id, summary: "Alle anderen eigenen Sitzungen beendet" });
   revalidatePath(PATH);
   return ok("Alle anderen Geräte wurden abgemeldet.");
+}
+
+export async function addDeviceAction(_: FormState, f: FormData): Promise<FormState> {
+  const me = await getCurrentUser();
+  if (!me) return fail(SIGNED_OUT);
+  const code = String(f.get("code") ?? "").replace(/\s/g, "");
+  if (!/^\d{6}$/.test(code)) return fail("Bitte den 6-stelligen Code aus der App auf dem neuen Gerät eingeben.", { code: "6 Ziffern" });
+  const r = await addTotpDevice(me, String(f.get("sealed") ?? ""), code, String(f.get("name") ?? ""));
+  if (!r.ok) return fail(r.error);
+  revalidatePath(PATH);
+  redirect(`${PATH}?geraet=1`);
+}
+
+export async function removeDeviceAction(_: FormState, f: FormData): Promise<FormState> {
+  const me = await getCurrentUser();
+  if (!me) return fail(SIGNED_OUT);
+  const r = await removeTotpDevice(me, String(f.get("id") ?? ""), String(f.get("password") ?? ""));
+  if (!r.ok) return fail(r.error);
+  revalidatePath(PATH);
+  return ok("Gerät entfernt. Es kann sich nicht mehr anmelden.");
 }
