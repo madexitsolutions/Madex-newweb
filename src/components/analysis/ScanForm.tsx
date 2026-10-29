@@ -5,6 +5,7 @@
  * on /analyse/<id>. Used in the home hero and on /kostenlose-prufung (dark backgrounds).
  */
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { trackLead } from "@/components/layout/Analytics";
 import { useTransition } from "@/components/layout/Transition";
 import "./scan-form.css";
 
@@ -42,7 +43,8 @@ export function ScanForm({ hint = DEFAULT_HINT }: { hint?: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ website: f.get("website"), email: f.get("email"), hp: f.get("hp_check"), startedAt: startedAt.current }),
       });
-      const json = (await res.json()) as { ok: boolean; error?: string; message?: string; url?: string };
+      const json = (await res.json()) as { ok: boolean; error?: string; message?: string; url?: string; ref?: string };
+      if (json.ok) trackLead(json.ref, "Kostenlose Analyse");
       if (json.ok && json.url) {
         setMsg("Die Analyse startet …");
         navigate(json.url);

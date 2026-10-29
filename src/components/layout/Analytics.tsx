@@ -1,19 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Link } from "./Transition";
 
-type Config = { ga4Id: string; gtmId: string; requireConsent: boolean };
+type Config = { ga4Id: string; gtmId: string; metaPixelId?: string; requireConsent: boolean };
 const KEY = "madex-consent";
 
 declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
+    fbq?: ((...args: unknown[]) => void) & { callMethod?: (...a: unknown[]) => void; queue?: unknown[]; push?: unknown; loaded?: boolean; version?: string };
+    _fbq?: unknown;
   }
 }
 
+/** The choice also goes into a cookie, so the server only sends Meta conversions with consent. */
+function rememberConsent(yes: boolean) {
+  document.cookie = `${KEY}=${yes ? "yes" : "no"}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
+}
+
+/** Meta Pixel (standard snippet), then a page view. */
+function injectMeta(id: string) {
+  if (window.fbq) return;
+  const fbq = function (...args: unknown[]) {
+    if (fbq.callMethod) fbq.callMethod(...args);
+    else fbq.queue!.push(args);
+  } as NonNullable<Window["fbq"]>;
+  fbq.push = fbq;
+  fbq.loaded = true;
+  fbq.version = "2.0";
+  fbq.queue = [];
+  window.fbq = fbq;
+  window._fbq = fbq;
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = "https://connect.facebook.net/en_US/fbevents.js";
+  document.head.appendChild(s);
+  fbq("init", id);
+  fbq("track", "PageView");
+}
+
+/**
+ * Conversion for Meta (only if the pixel runs, i.e. after consent). `id` is the
+ * enquiry reference – the server sends the same ID via the Conversions API.
+ */
+export function trackLead(id?: string, form?: string) {
+  window.fbq?.("track", "Lead", form ? { content_name: form } : {}, id ? { eventID: id } : undefined);
+  window.gtag?.("event", "generate_lead", form ? { form } : {});
+}
+
 function inject(c: Config) {
+  if (c.metaPixelId) injectMeta(c.metaPixelId);
+  if (!c.ga4Id && !c.gtmId) return;
   if (document.getElementById("mdx-analytics")) return;
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() {
@@ -39,18 +79,30 @@ function inject(c: Config) {
 export function Analytics() {
   const [cfg, setCfg] = useState<Config | null>(null);
   const [ask, setAsk] = useState(false);
+  const pathname = usePathname();
+  const first = useRef(true);
+
+  // client-side navigation: the pixel only counts the first page by itself
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    window.fbq?.("track", "PageView");
+  }, [pathname]);
 
   useEffect(() => {
     fetch("/api/site-config")
       .then((r) => r.json())
       .then((j: { analytics: Config }) => {
         const c = j.analytics;
-        if (!c.ga4Id && !c.gtmId) return;
+        if (!c.ga4Id && !c.gtmId && !c.metaPixelId) return;
         setCfg(c);
         let choice: string | null = null;
         try {
           choice = localStorage.getItem(KEY);
         } catch {}
+        if (choice === "yes") rememberConsent(true);
         if (!c.requireConsent || choice === "yes") inject(c);
         else if (choice !== "no") setAsk(true);
       })
@@ -61,6 +113,7 @@ export function Analytics() {
     try {
       localStorage.setItem(KEY, yes ? "yes" : "no");
     } catch {}
+    rememberConsent(yes);
     setAsk(false);
     if (yes && cfg) inject(cfg);
   };
@@ -69,7 +122,10 @@ export function Analytics() {
   return (
     <div className="consent" role="dialog" aria-label="Cookie-Einstellungen">
       <p>
-        Wir möchten mit Google Analytics anonym messen, wie unsere Website genutzt wird. Sie entscheiden, ob Sie dem zustimmen. <Link href="/datenschutz">Mehr erfahren</Link>
+        {cfg?.metaPixelId
+          ? "Wir möchten mit Google Analytics messen, wie unsere Website genutzt wird, und mit dem Meta-Pixel die Wirkung unserer Werbung auf Facebook und Instagram. Sie entscheiden, ob Sie dem zustimmen."
+          : "Wir möchten mit Google Analytics anonym messen, wie unsere Website genutzt wird. Sie entscheiden, ob Sie dem zustimmen."}{" "}
+        <Link href="/datenschutz">Mehr erfahren</Link>
       </p>
       <div className="consent__btns">
         <button className="consent__no" onClick={() => decide(false)}>

@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { contactSchema, serviceOptions, timeSlots } from "@/lib/contact-schema";
 import { Icon } from "@/components/ui/Icon";
+import { trackLead } from "@/components/layout/Analytics";
 import { Link } from "@/components/layout/Transition";
 import { site } from "@/content/site";
 
@@ -117,6 +118,7 @@ export function ContactForm({
         json = { ok: false, error: "Der Server hat nicht wie erwartet geantwortet." };
       }
       if (json.ok) {
+        trackLead(json.reference, payload.service === "Kostenlose Analyse" ? "Kostenlose Analyse" : "Kontakt");
         setReference(json.reference ?? null);
         setStatus("ok");
         setValues({ ...empty, service: defaultService });

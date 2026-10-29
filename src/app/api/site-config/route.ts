@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { analyticsIds, getSettings } from "@/lib/server/settings";
+import { metaPixelId } from "@/server/analytics/meta";
 import { getSettings as getDashboardSettings } from "@/server/settings";
 
 export const runtime = "nodejs";
@@ -23,7 +24,7 @@ export async function GET() {
         teaserDelay: c.teaserDelay,
         teaserMobile: c.teaserMobile,
       },
-      analytics: { ...ids, ga4Id: ga4 || ids.ga4Id, requireConsent: s.analytics.requireConsent },
+      analytics: { ...ids, ga4Id: ga4 || ids.ga4Id, metaPixelId: metaPixelId(), requireConsent: s.analytics.requireConsent },
     },
     { headers: { "Cache-Control": "public, max-age=60" } },
   );

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/contact-schema";
+import { metaLeadFromRequest } from "@/server/analytics/meta";
 import { createInquiry } from "@/server/content/inquiries";
 import { ipFromRequest } from "@/server/lib/request";
 
@@ -48,5 +49,6 @@ export async function POST(req: Request) {
     { ip: ipFromRequest(req), confirm: true },
   );
   if (!r.ok) return NextResponse.json({ ok: false, error: r.message, fieldErrors: r.fieldErrors }, { status: r.code === "rate_limited" ? 429 : 422 });
+  if (r.status === "new") metaLeadFromRequest(req, { reference: r.reference, email: d.email, phone: d.phone, name: d.name, form: isAnalysis ? "Kostenlose Analyse" : "Kontakt" });
   return NextResponse.json({ ok: true, reference: r.reference });
 }

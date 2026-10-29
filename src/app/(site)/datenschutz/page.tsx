@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/sections/PageHero";
 import { site } from "@/content/site";
+import { metaPixelId } from "@/server/analytics/meta";
 import { staticSeo, withSeo } from "@/lib/seo";
 
 export const generateMetadata = (): Promise<Metadata> => withSeo({ path: "/datenschutz", ...staticSeo["/datenschutz"] });
@@ -54,6 +55,13 @@ export default function PrivacyPage() {
             gekürzte IP-Adresse, aufgerufene Seiten, Gerät und Browser) an Google übermittelt. Ihre Entscheidung wird in Ihrem Browser gespeichert; Sie können sie jederzeit ändern, indem Sie die Website-Daten in Ihrem
             Browser löschen.
           </p>
+          {metaPixelId() && (
+            <p>
+              Wenn Sie zustimmen, verwenden wir zudem das Meta-Pixel und die Conversions API (Meta Platforms Ireland Ltd. bzw. Meta Platforms Inc., USA), um die Wirkung unserer Werbung auf Facebook und Instagram
+              zu messen. Dabei werden Cookies gesetzt und Angaben zu aufgerufenen Seiten an Meta übermittelt. Senden Sie uns eine Anfrage, übermitteln wir Meta zusätzlich Ihre E-Mail-Adresse und Telefonnummer – nur
+              verschlüsselt (gehasht), damit Meta die Anfrage einer Werbeanzeige zuordnen kann. Ohne Ihre Zustimmung findet keine Übermittlung an Meta statt.
+            </p>
+          )}
 
           <h2>Schriften und Medien</h2>
           <p>Schriftarten, Bilder und Videos werden direkt von unserem Server ausgeliefert. Es findet dabei keine Verbindung zu Drittanbietern statt.</p>

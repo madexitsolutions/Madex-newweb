@@ -4,6 +4,7 @@ import { canStart, createReport, findReport, setInquiryRef } from "@/lib/server/
 import { reportUrl } from "@/lib/server/analysis/email";
 import { admit, analysedBefore, clientIp, fromOwnSite } from "@/lib/server/analysis/guard";
 import { normalizeUrl } from "@/lib/server/analysis/safe-fetch";
+import { metaLeadFromRequest } from "@/server/analytics/meta";
 import { createInquiry } from "@/server/content/inquiries";
 
 export const runtime = "nodejs";
@@ -46,13 +47,17 @@ export async function POST(req: Request) {
   const source = req.headers.get("referer") ?? "";
   /** the request always lands in Admin → Anfragen, even when no analysis runs */
   // confirm = the person gets a "we'll get back to you" e-mail (when no report is coming)
-  const lead = (subject: string, message: string, fields: Record<string, string> = {}, confirm = true) =>
-    createInquiry({ form: "Kostenlose Analyse", email: d.email, subject, message, fields, sourceUrl: source }, { ip, confirm });
+  const lead = async (subject: string, message: string, fields: Record<string, string> = {}, confirm = true) => {
+    const r = await createInquiry({ form: "Kostenlose Analyse", email: d.email, subject, message, fields, sourceUrl: source }, { ip, confirm });
+    // Meta Conversions API (only with consent); `ref` lets the browser pixel send the same event ID
+    if (r.ok && r.status === "new") metaLeadFromRequest(req, { reference: r.reference, email: d.email, form: "Kostenlose Analyse" });
+    return r;
+  };
 
   if (!d.website) {
     const r = await lead("Kostenlose Analyse (Startseite)", "Kostenlose Analyse angefragt");
     if (!r.ok) return NextResponse.json({ ok: false, error: r.message }, { status: r.code === "rate_limited" ? 429 : 422 });
-    return NextResponse.json({ ok: true, message: `Danke! Wir melden uns innerhalb von 24 Stunden. Ihre Referenz: ${r.reference}` });
+    return NextResponse.json({ ok: true, ref: r.reference, message: `Danke! Wir melden uns innerhalb von 24 Stunden. Ihre Referenz: ${r.reference}` });
   }
 
   const url = normalizeUrl(d.website);
@@ -66,9 +71,10 @@ export async function POST(req: Request) {
       const existing = await findReport(before.id);
       if (existing) return NextResponse.json({ ok: true, id: existing.id, url: `/analyse/${existing.id}?t=${encodeURIComponent(existing.token)}` });
     }
-    await lead(`Website-Analyse für ${domain} (bereits analysiert)`, `Erneute Anfrage für ${domain}. Die Website wurde bereits automatisch analysiert – bitte persönlich nachfassen.`, { Website: url.toString() });
+    const again = await lead(`Website-Analyse für ${domain} (bereits analysiert)`, `Erneute Anfrage für ${domain}. Die Website wurde bereits automatisch analysiert – bitte persönlich nachfassen.`, { Website: url.toString() });
     return NextResponse.json({
       ok: true,
+      ref: again.ok ? again.reference : undefined,
       message: `Für ${domain} wurde bereits eine Analyse erstellt. Wir haben Ihre Anfrage erhalten und melden uns innerhalb von 24 Stunden persönlich mit den Ergebnissen.`,
     });
   }
@@ -76,8 +82,8 @@ export async function POST(req: Request) {
   const admission = await admit(ip, d.email);
   if (!admission.ok) {
     if (admission.reason === "budget") {
-      await lead(`Website-Analyse für ${domain} (Kontingent erreicht)`, `Analyse für ${domain} angefragt, das tägliche Kontingent war erreicht – bitte manuell erstellen.`, { Website: url.toString() });
-      return NextResponse.json({ ok: true, message: admission.message });
+      const queued = await lead(`Website-Analyse für ${domain} (Kontingent erreicht)`, `Analyse für ${domain} angefragt, das tägliche Kontingent war erreicht – bitte manuell erstellen.`, { Website: url.toString() });
+      return NextResponse.json({ ok: true, ref: queued.ok ? queued.reference : undefined, message: admission.message });
     }
     return NextResponse.json({ ok: false, error: admission.message }, { status: 429 });
   }
@@ -88,5 +94,5 @@ export async function POST(req: Request) {
   // the lead lands in Admin → Anfragen with the link to the report
   const r = await lead(`Website-Analyse für ${domain}`, `Website-Analyse für ${domain} gestartet. Den Bericht finden Sie im Feld «Bericht».`, { Website: url.toString(), Bericht: reportUrl(report) }, false);
   if (r.ok) await setInquiryRef(report, r.reference);
-  return NextResponse.json({ ok: true, id: report.id, url: `/analyse/${report.id}?t=${encodeURIComponent(report.token)}` });
+  return NextResponse.json({ ok: true, id: report.id, ref: r.ok ? r.reference : undefined, url: `/analyse/${report.id}?t=${encodeURIComponent(report.token)}` });
 }

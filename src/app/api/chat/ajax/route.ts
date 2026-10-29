@@ -8,6 +8,7 @@ import { NextResponse } from "next/server";
 import { appendMessages, createSession, getSession, touchSession, type ChatMessage } from "@/lib/server/chats";
 import { extractActions, nextActions, respond, UNCONFIRMED } from "@/lib/server/orion";
 import { recommend, SERVICE_OPTIONS } from "@/lib/server/packages";
+import { metaLeadFromRequest } from "@/server/analytics/meta";
 import { createInquiry } from "@/server/content/inquiries";
 import { checkMessage, checkNewSession, clientIp, ipBlocked, logSecurity } from "@/lib/server/security";
 import { getSettings } from "@/lib/server/settings";
@@ -191,6 +192,7 @@ export async function POST(req: Request) {
         );
         if (!r.ok) return fail(r.message, r.code === "rate_limited" ? 429 : 400, r.code);
         reference = r.reference;
+        if (r.status === "new") metaLeadFromRequest(req, { reference, email, phone, name, form: service === "analyse" ? "Kostenlose Analyse" : "Terminanfrage" });
         await touchSession(session.id, { requestRef: reference, requestKey: key, customerType: existing === "yes" ? "client" : "prospect", ...(service ? { topic: service } : {}) });
       }
       const first = name.split(/\s+/)[0];
