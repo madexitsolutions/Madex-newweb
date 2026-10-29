@@ -52,7 +52,8 @@ angelegt. Es braucht zusätzlich `DATABASE_URL`, `APP_SECRET` und `APP_URL` (sie
 Anmeldung mit **E-Mail-Adresse** und Passwort, danach Zwei-Faktor-Code (Authenticator-App). Das erste Konto entsteht
 über die Ersteinrichtung unter `/admin` oder automatisch aus `ADMIN_EMAIL` + `ADMIN_PASSWORD` (solange noch kein Benutzer existiert).
 
-- **Status:** `/admin/status` zeigt ohne Anmeldung Datenbank, Datenordner, Schlüssel, Konto und HTTPS.
+- **Status:** `/admin/status` zeigt Datenbank, Datenordner, Schlüssel, Konto und HTTPS – angemeldeten Admins; mit
+  `STATUS_PAGE_PUBLIC=true` vorübergehend auch ohne Anmeldung (z. B. wenn die Anmeldung selbst nicht klappt).
 - **Notfallzugang:** `ADMIN_RESET=true` setzen und neu starten (Konto `ADMIN_EMAIL` bekommt `ADMIN_PASSWORD`, 2FA wird neu eingerichtet),
   danach entfernen. Oder im Terminal bei gestoppter App: `npm run admin:reset -- name@firma.ch`.
 - **Datenbank:** ohne `DATABASE_URL` läuft die eingebaute PostgreSQL-Datenbank (PGlite) in `DATA_DIR/pglite` – auch in Produktion,

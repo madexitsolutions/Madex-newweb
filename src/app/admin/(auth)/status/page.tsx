@@ -1,11 +1,13 @@
 import { accessSync, constants, mkdirSync } from "node:fs";
 import { count, sql } from "drizzle-orm";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { db, embeddedDir, usesEmbeddedDb } from "@/server/db";
 import { users } from "@/server/db/schema";
 import { secretSource } from "@/server/lib/crypto";
 import { requestInfo } from "@/server/lib/request";
 import { dataDir, dataDirInsideApp } from "@/server/lib/data-dir";
+import { getCurrentUser } from "@/server/auth/session";
 
 export const metadata = { title: "Status" };
 export const dynamic = "force-dynamic";
@@ -24,10 +26,15 @@ function dataDirWritable() {
 }
 
 /**
- * Public setup check – no login needed, no secrets shown. Helps when the login
- * does not work on a new server.
+ * Setup check (no secrets shown). Only for signed-in admins; with
+ * STATUS_PAGE_PUBLIC=true also without login – for a new server or when the
+ * login itself does not work. Everyone else gets "not found".
  */
 export default async function StatusPage() {
+  if (!/^(true|1|on|yes)$/i.test(process.env.STATUS_PAGE_PUBLIC?.trim() ?? "")) {
+    const me = await getCurrentUser().catch(() => null);
+    if (!me?.permissions.has("settings.manage")) notFound();
+  }
   const startupError = (globalThis as { __startupError?: string }).__startupError;
   const embedded = usesEmbeddedDb();
   let dbOk = false;
