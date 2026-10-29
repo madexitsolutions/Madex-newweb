@@ -5,7 +5,6 @@
  * Table-based with inline styles, so it looks the same in Outlook, Gmail and Apple Mail.
  */
 import { site } from "@/content/site";
-import { appUrl } from "@/server/lib/app-url";
 import { getSettings } from "@/server/settings";
 
 export type EmailContent = {
@@ -27,6 +26,13 @@ export type EmailContent = {
   reason?: string;
 };
 
+/**
+ * The logo travels inside the e-mail (inline attachment, see mailer.ts) instead of
+ * being loaded from the website: it shows before the domain points to this app,
+ * and Outlook does not block it like external images.
+ */
+export const LOGO_CID = "logo@madex-it.ch";
+
 export const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 
 const INK = "#01292d";
@@ -43,7 +49,7 @@ export async function renderEmail(c: EmailContent) {
   const place = [g.zip || site.contact.postalCode, g.city || site.contact.locality].filter(Boolean).join(" ");
   const email = g.email || site.contact.email;
   const url = g.siteUrl || site.url;
-  const logo = b.logoUrl && /^https?:\/\//.test(b.logoUrl) ? b.logoUrl : appUrl("/brand/logo.png");
+  const logo = b.logoUrl && /^https?:\/\//.test(b.logoUrl) ? b.logoUrl : `cid:${LOGO_CID}`;
 
   const rows = (c.rows ?? []).filter(([, v]) => v);
   const rowsHtml = rows.length

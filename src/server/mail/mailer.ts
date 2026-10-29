@@ -6,7 +6,9 @@ import nodemailer from "nodemailer";
 import { db } from "@/server/db";
 import { emailLog } from "@/server/db/schema";
 import { getSettings } from "@/server/settings";
-import { renderEmail, type EmailContent } from "./template";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { LOGO_CID, renderEmail, type EmailContent } from "./template";
 
 export async function smtpConfig() {
   const s = await getSettings("email");
@@ -62,7 +64,7 @@ export async function sendMail(input: SendInput): Promise<{ ok: boolean; error?:
   try {
     const transport = nodemailer.createTransport({ host: cfg.host, port: cfg.port, secure: cfg.secure, auth: cfg.user ? { user: cfg.user, pass: cfg.pass } : undefined });
     const { html, text } = input.rendered ?? (await renderEmail(input.content));
-    await transport.sendMail({ from: cfg.from, to, subject: input.subject, html, text, replyTo: input.replyTo || cfg.replyTo, attachments: input.attachments });
+    await transport.sendMail({ from: cfg.from, to, subject: input.subject, html, text, replyTo: input.replyTo || cfg.replyTo, attachments: [...(input.attachments ?? []), ...inlineLogo(html)] });
     await log("sent");
     return { ok: true };
   } catch (e) {
@@ -70,4 +72,18 @@ export async function sendMail(input: SendInput): Promise<{ ok: boolean; error?:
     await log("failed", msg.slice(0, 500));
     return { ok: false, error: msg };
   }
+}
+
+let logoFile: Buffer | null | undefined;
+/** The logo as inline attachment for e-mails that reference cid:LOGO_CID (public/brand/logo.png). */
+function inlineLogo(html: string) {
+  if (!html.includes(`cid:${LOGO_CID}`)) return [];
+  if (logoFile === undefined) {
+    try {
+      logoFile = readFileSync(path.join(/*turbopackIgnore: true*/ process.cwd(), "public", "brand", "logo.png"));
+    } catch {
+      logoFile = null; // without the file the alt text shows
+    }
+  }
+  return logoFile ? [{ filename: "madex-logo.png", content: logoFile, contentType: "image/png", cid: LOGO_CID, contentDisposition: "inline" as const }] : [];
 }

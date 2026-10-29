@@ -7,7 +7,7 @@
 import { CATEGORIES, scoreLabel, type Recommendation } from "@/lib/analysis";
 import { site } from "@/content/site";
 import { sendMail } from "@/server/mail/mailer";
-import { esc } from "@/server/mail/template";
+import { esc, LOGO_CID } from "@/server/mail/template";
 import { appUrl } from "@/server/lib/app-url";
 import { getShot, type Report } from "./engine";
 import { renderReportPdf } from "./pdf";
@@ -85,7 +85,7 @@ ${(["mobile", "desktop"] as const)
 
 <tr><td style="padding:24px 32px">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
-<td><a href="${esc(site.url)}"><img src="${esc(appUrl("/brand/logo.png"))}" width="150" height="32" alt="${esc(site.name)}" style="display:block;width:150px;height:auto;border:0"></a></td>
+<td><a href="${esc(site.url)}"><img src="cid:${LOGO_CID}" width="150" height="32" alt="${esc(site.name)}" style="display:block;width:150px;height:auto;border:0"></a></td>
 <td align="right" style="${FONT};font-size:13px;color:${SOFT}">Website-Analyse<br>${esc(date)}</td>
 </tr></table></td></tr>
 
