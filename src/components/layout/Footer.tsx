@@ -111,7 +111,7 @@ export function Footer() {
 
           <div className="ft__bottom">
             <span>
-              © {year} {site.legalName} · UID {site.uid}
+              © {year} {site.legalName}
             </span>
             <ul>
               {legalNav.map((l) => (
