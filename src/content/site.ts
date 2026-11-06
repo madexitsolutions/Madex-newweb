@@ -124,7 +124,6 @@ export const packages: Package[] = [
       "Ihre neue Website ist inklusive – wir kümmern uns laufend um Technik, Sicherheit und Aktualisierungen.",
     features: [
       "Domain & Hosting",
-      "Bis 8 Seiten",
       "Kontaktformular",
       "1 Std. Updates pro Monat",
       "SEO Basic",
@@ -151,7 +150,6 @@ export const packages: Package[] = [
       "Professionelle Fotos vor Ort oder Stockbilder",
       "Individuelle Designs & Texte",
       "Zielgruppen-Definition",
-      "Website bis 10 Seiten",
       "Domain & Hosting",
       "Kontaktformular",
       "SEO Basic",
@@ -181,7 +179,6 @@ export const packages: Package[] = [
       "Google Ads",
       "Website inklusive",
       "Domain & Hosting",
-      "Bis 15 Seiten",
       "Kontaktformular",
       "2 Std./Monat Updates",
       "SEO Premium",
