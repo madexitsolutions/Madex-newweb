@@ -13,7 +13,7 @@ const PATH = "/madexadm/sicherheit";
 const NO_ACCESS = "Keine Berechtigung. Diese Aktion braucht das Recht «Sicherheitsrichtlinien und Sperren».";
 
 const num = (label: string, min: number, max: number) =>
-  z.coerce.number({ invalid_type_error: `${label}: bitte eine Zahl eingeben.` }).int(`${label}: bitte eine ganze Zahl.`).min(min, `${label}: mindestens ${min}.`).max(max, `${label}: höchstens ${max}.`);
+  z.coerce.number({ error: `${label}: bitte eine Zahl eingeben.` }).int(`${label}: bitte eine ganze Zahl.`).min(min, `${label}: mindestens ${min}.`).max(max, `${label}: höchstens ${max}.`);
 
 const policySchema = z
   .object({

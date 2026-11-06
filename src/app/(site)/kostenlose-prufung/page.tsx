@@ -38,7 +38,7 @@ export default function FreeAnalysisPage() {
     { q: "Was kostet die Analyse?", a: "Nichts. Die Analyse ist kostenlos und unverbindlich. Wenn Sie möchten, besprechen wir das Ergebnis anschliessend in einem kostenlosen Erstgespräch – Sie müssen aber nicht." },
     { q: "Wie lange dauert es?", a: "Etwa eine Minute. Sie können live zuschauen, wie Ihre Website auf dem Computer und dem Smartphone geprüft wird. Danach steht der Bericht sofort bereit." },
     { q: "Wofür braucht es meine E-Mail-Adresse?", a: "Wir senden Ihnen den Bericht als PDF, damit Sie ihn später wiederfinden und weitergeben können. Ihre Adresse verwenden wir für nichts anderes und geben sie nicht weiter." },
-    { q: "Kann ich dieselbe Website mehrmals prüfen?", a: "Jede Website wird einmal automatisch analysiert. Möchten Sie nach Änderungen eine neue Auswertung, melden Sie sich bei uns – wir prüfen sie gerne erneut und besprechen die Fortschritte mit Ihnen." },
+    { q: "Kann ich dieselbe Website mehrmals prüfen?", a: "Pro Besuch erstellen wir eine automatische Analyse. Wurde Ihre Website kürzlich geprüft, sehen Sie sofort den vorhandenen Bericht – er bleibt 90 Tage verfügbar, danach wird neu analysiert. Möchten Sie nach Änderungen früher eine neue Auswertung, melden Sie sich bei uns – wir prüfen sie gerne erneut und besprechen die Fortschritte mit Ihnen." },
     { q: "Was passiert nach der Analyse?", a: "Sie entscheiden. Viele Verbesserungen setzen Sie mit dem Bericht selbst um. Wenn Sie Unterstützung möchten, zeigen wir Ihnen im Erstgespräch, was sich lohnt und was es kostet." },
   ];
   const trail = [

@@ -123,6 +123,7 @@ export const packages: Package[] = [
     intro:
       "Ihre neue Website ist inklusive – wir kümmern uns laufend um Technik, Sicherheit und Aktualisierungen.",
     features: [
+      "Website inklusive",
       "Domain & Hosting",
       "Kontaktformular",
       "1 Std. Updates pro Monat",
@@ -144,6 +145,7 @@ export const packages: Package[] = [
     intro:
       "Wir betreuen Ihren Social-Media-Auftritt und erstellen Ihre professionelle Website ohne zusätzliche Erstellungskosten.",
     features: [
+      "Website inklusive",
       "4 Social-Media-Designs pro Monat",
       "1 Werbeclip inkl. Bildslider/Fotogalerie",
       "Betreuung Ihrer Social-Media-Kanäle",

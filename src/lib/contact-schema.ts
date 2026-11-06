@@ -20,7 +20,7 @@ export const contactSchema = z.object({
   message: z.string().trim().min(10, "Bitte beschreiben Sie Ihr Anliegen (mind. 10 Zeichen).").max(5000),
   date: z.string().trim().max(20).optional().or(z.literal("")),
   slot: z.string().trim().max(60).optional().or(z.literal("")),
-  consent: z.literal(true, { errorMap: () => ({ message: "Bitte stimmen Sie der Datenverarbeitung zu." }) }),
+  consent: z.literal(true, { error: "Bitte stimmen Sie der Datenverarbeitung zu." }),
   // honeypot – stays empty for people; a neutral name so browser autofill leaves it alone
   hp: z.string().max(500).optional().or(z.literal("")),
   source: z.string().max(80).optional(),

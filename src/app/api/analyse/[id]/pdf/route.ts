@@ -11,11 +11,12 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   const { id } = await ctx.params;
   // rendering takes about a second of CPU
   if (!rateLimit(`analyse-pdf:${clientIp(req)}`, 15, 10 * 60_000) || !rateLimit(`analyse-pdf-id:${id}`, 15, 10 * 60_000)) return new Response("Zu viele Anfragen. Bitte warten Sie einen Moment.", { status: 429 });
-  const r = await getReport(id, new URL(req.url).searchParams.get("t"));
+  const t = new URL(req.url).searchParams.get("t");
+  const r = await getReport(id, t);
   if (!r) return new Response("Dieser Bericht wurde nicht gefunden oder ist abgelaufen.", { status: 404 });
   if (r.status !== "done") return new Response("Die Analyse ist noch nicht fertig.", { status: 409 });
   const [mobile, desktop] = await Promise.all([getShot(id, "mobile"), getShot(id, "desktop")]);
-  const pdf = await renderReportPdf(r, { mobile: mobile ?? undefined, desktop: desktop ?? undefined }, reportUrl(r));
+  const pdf = await renderReportPdf(r, { mobile: mobile ?? undefined, desktop: desktop ?? undefined }, reportUrl(r, t!));
   const name = `Website-Analyse ${r.domain}.pdf`;
   return new Response(new Uint8Array(pdf), {
     headers: {

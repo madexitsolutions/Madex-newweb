@@ -28,7 +28,7 @@ import { priceCart } from "./pricing";
 
 /* ------------------------------------------------------------ validation */
 
-const text = (max: number, msg: string) => z.string({ required_error: msg }).trim().min(1, msg).max(max, `Höchstens ${max} Zeichen.`);
+const text = (max: number, msg: string) => z.string({ error: msg }).trim().min(1, msg).max(max, `Höchstens ${max} Zeichen.`);
 const optText = (max: number) =>
   z
     .string()

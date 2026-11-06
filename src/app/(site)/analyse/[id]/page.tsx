@@ -19,5 +19,5 @@ export default async function AnalysisPage({ params, searchParams }: { params: P
   if (!report || !t) notFound();
   // shown in the dashboard: did the prospect open the report?
   if (report.status === "done" && intern !== "1") await markViewed(report.id).catch(() => undefined);
-  return <AnalysisView initial={toView(report)} token={t} />;
+  return <AnalysisView initial={toView(report, t)} token={t} />;
 }

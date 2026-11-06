@@ -41,7 +41,20 @@ function decode(raw: string): string {
 }
 
 const queues = new Map<string, Promise<unknown>>();
+/**
+ * Recently read collections (by modification time). Bounded: every analysis has its own
+ * collections, so an unbounded cache would keep all of them in memory for the life of the
+ * process. Large files (screenshots) are not cached at all.
+ */
 const cache = new Map<string, { mtime: number; value: unknown }>();
+const CACHE_ENTRIES = 60;
+const CACHE_MAX_BYTES = 256 * 1024;
+
+function remember(name: string, mtime: number, value: unknown) {
+  cache.delete(name);
+  cache.set(name, { mtime, value });
+  while (cache.size > CACHE_ENTRIES) cache.delete(cache.keys().next().value!);
+}
 
 function file(name: string) {
   if (!/^[a-z0-9-]+$/.test(name)) throw new Error("invalid collection");
@@ -53,10 +66,17 @@ export async function read<T>(name: string, fallback: T): Promise<T> {
   try {
     const stat = await fs.stat(f);
     const hit = cache.get(name);
-    if (hit && hit.mtime === stat.mtimeMs) return structuredClone(hit.value) as T;
+    if (hit && hit.mtime === stat.mtimeMs) {
+      remember(name, hit.mtime, hit.value);
+      return structuredClone(hit.value) as T;
+    }
     const value = JSON.parse(decode(await fs.readFile(f, "utf8"))) as T;
-    cache.set(name, { mtime: stat.mtimeMs, value });
-    return structuredClone(value);
+    if (stat.size <= CACHE_MAX_BYTES) {
+      remember(name, stat.mtimeMs, value);
+      return structuredClone(value);
+    }
+    cache.delete(name);
+    return value;
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === "ENOENT") return structuredClone(fallback);
     throw err;

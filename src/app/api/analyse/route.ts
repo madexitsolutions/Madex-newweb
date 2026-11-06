@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { canStart, createReport, findReport, setInquiryRef } from "@/lib/server/analysis/engine";
+import { addGuest, available, canStart, createReport, findReport, getReport, setInquiryRef, type Report } from "@/lib/server/analysis/engine";
 import { reportUrl } from "@/lib/server/analysis/email";
-import { admit, analysedBefore, clientIp, fromOwnSite } from "@/lib/server/analysis/guard";
+import { admit, analysedBefore, clientIp, domainKey, fromOwnSite, releaseDomain } from "@/lib/server/analysis/guard";
 import { normalizeUrl } from "@/lib/server/analysis/safe-fetch";
 import { metaLeadFromRequest } from "@/server/analytics/meta";
 import { createInquiry } from "@/server/content/inquiries";
@@ -23,9 +23,12 @@ const schema = z.object({
 /**
  * Hero quick form. With a website the analysis starts right away and the
  * answer carries the link to the live report page; without one only the
- * request is recorded. Protection: own site only, minimum fill time, each
- * domain once, limits per visitor/network/e-mail and a global budget
- * (see analysis/guard.ts).
+ * request is recorded.
+ * Rules: one automatic analysis per visit (session cookie); a website that
+ * has an available report is not scanned again – the person gets that report
+ * with their own link; an expired or failed report is scanned anew.
+ * Protection: own site only, minimum fill time, limits per visitor/network/
+ * e-mail and a global budget (see analysis/guard.ts).
  */
 export async function POST(req: Request) {
   let body: unknown;
@@ -63,21 +66,25 @@ export async function POST(req: Request) {
   const url = normalizeUrl(d.website);
   if (!url) return NextResponse.json({ ok: false, error: "Bitte geben Sie eine gültige Website-Adresse ein, z. B. firma.ch." }, { status: 422 });
   const domain = url.hostname.replace(/^www\./, "");
+  const open = (r: Report, token: string, extra: Record<string, unknown> = {}) =>
+    withSession(NextResponse.json({ ok: true, id: r.id, url: link(r, token), ...extra }), r.id, token);
 
-  // each website only once: the same person gets their report back, anyone else a personal follow-up
-  const before = await analysedBefore(url.hostname);
-  if (before) {
-    if (before.email.toLowerCase() === d.email.toLowerCase()) {
-      const existing = await findReport(before.id);
-      if (existing) return NextResponse.json({ ok: true, id: existing.id, url: `/analyse/${existing.id}?t=${encodeURIComponent(existing.token)}` });
-    }
-    const again = await lead(`Website-Analyse für ${domain} (bereits analysiert)`, `Erneute Anfrage für ${domain}. Die Website wurde bereits automatisch analysiert – bitte persönlich nachfassen.`, { Website: url.toString() });
+  // one automatic analysis per visit: the same website opens the report again, another one becomes a personal request
+  const mine = await sessionReport(req);
+  if (mine && available(mine.report)) {
+    if (domainKey(mine.report.domain) === domainKey(url.hostname)) return open(mine.report, mine.token);
+    const more = await lead(`Website-Analyse für ${domain} (weitere Website)`, `In diesem Besuch wurde bereits ${mine.report.domain} analysiert. Weitere Analyse für ${domain} gewünscht – bitte persönlich nachfassen.`, { Website: url.toString(), "Bisheriger Bericht": reportUrl(mine.report, mine.token) });
     return NextResponse.json({
       ok: true,
-      ref: again.ok ? again.reference : undefined,
-      message: `Für ${domain} wurde bereits eine Analyse erstellt. Wir haben Ihre Anfrage erhalten und melden uns innerhalb von 24 Stunden persönlich mit den Ergebnissen.`,
+      ref: more.ok ? more.reference : undefined,
+      report: link(mine.report, mine.token),
+      message: `Pro Besuch erstellen wir eine automatische Analyse – Ihr Bericht für ${mine.report.domain} ist bereit. Ihre Anfrage für ${domain} haben wir erhalten und melden uns innerhalb von 24 Stunden persönlich.`,
     });
   }
+
+  // the website was analysed before and its report is still available: show it instead of scanning again
+  const shared = await existingReport(url.hostname);
+  if (shared) return open(shared.report, (await share(shared.report)).token);
 
   const admission = await admit(ip, d.email);
   if (!admission.ok) {
@@ -90,9 +97,50 @@ export async function POST(req: Request) {
   if (!canStart()) return NextResponse.json({ ok: false, error: "Gerade laufen sehr viele Analysen. Bitte versuchen Sie es in einer Minute erneut." }, { status: 503 });
 
   const report = await createReport(url, d.email);
-  if (!report) return NextResponse.json({ ok: true, message: `Für ${domain} wird gerade bereits eine Analyse erstellt. Wir melden uns innerhalb von 24 Stunden persönlich.` });
+  if (!report) {
+    // someone started the same website a moment ago: join that analysis
+    const now = await existingReport(url.hostname);
+    if (now) return open(now.report, (await share(now.report)).token);
+    return NextResponse.json({ ok: false, error: "Für diese Website läuft gerade eine Analyse. Bitte versuchen Sie es in einer Minute erneut." }, { status: 409 });
+  }
   // the lead lands in Admin → Anfragen with the link to the report
   const r = await lead(`Website-Analyse für ${domain}`, `Website-Analyse für ${domain} gestartet. Den Bericht finden Sie im Feld «Bericht».`, { Website: url.toString(), Bericht: reportUrl(report) }, false);
   if (r.ok) await setInquiryRef(report, r.reference);
-  return NextResponse.json({ ok: true, id: report.id, ref: r.ok ? r.reference : undefined, url: `/analyse/${report.id}?t=${encodeURIComponent(report.token)}` });
+  return open(report, report.token, { ref: r.ok ? r.reference : undefined });
+
+  /** A link of its own for this person; new people land in Anfragen like a new analysis. */
+  async function share(rep: Report) {
+    const g = await addGuest(rep, d.email);
+    if (g.added) {
+      await lead(`Website-Analyse für ${domain} (bestehender Bericht)`, `Die Website wurde bereits analysiert – der bestehende Bericht wurde angezeigt. Den Bericht finden Sie im Feld «Bericht».`, { Website: url!.toString(), Bericht: reportUrl(rep, g.token) }, false);
+    }
+    return g;
+  }
+}
+
+const SESSION_COOKIE = "madex-analyse";
+const link = (r: Report, token: string) => `/analyse/${r.id}?t=${encodeURIComponent(token)}`;
+
+/** Session cookie (no expiry): the analysis of this visit. */
+function withSession(res: NextResponse, id: string, token: string) {
+  res.cookies.set(SESSION_COOKIE, `${id}.${token}`, { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/" });
+  return res;
+}
+
+async function sessionReport(req: Request): Promise<{ report: Report; token: string } | null> {
+  const raw = (req.headers.get("cookie") ?? "").split(/;\s*/).find((c) => c.startsWith(`${SESSION_COOKIE}=`));
+  const [id, token] = decodeURIComponent(raw?.slice(SESSION_COOKIE.length + 1) ?? "").split(".");
+  if (!id || !token) return null;
+  const report = await getReport(id, token);
+  return report ? { report, token } : null;
+}
+
+/** The report registered for this website, while it can still be shown; an unusable entry is freed. */
+async function existingReport(host: string): Promise<{ report: Report } | null> {
+  const before = await analysedBefore(host);
+  if (!before) return null;
+  const report = await findReport(before.id);
+  if (report && available(report)) return { report };
+  await releaseDomain(host, before.id);
+  return null;
 }

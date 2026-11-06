@@ -206,7 +206,7 @@ export function Offer() {
               <tr>
                 <td>
                   Webdesign & Entwicklung
-                  <small>Individuelles Design, bis 15 Seiten, responsive</small>
+                  <small>Individuelles Design, responsive</small>
                 </td>
                 <td>8’000.00</td>
               </tr>

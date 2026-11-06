@@ -20,6 +20,13 @@ export type Tx = Parameters<Parameters<DB["transaction"]>[0]>[0];
 
 const g = globalThis as unknown as { __predashDb?: DB; __predashPglite?: PGlite };
 
+/**
+ * The built-in database runs inside the app process, so its buffers count towards the
+ * hosting's memory limit. PostgreSQL's defaults (128 MB shared buffers) are made for a
+ * database server; a website's data fits in far less. PGLITE_SHARED_BUFFERS overrides it.
+ */
+const EMBEDDED_MEMORY = ["-c", `shared_buffers=${process.env.PGLITE_SHARED_BUFFERS || "16MB"}`, "-c", "work_mem=4MB", "-c", "maintenance_work_mem=16MB", "-c", "temp_buffers=4MB"];
+
 export const usesEmbeddedDb = () => !process.env.DATABASE_URL;
 
 export function embeddedDir() {
@@ -34,7 +41,7 @@ function create(): DB {
   }
   const dir = embeddedDir();
   if (!dir.startsWith("memory://")) mkdirSync(path.dirname(path.resolve(/*turbopackIgnore: true*/ dir)), { recursive: true });
-  const client = new PGlite(dir);
+  const client = new PGlite(dir, { startParams: [...PGlite.defaultStartParams, ...EMBEDDED_MEMORY] });
   g.__predashPglite = client;
   return drizzlePglite(client, { schema });
 }

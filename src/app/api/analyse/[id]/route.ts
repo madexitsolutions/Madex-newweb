@@ -10,7 +10,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   // the page polls about once a second while a scan runs
   if (!rateLimit(`analyse-poll:${clientIp(req)}`, 400, 10 * 60_000)) return NextResponse.json({ ok: false, error: "Zu viele Anfragen. Bitte warten Sie einen Moment." }, { status: 429 });
   const { id } = await ctx.params;
-  const r = await getReport(id, new URL(req.url).searchParams.get("t"));
+  const t = new URL(req.url).searchParams.get("t");
+  const r = await getReport(id, t);
   if (!r) return NextResponse.json({ ok: false, error: "Dieser Bericht wurde nicht gefunden oder ist abgelaufen." }, { status: 404 });
-  return NextResponse.json({ ok: true, report: toView(r) }, { headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json({ ok: true, report: toView(r, t) }, { headers: { "Cache-Control": "no-store" } });
 }

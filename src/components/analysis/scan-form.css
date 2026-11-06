@@ -17,6 +17,7 @@
 .hx__hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .hx__msg { margin: 12px 0 0 18px; min-height: 20px; font-size: 13.5px; color: var(--hx-muted); max-width: 560px; }
 .hx__msg.is-ok { color: var(--mint); } .hx__msg.is-err { color: #ff9b94; }
+.hx__msg-link { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 @media (max-width: 640px) {
   .hx__form { flex-direction: column; border-radius: 22px; gap: 0; }
   .hx__sep { width: auto; height: 1px; margin: 0 12px; }

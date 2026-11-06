@@ -17,7 +17,7 @@ export type Coupon = typeof coupons.$inferSelect;
 
 const optInt = (msg: string, min = 0) =>
   z
-    .number({ invalid_type_error: msg })
+    .number({ error: msg })
     .int(msg)
     .min(min, msg)
     .max(1_000_000_000, msg)
@@ -32,9 +32,9 @@ export const couponInputSchema = z
       .transform((s) => s.toUpperCase().replace(/\s+/g, ""))
       .pipe(z.string().min(3, "Der Code braucht mindestens 3 Zeichen.").max(40, "Der Code darf höchstens 40 Zeichen haben.").regex(/^[A-Z0-9][A-Z0-9_-]*$/, "Der Code darf nur Buchstaben (ohne Umlaute), Ziffern, - und _ enthalten.")),
     description: z.string().trim().max(500).default(""),
-    type: z.enum(COUPON_TYPES, { errorMap: () => ({ message: "Bitte eine Art wählen." }) }),
+    type: z.enum(COUPON_TYPES, { error: "Bitte eine Art wählen." }),
     /** percent: basis points (10 % = 1000), fixed: Rappen, free_shipping: 0 */
-    value: z.number({ invalid_type_error: "Bitte einen Wert eingeben." }).int().default(0),
+    value: z.number({ error: "Bitte einen Wert eingeben." }).int().default(0),
     minSubtotal: optInt("Der Mindestbestellwert muss ein Betrag ab 0 sein."),
     usageLimit: optInt("Die Gesamtzahl muss eine ganze Zahl ab 1 sein.", 1),
     usageLimitPerCustomer: optInt("Die Anzahl pro Kunde muss eine ganze Zahl ab 1 sein.", 1),

@@ -1,7 +1,9 @@
 /**
  * Protection of the website analysis against abuse and runaway API costs.
  *
- * - every domain is analysed only once (permanent list, failed runs excepted)
+ * - one automatic analysis per visit (session cookie, see api/analyse)
+ * - a website is not analysed twice while its report is available: the next person
+ *   gets that report with their own link (domain index below)
  * - limits per visitor IP, per network (/24 or /64) and per e-mail address
  * - a global hourly and daily budget (ANALYSE_HOURLY_LIMIT, ANALYSE_DAILY_LIMIT)
  * - only requests from our own website (Origin/Referer) and a minimum time
@@ -33,8 +35,11 @@ export function clientIp(req: Request) {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
-  return chain.at(-1) ?? "unknown";
+  return chain.at(-1) ?? UNKNOWN_IP;
 }
+
+/** No address from the proxy: all visitors would share one counter, so IP limits are skipped. */
+export const UNKNOWN_IP = "unknown";
 
 /** /24 for IPv4, /64 for IPv6 – one attacker rarely has more than one network. */
 export function networkOf(ip: string) {
@@ -59,11 +64,10 @@ export type Admission = { ok: true } | { ok: false; reason: "visitor" | "email" 
 
 /** Per-visitor limits first, the global budget last (so blocked visitors don't use it up). */
 export async function admit(ip: string, email: string): Promise<Admission> {
-  const visitor = [
-    await hit(`analyse:ip-h:${ip}`, 3, HOUR),
-    await hit(`analyse:ip-d:${ip}`, 6, DAY),
-    await hit(`analyse:net-d:${networkOf(ip)}`, 12, DAY),
-  ];
+  const visitor =
+    ip === UNKNOWN_IP
+      ? []
+      : [await hit(`analyse:ip-h:${ip}`, 3, HOUR), await hit(`analyse:ip-d:${ip}`, 6, DAY), await hit(`analyse:net-d:${networkOf(ip)}`, 12, DAY)];
   if (visitor.some((r) => !r.allowed)) return { ok: false, reason: "visitor", message: "Sie haben in kurzer Zeit mehrere Analysen gestartet. Bitte versuchen Sie es später erneut oder rufen Sie uns an: 052 589 67 59." };
   if (!(await hit(`analyse:mail-d:${email.toLowerCase()}`, 3, DAY)).allowed) return { ok: false, reason: "email", message: "Für diese E-Mail-Adresse wurden heute bereits mehrere Analysen erstellt. Bitte versuchen Sie es morgen erneut." };
   const b = budget();
@@ -73,7 +77,7 @@ export async function admit(ip: string, email: string): Promise<Admission> {
   return { ok: true };
 }
 
-/* ------------------------------------------------- once per website */
+/* ------------------------------------------------- one report per website */
 
 type DomainEntry = { id: string; email: string; createdAt: string };
 const INDEX = "analyse-domains";
@@ -96,7 +100,7 @@ export async function claimDomain(host: string, entry: DomainEntry): Promise<boo
   });
 }
 
-/** A failed run frees the domain again. */
+/** A failed or expired report frees the domain again. */
 export async function releaseDomain(host: string, id: string) {
   await update<Record<string, DomainEntry>>(INDEX, {}, (all) => {
     const k = domainKey(host);

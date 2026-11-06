@@ -30,10 +30,10 @@ export const shopGeneralSchema = z.object({
     .trim()
     .max(10, "Das Präfix darf höchstens 10 Zeichen haben.")
     .regex(/^[A-Za-z0-9-]*$/, "Nur Buchstaben, Ziffern und Bindestrich, z. B. «SH-»."),
-  orderNumberStart: z.number({ invalid_type_error: "Bitte eine ganze Zahl eingeben, z. B. 1000." }).int("Bitte eine ganze Zahl eingeben.").min(1, "Die Startnummer muss mindestens 1 sein.").max(999_999_999),
-  lowStockThreshold: z.number({ invalid_type_error: "Bitte eine ganze Zahl eingeben, z. B. 3." }).int().min(0, "Die Warnschwelle darf nicht negativ sein.").max(100_000),
+  orderNumberStart: z.number({ error: "Bitte eine ganze Zahl eingeben, z. B. 1000." }).int("Bitte eine ganze Zahl eingeben.").min(1, "Die Startnummer muss mindestens 1 sein.").max(999_999_999),
+  lowStockThreshold: z.number({ error: "Bitte eine ganze Zahl eingeben, z. B. 3." }).int().min(0, "Die Warnschwelle darf nicht negativ sein.").max(100_000),
   showOutOfStock: z.boolean(),
-  productsPerPage: z.number({ invalid_type_error: "Bitte eine Zahl zwischen 4 und 200 eingeben." }).int().min(4, "Mindestens 4 Produkte pro Seite.").max(200, "Höchstens 200 Produkte pro Seite."),
+  productsPerPage: z.number({ error: "Bitte eine Zahl zwischen 4 und 200 eingeben." }).int().min(4, "Mindestens 4 Produkte pro Seite.").max(200, "Höchstens 200 Produkte pro Seite."),
   orderNotifyEmails: emailList,
   invoiceFooter: z.string().trim().max(500, "Höchstens 500 Zeichen."),
 });
@@ -153,7 +153,7 @@ export const paymentsSchema = z.object({
     .refine((s) => !s || /^[a-z0-9-]+$/.test(s), "Der Instanzname ist der Teil vor «.payrexx.com», z. B. «meinshop»."),
   payrexxApiSecret: z.string().trim().max(200),
   invoiceEnabled: z.boolean(),
-  invoiceDueDays: z.number({ invalid_type_error: "Bitte die Zahlungsfrist in Tagen eingeben, z. B. 30." }).int().min(1, "Mindestens 1 Tag.").max(120, "Höchstens 120 Tage."),
+  invoiceDueDays: z.number({ error: "Bitte die Zahlungsfrist in Tagen eingeben, z. B. 30." }).int().min(1, "Mindestens 1 Tag.").max(120, "Höchstens 120 Tage."),
   invoiceOnlyForCustomers: z.boolean(),
   bankTransferEnabled: z.boolean(),
   bankAccountHolder: z.string().trim().max(70, "Höchstens 70 Zeichen (Vorgabe des QR-Einzahlungsscheins)."),

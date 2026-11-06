@@ -26,7 +26,7 @@ import { fromZod, InputError } from "./errors";
 /* ------------------------------------------------------------------ input */
 
 const MAX_MONEY = 100_000_000; // CHF 1 Mio. per unit is plenty
-const money = z.number({ invalid_type_error: "Bitte einen Betrag eingeben." }).int().min(0, "Der Betrag darf nicht negativ sein.").max(MAX_MONEY, "Der Betrag ist zu hoch.");
+const money = z.number({ error: "Bitte einen Betrag eingeben." }).int().min(0, "Der Betrag darf nicht negativ sein.").max(MAX_MONEY, "Der Betrag ist zu hoch.");
 const optText = (max: number) =>
   z
     .string()

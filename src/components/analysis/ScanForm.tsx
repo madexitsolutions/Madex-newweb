@@ -33,17 +33,20 @@ export function ScanForm({ hint = DEFAULT_HINT }: { hint?: string }) {
   }, []);
   const [state, setState] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [msg, setMsg] = useState("");
+  // the analysis of this visit, when the server answers with a personal request instead
+  const [report, setReport] = useState("");
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     setState("sending");
+    setReport("");
     try {
       const res = await fetch("/api/analyse", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ website: f.get("website"), email: f.get("email"), hp: f.get("hp_check"), startedAt: startedAt.current }),
       });
-      const json = (await res.json()) as { ok: boolean; error?: string; message?: string; url?: string; ref?: string };
+      const json = (await res.json()) as { ok: boolean; error?: string; message?: string; url?: string; ref?: string; report?: string };
       if (json.ok) trackLead(json.ref, "Kostenlose Analyse");
       if (json.ok && json.url) {
         setMsg("Die Analyse startet …");
@@ -57,6 +60,7 @@ export function ScanForm({ hint = DEFAULT_HINT }: { hint?: string }) {
       }
       setState("done");
       setMsg(json.message || "Danke! Wir melden uns innerhalb von 24 Stunden.");
+      if (json.report) setReport(json.report);
       e.currentTarget?.reset();
     } catch {
       setState("error");
@@ -85,6 +89,14 @@ export function ScanForm({ hint = DEFAULT_HINT }: { hint?: string }) {
       </form>
       <p className={`hx__msg${state === "error" ? " is-err" : state === "done" ? " is-ok" : ""}`} role="status">
         {msg || hint}
+        {report && (
+          <>
+            {" "}
+            <a href={report} className="hx__msg-link">
+              Zum Bericht
+            </a>
+          </>
+        )}
       </p>
     </div>
   );

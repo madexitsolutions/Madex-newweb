@@ -38,12 +38,20 @@ export type Report = {
   /** a site built by Madex (footer credit or link): the report stays client-friendly */
   madex?: boolean;
   shots?: { mobile?: boolean; desktop?: boolean };
+  /** other people who asked for the same website while this report was available – each with their own link */
+  guests?: Guest[];
 };
+
+export type Guest = { token: string; email: string; createdAt: string; emailSentAt?: string };
+
+/** Whose link was used: the person who started the analysis or a guest. */
+export type Viewer = { email: string; emailSentAt?: string; guest?: Guest };
 
 type Shots = { mobile?: string; desktop?: string };
 
-/** Reports older than this are no longer shown. */
+/** Reports older than this are no longer shown (and the website is analysed again). */
 const KEEP_DAYS = 90;
+const MAX_GUESTS = 100;
 /** A job that is neither in memory nor finished after this was cut off by a restart. */
 const STALE_MS = 6 * 60_000;
 /** analyses at the same time – each one uses Google and OpenAI */
@@ -55,7 +63,7 @@ const running = (g.__madexAnalyses ??= new Map<string, Report>());
 const name = (id: string) => `analyse-${id}`;
 const validId = (id: string) => /^[a-f0-9]{20}$/.test(id);
 
-/** Starts an analysis, or returns null when the domain was analysed before (claimed atomically). */
+/** Starts an analysis, or returns null when another one for the domain is registered (claimed atomically). */
 export async function createReport(url: URL, email: string): Promise<Report | null> {
   const steps = Object.fromEntries(STEPS.map((s) => [s.key, "wait"])) as Record<StepKey, StepState>;
   const r: Report = {
@@ -85,15 +93,34 @@ async function save(r: Report) {
   });
 }
 
-/** Report by id when the token matches (constant-time), else null. */
+const sameToken = (expected: string, given: string) => {
+  const a = Buffer.from(expected);
+  const b = Buffer.from(given);
+  return a.length === b.length && timingSafeEqual(a, b);
+};
+
+/** The person behind a link: the one who started the analysis or a guest (constant-time compare). */
+export function viewerOf(r: Report, token: string | null | undefined): Viewer | null {
+  if (!token) return null;
+  if (sameToken(r.token, token)) return { email: r.email, emailSentAt: r.emailSentAt };
+  const guest = r.guests?.find((g) => sameToken(g.token, token));
+  return guest ? { email: guest.email, emailSentAt: guest.emailSentAt, guest } : null;
+}
+
+const expired = (r: Report) => Date.now() - Date.parse(r.createdAt) > KEEP_DAYS * 86_400_000;
+
+/** Can this report still be shown instead of a new analysis? (not expired, not failed or cut off) */
+export function available(r: Report) {
+  if (expired(r) || r.status === "failed") return false;
+  return r.status === "done" || running.has(r.id) || Date.now() - Date.parse(r.createdAt) <= STALE_MS;
+}
+
+/** Report by id when the token belongs to it (owner or guest), else null. */
 export async function getReport(id: string, token: string | null): Promise<Report | null> {
   if (!validId(id) || !token) return null;
   const r = running.get(id) ?? (await read<Report | null>(name(id), null));
-  if (!r?.token) return null;
-  const a = Buffer.from(r.token);
-  const b = Buffer.from(token);
-  if (a.length !== b.length || !timingSafeEqual(a, b)) return null;
-  if (Date.now() - Date.parse(r.createdAt) > KEEP_DAYS * 86_400_000) return null;
+  if (!r?.token || !viewerOf(r, token)) return null;
+  if (expired(r)) return null;
   if (r.status === "running" && !running.has(id) && Date.now() - Date.parse(r.createdAt) > STALE_MS) {
     r.status = "failed";
     r.error = "Die Analyse wurde unterbrochen. Bitte starten Sie sie erneut.";
@@ -108,8 +135,32 @@ export async function findReport(id: string): Promise<Report | null> {
   return r?.token ? getReport(id, r.token) : null;
 }
 
-export async function markEmailSent(r: Report) {
-  r.emailSentAt = new Date().toISOString();
+/**
+ * Gives another person access to an existing report with their own link (their e-mail
+ * gets the PDF, not the first requester's). Returns their token and whether they are new.
+ */
+export async function addGuest(r: Report, email: string): Promise<{ token: string; added: boolean }> {
+  const e = email.trim().toLowerCase();
+  if (r.email.toLowerCase() === e) return { token: r.token, added: false };
+  const known = r.guests?.find((g) => g.email.toLowerCase() === e);
+  if (known) return { token: known.token, added: false };
+  const guest: Guest = { token: randomBytes(18).toString("base64url"), email: email.trim(), createdAt: new Date().toISOString() };
+  r.guests = [...(r.guests ?? []), guest].slice(-MAX_GUESTS);
+  if (!running.has(r.id)) await save(r);
+  return { token: guest.token, added: true };
+}
+
+export async function markEmailSent(r: Report, viewer?: Viewer | null) {
+  const at = new Date().toISOString();
+  if (viewer?.guest) {
+    const g = r.guests?.find((x) => x.token === viewer.guest!.token);
+    if (g) g.emailSentAt = at;
+    viewer.emailSentAt = at;
+    if (!running.has(r.id)) await save(r);
+    return;
+  }
+  r.emailSentAt = at;
+  if (viewer) viewer.emailSentAt = at;
   if (!running.has(r.id)) await save(r);
   await indexReport(r).catch(() => undefined);
 }
@@ -130,8 +181,9 @@ const maskEmail = (e: string) => {
   return `${user.slice(0, 2)}…@${host}`;
 };
 
-/** What the browser may see: no e-mail address, no token. */
-export function toView(r: Report): ReportView {
+/** What the browser may see: no e-mail address, no token; the masked address is the viewer's own. */
+export function toView(r: Report, token?: string | null): ReportView {
+  const viewer = viewerOf(r, token) ?? { email: r.email, emailSentAt: r.emailSentAt };
   return {
     id: r.id,
     url: r.url,
@@ -146,8 +198,8 @@ export function toView(r: Report): ReportView {
     scores: r.scores,
     lighthouse: r.lighthouse,
     insights: r.insights,
-    emailMasked: maskEmail(r.email),
-    emailSentAt: r.emailSentAt,
+    emailMasked: maskEmail(viewer.email),
+    emailSentAt: viewer.emailSentAt,
     shots: r.shots,
     madex: r.madex,
   };

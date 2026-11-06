@@ -9,7 +9,7 @@ import { fromZod, InputError } from "./errors";
 export const taxClassInputSchema = z.object({
   name: z.string().trim().min(1, "Bitte einen Namen eingeben, z. B. «Normalsatz».").max(80),
   /** basis points: 8.1 % = 810 */
-  rateBp: z.number({ invalid_type_error: "Bitte einen Steuersatz in Prozent eingeben, z. B. 8.1." }).int().min(0, "Der Steuersatz darf nicht negativ sein.").max(10_000, "Der Steuersatz darf höchstens 100 % sein."),
+  rateBp: z.number({ error: "Bitte einen Steuersatz in Prozent eingeben, z. B. 8.1." }).int().min(0, "Der Steuersatz darf nicht negativ sein.").max(10_000, "Der Steuersatz darf höchstens 100 % sein."),
   isDefault: z.boolean().default(false),
 });
 export type TaxClassInput = z.input<typeof taxClassInputSchema>;

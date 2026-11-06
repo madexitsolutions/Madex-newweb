@@ -95,7 +95,7 @@ export const categoryInputSchema = z.object({
   parentId: z.string().uuid().nullish().transform((v) => v ?? null),
   description: z.string().max(20_000).default(""),
   imageId: z.string().uuid().nullish().transform((v) => v ?? null),
-  sort: z.number({ invalid_type_error: "Die Reihenfolge ist eine ganze Zahl." }).int("Die Reihenfolge ist eine ganze Zahl.").min(-10_000).max(10_000).default(0),
+  sort: z.number({ error: "Die Reihenfolge ist eine ganze Zahl." }).int("Die Reihenfolge ist eine ganze Zahl.").min(-10_000).max(10_000).default(0),
   seoTitle: z.string().trim().max(200).nullish().transform((v) => v || null),
   seoDescription: z.string().trim().max(400).nullish().transform((v) => v || null),
 });

@@ -1,0 +1,11 @@
+{
+  "name": "minimatch",
+  "version": "11.0.1+cjs",
+  "description": "minimatch 11.0.1 with the call signature of minimatch 3 (module.exports is the match function). ESLint plugins still require('minimatch') that way; minimatch 3 has an unpatched denial-of-service advisory.",
+  "main": "index.js",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+    "minimatch-11": "npm:minimatch@11.0.1"
+  }
+}

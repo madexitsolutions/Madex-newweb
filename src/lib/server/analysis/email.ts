@@ -24,14 +24,13 @@ const tone = (n: number) => (n >= 85 ? "#1f8a5b" : n >= 60 ? "#027872" : n >= 40
 const toneDark = (n: number) => (n >= 85 ? "#45d39a" : n >= 60 ? "#4fe0d2" : n >= 40 ? "#ffbe11" : "#ff7a6b");
 const IMPACT: Record<Recommendation["impact"], [string, string]> = { hoch: ["#fde7e4", "#8a1c14"], mittel: ["#fff1cc", "#6b4a00"], niedrig: ["#e9efef", SOFT] };
 
-export const reportUrl = (r: Report) => appUrl(`/analyse/${r.id}?t=${encodeURIComponent(r.token)}`);
+export const reportUrl = (r: Report, token = r.token) => appUrl(`/analyse/${r.id}?t=${encodeURIComponent(token)}`);
 
 const dateFmt = new Intl.DateTimeFormat("de-CH", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Zurich" });
 
-export function renderReportEmail(r: Report) {
+export function renderReportEmail(r: Report, url = reportUrl(r)) {
   const s = r.scores!;
   const ins = r.insights!;
-  const url = reportUrl(r);
   const c = site.contact;
   const date = dateFmt.format(new Date(r.createdAt));
   const counts = { bad: r.checks.filter((x) => x.status === "bad").length, warn: r.checks.filter((x) => x.status === "warn").length, ok: r.checks.filter((x) => x.status === "ok").length };
@@ -136,23 +135,25 @@ ${strengths}
   return { html, text };
 }
 
-export async function sendReport(r: Report) {
+/** Sends the report to the person behind the link (the requester or a guest). */
+export async function sendReport(r: Report, to: { email: string; token: string } = { email: r.email, token: r.token }) {
+  const url = reportUrl(r, to.token);
   if (!r.scores || !r.insights) return { ok: false, error: "Die Analyse ist noch nicht fertig." };
   // the designed PDF goes along; if it can't be rendered, the e-mail still goes out
   let attachments: { filename: string; content: Buffer; contentType: string }[] | undefined;
   try {
     const [mobile, desktop] = await Promise.all([getShot(r.id, "mobile"), getShot(r.id, "desktop")]);
-    const pdf = await renderReportPdf(r, { mobile: mobile ?? undefined, desktop: desktop ?? undefined }, reportUrl(r));
+    const pdf = await renderReportPdf(r, { mobile: mobile ?? undefined, desktop: desktop ?? undefined }, url);
     attachments = [{ filename: `Website-Analyse ${r.domain}.pdf`, content: pdf, contentType: "application/pdf" }];
   } catch (e) {
     console.error("[analyse] PDF für E-Mail nicht erstellt:", e);
   }
   return sendMail({
-    to: r.email,
+    to: to.email,
     subject: `Ihre Website-Analyse für ${r.domain}: ${r.scores.overall} von 100 Punkten`,
     template: "website-analyse",
-    content: { title: `Website-Analyse für ${r.domain}`, cta: { label: "Bericht ansehen", url: reportUrl(r) } },
-    rendered: renderReportEmail(r),
+    content: { title: `Website-Analyse für ${r.domain}`, cta: { label: "Bericht ansehen", url } },
+    rendered: renderReportEmail(r, url),
     related: { type: "website-analyse", id: r.id },
     attachments,
   });

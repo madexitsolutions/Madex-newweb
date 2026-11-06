@@ -25,7 +25,7 @@ export type ZoneInput = z.input<typeof zoneInputSchema>;
 
 const optMoney = (msg: string) =>
   z
-    .number({ invalid_type_error: msg })
+    .number({ error: msg })
     .int()
     .min(0, msg)
     .max(100_000_000, msg)
@@ -38,7 +38,7 @@ export const methodInputSchema = z
     name: z.string().trim().min(1, "Bitte einen Namen eingeben, z. B. «PostPac Economy».").max(100),
     description: z.string().trim().max(300).default(""),
     type: z.enum(SHIPPING_TYPES),
-    price: z.number({ invalid_type_error: "Bitte einen Preis eingeben." }).int().min(0, "Der Preis darf nicht negativ sein.").max(100_000_000).default(0),
+    price: z.number({ error: "Bitte einen Preis eingeben." }).int().min(0, "Der Preis darf nicht negativ sein.").max(100_000_000).default(0),
     freeAbove: optMoney("«Gratis ab» muss ein Betrag ab 0 sein."),
     weightRates: z
       .array(z.object({ upToGrams: z.number().int().min(1, "Gewicht ab 1 g."), price: z.number().int().min(0) }))
