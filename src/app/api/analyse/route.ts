@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { isBotTrap } from "@/lib/honeypot";
 import { addGuest, available, canStart, createReport, findReport, getReport, setInquiryRef, type Report } from "@/lib/server/analysis/engine";
 import { reportUrl } from "@/lib/server/analysis/email";
 import { admit, analysedBefore, clientIp, domainKey, fromOwnSite, releaseDomain } from "@/lib/server/analysis/guard";
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
   if (!parsed.success) return NextResponse.json({ ok: false, error: parsed.error.issues[0].message }, { status: 422 });
   const d = parsed.data;
   // bots: pretend success, do nothing
-  if (d.hp) return NextResponse.json({ ok: true, message: "Danke! Wir melden uns innerhalb von 24 Stunden." });
+  if (isBotTrap(d.hp, [d.email, d.website])) return NextResponse.json({ ok: true, message: "Danke! Wir melden uns innerhalb von 24 Stunden." });
   if (!fromOwnSite(req)) return NextResponse.json({ ok: false, error: "Bitte starten Sie die Analyse über unsere Website." }, { status: 403 });
   if (!d.startedAt || Date.now() - d.startedAt < MIN_FILL_MS)
     return NextResponse.json({ ok: false, error: "Bitte prüfen Sie Ihre Angaben und senden Sie das Formular erneut." }, { status: 429 });

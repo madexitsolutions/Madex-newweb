@@ -241,7 +241,14 @@ export async function getSettings<K extends SettingsKey>(key: K): Promise<Settin
 async function storedSettings<K extends SettingsKey>(key: K): Promise<Settings[K]> {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < TTL) return hit.value as Settings[K];
-  const [row] = await db.select().from(settingsTable).where(eq(settingsTable.key, key));
+  let row: { value: unknown } | undefined;
+  try {
+    [row] = await db.select().from(settingsTable).where(eq(settingsTable.key, key));
+  } catch (e) {
+    // database down: pages still render with the defaults (the login explains the problem)
+    console.error(`[settings] ${key} nicht lesbar:`, e instanceof Error ? e.message.split("\n")[0] : e);
+    return defaults(key);
+  }
   const raw = { ...((row?.value as Record<string, unknown>) ?? {}) };
   for (const f of (SECRET_FIELDS[key] ?? []) as string[]) {
     if (isEncrypted(raw[f])) {

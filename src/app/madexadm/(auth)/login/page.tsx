@@ -3,12 +3,16 @@ import QRCode from "qrcode";
 import { Brand } from "@/components/admin/brand";
 import { otpauthUrl } from "@/server/auth/totp";
 import { getCurrentUser, hasAnyUser, pendingLogin } from "@/server/auth/session";
+import { databaseProblem } from "@/server/db";
 import { getSettings } from "@/server/settings";
 import { CodeForm, PasswordForm } from "./forms";
 
 export const metadata = { title: "Anmelden" };
 
 export default async function Login({ searchParams }: { searchParams: Promise<{ schritt?: string; eingerichtet?: string; zurueckgesetzt?: string; next?: string }> }) {
+  // without a database nothing below works: say so instead of a blank server error
+  const problem = await databaseProblem();
+  if (problem) return <DatabaseDown reason={problem} />;
   if (!(await hasAnyUser())) redirect("/madexadm/einrichtung");
   if (await getCurrentUser()) redirect("/madexadm");
   const { schritt, eingerichtet, zurueckgesetzt, next } = await searchParams;
@@ -69,6 +73,30 @@ export default async function Login({ searchParams }: { searchParams: Promise<{ 
             <CodeForm next={next} />
           </>
         )}
+      </div>
+    </div>
+  );
+}
+
+function DatabaseDown({ reason }: { reason: string }) {
+  console.error("[login] Datenbank nicht erreichbar:", reason);
+  return (
+    <div className="a-login">
+      <div className="a-login__card">
+        <Brand className="a-login__logo" />
+        <h1>Anmeldung gerade nicht möglich</h1>
+        <p className="a-alert a-alert--error" role="alert">
+          Die Datenbank des Dashboards lässt sich nicht öffnen. Die Website selbst läuft weiter.
+        </p>
+        <p className="a-muted">So beheben Sie es:</p>
+        <ol className="a-muted">
+          <li>Die App beim Hosting neu starten (bei Hostinger: Website → Node.js → Neustart).</li>
+          <li>Prüfen, dass die App nur einmal läuft – zwei Instanzen können die eingebaute Datenbank nicht gleichzeitig öffnen.</li>
+          <li>Hilft das nicht: diese Meldung an Madex senden.</li>
+        </ol>
+        <p className="a-muted">
+          Grund: <code>{reason}</code>
+        </p>
       </div>
     </div>
   );

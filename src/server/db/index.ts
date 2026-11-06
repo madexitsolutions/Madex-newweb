@@ -9,6 +9,7 @@
 import { mkdirSync } from "node:fs";
 import path from "node:path";
 import { PGlite } from "@electric-sql/pglite";
+import { sql } from "drizzle-orm";
 import { drizzle as drizzlePglite, type PgliteDatabase } from "drizzle-orm/pglite";
 import { drizzle as drizzlePostgres } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
@@ -18,7 +19,7 @@ import { dataDir } from "@/server/lib/data-dir";
 export type DB = PgliteDatabase<typeof schema>;
 export type Tx = Parameters<Parameters<DB["transaction"]>[0]>[0];
 
-const g = globalThis as unknown as { __predashDb?: DB; __predashPglite?: PGlite };
+const g = globalThis as unknown as { __predashDb?: DB; __predashPglite?: PGlite; __pgliteDefaults?: boolean };
 
 /**
  * The built-in database runs inside the app process, so its buffers count towards the
@@ -41,7 +42,16 @@ function create(): DB {
   }
   const dir = embeddedDir();
   if (!dir.startsWith("memory://")) mkdirSync(path.dirname(path.resolve(/*turbopackIgnore: true*/ dir)), { recursive: true });
-  const client = new PGlite(dir, { startParams: [...PGlite.defaultStartParams, ...EMBEDDED_MEMORY] });
+  const tuned = !g.__pgliteDefaults;
+  const client = new PGlite(dir, tuned ? { startParams: [...PGlite.defaultStartParams, ...EMBEDDED_MEMORY] } : undefined);
+  // if the database does not start with the smaller buffers, the next request opens it with PostgreSQL's defaults
+  if (tuned)
+    client.waitReady.catch((e) => {
+      console.error("[db] Start mit kleinen Puffern fehlgeschlagen, nächster Versuch mit Standardwerten:", e instanceof Error ? e.message : e);
+      g.__pgliteDefaults = true;
+      g.__predashDb = undefined;
+      g.__predashPglite = undefined;
+    });
   g.__predashPglite = client;
   return drizzlePglite(client, { schema });
 }
@@ -63,6 +73,16 @@ export const db: DB = new Proxy({} as DB, {
 export function embeddedClient(): PGlite | null {
   getDb();
   return g.__predashPglite ?? null;
+}
+
+/** null when the database answers, else a short reason (for pages that must not crash, e.g. the login). */
+export async function databaseProblem(): Promise<string | null> {
+  try {
+    await getDb().execute(sql`select 1`);
+    return null;
+  } catch (e) {
+    return (e instanceof Error ? e.message.split("\n")[0] : String(e)).slice(0, 300) || "Unbekannter Fehler";
+  }
 }
 
 /** For tests and scripts: swap in a database instance. */

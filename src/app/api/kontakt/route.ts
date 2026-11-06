@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/contact-schema";
+import { isBotTrap } from "@/lib/honeypot";
 import { metaLeadFromRequest } from "@/server/analytics/meta";
 import { createInquiry } from "@/server/content/inquiries";
 import { ipFromRequest } from "@/server/lib/request";
@@ -24,8 +25,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Bitte prüfen Sie Ihre Eingaben.", fieldErrors }, { status: 422 });
   }
   const d = parsed.data;
-  // Honeypot filled → accept silently, store nothing.
-  if (d.hp) return NextResponse.json({ ok: true });
+  // Honeypot filled by a bot → accept silently, store nothing (autofill by the browser is let through).
+  if (isBotTrap(d.hp, [d.email, d.phone, d.name, d.company, d.website])) return NextResponse.json({ ok: true });
 
   const isAnalysis = d.source === "kostenlose-prufung" || d.source === "hero" || d.service === "Kostenlose Analyse";
   const fields: Record<string, string> = {};
