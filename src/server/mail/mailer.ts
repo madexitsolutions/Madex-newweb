@@ -42,7 +42,10 @@ export type SendInput = {
 export async function sendMail(input: SendInput): Promise<{ ok: boolean; error?: string }> {
   const to = (Array.isArray(input.to) ? input.to : [input.to]).map((s) => s.trim()).filter(Boolean);
   const log = async (status: "sent" | "failed" | "skipped", error?: string) => {
-    await db.insert(emailLog).values({
+    // the log is a record only: without a database the e-mail still goes out
+    await db
+      .insert(emailLog)
+      .values({
       to: to.join(", "),
       subject: input.subject,
       template: input.template,
@@ -50,7 +53,8 @@ export async function sendMail(input: SendInput): Promise<{ ok: boolean; error?:
       error: error ?? null,
       relatedType: input.related?.type ?? null,
       relatedId: input.related?.id ?? null,
-    });
+      })
+      .catch((e) => console.error("[mail] Protokoll nicht gespeichert:", e instanceof Error ? e.message.split("\n")[0] : e));
   };
   if (!to.length) {
     await log("skipped", "Kein Empfänger");

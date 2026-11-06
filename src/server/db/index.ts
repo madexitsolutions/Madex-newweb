@@ -6,7 +6,7 @@
  *   It runs inside the app process, so start exactly one instance and keep DATA_DIR on
  *   persistent storage. "memory://" keeps it in RAM (tests).
  */
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, renameSync } from "node:fs";
 import path from "node:path";
 import { PGlite } from "@electric-sql/pglite";
 import { sql } from "drizzle-orm";
@@ -81,8 +81,36 @@ export async function databaseProblem(): Promise<string | null> {
     await getDb().execute(sql`select 1`);
     return null;
   } catch (e) {
-    return (e instanceof Error ? e.message.split("\n")[0] : String(e)).slice(0, 300) || "Unbekannter Fehler";
+    return errorChain(e);
   }
+}
+
+/** "Failed query: select 1 → PGlite failed to initialize properly": the message with its causes. */
+export function errorChain(e: unknown) {
+  const parts: string[] = [];
+  for (let x: unknown = e, i = 0; x && i < 5; i++) {
+    parts.push((x instanceof Error ? x.message : String(x)).split("\n")[0].trim());
+    x = x instanceof Error ? (x as { cause?: unknown }).cause : undefined;
+  }
+  return [...new Set(parts.filter(Boolean))].join(" → ").slice(0, 400) || "Unbekannter Fehler";
+}
+
+/**
+ * PGLITE_RECOVER=true: a built-in database that cannot be opened is moved aside
+ * (kept as "<folder>-defekt-<time>", nothing is deleted) and a new, empty one is
+ * created. Used only at start-up when the migrations fail.
+ */
+export async function recoverEmbedded(reason: string): Promise<string | null> {
+  if (!usesEmbeddedDb() || !/^(true|1|yes|ja)$/i.test(process.env.PGLITE_RECOVER?.trim() ?? "")) return null;
+  const dir = embeddedDir();
+  if (dir.startsWith("memory://") || !existsSync(dir)) return null;
+  await g.__predashPglite?.close().catch(() => undefined);
+  g.__predashDb = undefined;
+  g.__predashPglite = undefined;
+  const aside = `${dir}-defekt-${new Date().toISOString().replace(/[:.]/g, "-")}`;
+  renameSync(dir, aside);
+  console.error(`[db] PGLITE_RECOVER: Datenbank liess sich nicht öffnen (${reason}). Alter Ordner: ${aside} – neue Datenbank wird angelegt.`);
+  return aside;
 }
 
 /** For tests and scripts: swap in a database instance. */

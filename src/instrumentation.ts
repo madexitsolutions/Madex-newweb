@@ -6,14 +6,22 @@ export async function register() {
   const { ensureSecret } = await import("./server/lib/crypto");
   try {
     ensureSecret();
-    await runMigrations().catch(async (e) => {
-      // the built-in database may have just fallen back to its default settings (server/db): try once more
-      if (!(globalThis as { __pgliteDefaults?: boolean }).__pgliteDefaults) throw e;
-      await runMigrations();
-    });
+    await runMigrations()
+      .catch(async (e) => {
+        // the built-in database may have just fallen back to its default settings (server/db): try once more
+        if (!(globalThis as { __pgliteDefaults?: boolean }).__pgliteDefaults) throw e;
+        await runMigrations();
+      })
+      .catch(async (e) => {
+        // still not: with PGLITE_RECOVER=true start with a new database (the old folder is kept)
+        const { errorChain, recoverEmbedded } = await import("./server/db");
+        if (!(await recoverEmbedded(errorChain(e)))) throw e;
+        await runMigrations();
+      });
   } catch (e) {
     // keep the server up so /madexadm/status can show what is wrong
-    const msg = e instanceof Error ? e.message : String(e);
+    const { errorChain } = await import("./server/db");
+    const msg = errorChain(e);
     (globalThis as { __startupError?: string }).__startupError = msg;
     console.error("[db] Start fehlgeschlagen:", msg);
   }

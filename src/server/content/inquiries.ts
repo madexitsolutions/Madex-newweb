@@ -124,8 +124,11 @@ export async function createInquiry(raw: unknown, meta: InquiryMeta): Promise<Cr
     if (k === "website_url" || k === "honeypot" || v === null) continue;
     fields[k] = typeof v === "boolean" ? (v ? "Ja" : "Nein") : String(v);
   }
-  const reference = await nextReference(now);
-  const [row] = await db
+  let reference: string;
+  let row: Inquiry;
+  try {
+    reference = await nextReference(now);
+    [row] = await db
     .insert(inquiries)
     .values({
       reference,
@@ -144,10 +147,41 @@ export async function createInquiry(raw: unknown, meta: InquiryMeta): Promise<Cr
       updatedAt: now,
     })
     .returning();
+  } catch (e) {
+    console.error("[anfragen] Datenbank nicht erreichbar – Anfrage per E-Mail und im Notfall-Ordner gesichert:", e instanceof Error ? e.message.split("\n")[0] : e);
+    return rescue(input, fields, meta, now, status);
+  }
 
   if (status === "new") await announce(row);
   if (status === "new" && meta.confirm) await confirmToSender(row);
   return { ok: true, id: row.id, reference, status, spam };
+}
+
+/**
+ * Database down: the enquiry goes to the team by e-mail and into the file store
+ * (DATA_DIR/anfragen-notfall.json), so nobody's request is lost.
+ */
+async function rescue(input: z.infer<typeof inquiryInput>, fields: Record<string, string>, meta: InquiryMeta, now: Date, status: InquiryStatus): Promise<CreateResult> {
+  const reference = `N-${now.toISOString().slice(0, 10).replace(/-/g, "")}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+  const saved = { reference, form: input.form, name: input.name, email: input.email, phone: input.phone, company: input.company, subject: input.subject, message: input.message, fields, sourceUrl: input.sourceUrl, ip: meta.ip, createdAt: now.toISOString() };
+  const { update } = await import("@/lib/server/store");
+  await update<(typeof saved)[]>("anfragen-notfall", [], (list) => void list.push(saved)).catch((e) => console.error("[anfragen] Notfall-Ordner:", e));
+  if (status === "new") {
+    await sendMail({
+      to: await inquiryRecipients(input.form),
+      subject: `Neue Anfrage (${input.form}): ${input.subject || input.name || input.email}`,
+      template: "inquiry_new",
+      replyTo: input.email,
+      content: {
+        kicker: "Neue Anfrage",
+        title: input.subject || `Anfrage über ${input.form}`,
+        intro: "Das Dashboard war beim Eingang nicht erreichbar – die Anfrage steht deshalb nur in dieser E-Mail und in DATA_DIR/anfragen-notfall.json.",
+        rows: [["Referenz", reference], ["Name", input.name], ["Firma", input.company], ["E-Mail", input.email], ["Telefon", input.phone], ...Object.entries(fields)],
+        quote: input.message ? { label: "Nachricht", text: input.message } : undefined,
+      },
+    }).catch((e) => console.error("[anfragen] E-Mail nicht gesendet:", e));
+  }
+  return { ok: true, id: "", reference, status, spam: [] };
 }
 
 /** Forms with their own recipients (Einstellungen → E-Mail); every other form uses the standard list. */
