@@ -1,0 +1,59 @@
+/* SEO page: Google results of clients, redrawn as calm search cards (no screenshots). */
+.sr-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px 64px; align-items: end; margin-bottom: clamp(36px, 4vw, 56px); }
+.sr-head .h2 { margin: 0; text-wrap: balance; }
+.sr-intro .lead { margin: 0; max-width: 52ch; }
+
+/* 3 cards, then 2 wider ones */
+.sr-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 22px; }
+.sr-grid > * { grid-column: span 2; display: flex; }
+.sr-grid > :nth-child(n + 4) { grid-column: span 3; }
+
+.sr-card { display: flex; flex-direction: column; width: 100%; border-radius: var(--radius-m); background: #fff; border: 1px solid var(--line); box-shadow: 0 30px 60px -44px rgba(1, 41, 45, 0.45); overflow: hidden; }
+
+.sr-query { display: flex; align-items: center; gap: 12px; margin: 20px 20px 6px; padding: 12px 18px; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); font-size: 16px; font-weight: 500; color: var(--ink); box-shadow: 0 2px 8px -4px rgba(1, 41, 45, 0.18); }
+.sr-query svg { flex: none; color: var(--teal-ink); }
+.sr-query span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.sr-list { list-style: none; margin: 0; padding: 10px 20px 18px; display: grid; gap: 4px; flex: 1; align-content: start; }
+.sr-list li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; border-radius: 14px; padding: 10px 12px 10px 8px; }
+.sr-n { font-family: var(--font-display); font-size: 15px; font-weight: 700; line-height: 22px; text-align: center; color: #9aa9ab; font-variant-numeric: tabular-nums; }
+
+.sr-other { padding-top: 12px !important; padding-bottom: 12px !important; }
+.sr-ghost { display: grid; gap: 8px; padding-top: 5px; }
+.sr-ghost i { display: block; height: 9px; border-radius: 6px; background: #edf1f1; }
+.sr-ghost i:first-child { height: 11px; background: #e3e9e9; }
+
+.sr-hit { position: relative; background: var(--mint); box-shadow: inset 0 0 0 1px rgba(2, 141, 134, 0.28); }
+.sr-hit .sr-n { color: #fff; background: var(--teal); border-radius: 8px; height: 26px; line-height: 26px; }
+.sr-hit-body { min-width: 0; }
+.sr-site { display: flex; align-items: center; gap: 10px; margin: 0 0 6px; }
+.sr-site > span:last-child { display: grid; min-width: 0; line-height: 1.25; }
+.sr-site b { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+.sr-site small { font-size: 12px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sr-fav { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 1px solid var(--line); font-size: 12px; font-weight: 700; color: var(--teal-ink); }
+.sr-title { margin: 0 0 4px; font-size: 18px; line-height: 1.3; font-weight: 600; color: var(--deep); letter-spacing: -0.005em; }
+.sr-snippet { margin: 0; font-size: 13.5px; line-height: 1.5; color: var(--ink-soft); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+.sr-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 18px; padding: 16px 20px 18px; border-top: 1px solid var(--line-soft); background: #fbfcfc; }
+.sr-rank { margin: 0; font-size: 15px; color: var(--ink-soft); }
+.sr-rank strong { font-family: var(--font-display); font-size: 22px; letter-spacing: -0.02em; color: var(--deep); margin-right: 4px; }
+.sr-extra { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.sr-extra li { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--teal-ink); }
+
+.sr-note { margin: 26px 0 0; font-size: 13.5px; color: var(--ink-soft); max-width: 70ch; }
+
+@media (max-width: 1100px) {
+  .sr-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sr-grid > *, .sr-grid > :nth-child(n + 4) { grid-column: span 1; }
+  .sr-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+@media (max-width: 760px) {
+  .sr-head { grid-template-columns: minmax(0, 1fr); }
+  .sr-grid { grid-template-columns: minmax(0, 1fr); }
+  .sr-grid > :last-child:nth-child(odd) { grid-column: auto; }
+  .sr-query { margin: 16px 16px 4px; }
+  .sr-list { padding: 8px 14px 14px; }
+  .sr-foot { padding: 14px 16px 16px; }
+  /* shorter cards: the empty fourth place is not needed to read the position */
+  .sr-list li.sr-other:nth-child(4) { display: none; }
+}

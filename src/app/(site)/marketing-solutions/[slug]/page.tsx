@@ -3,6 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/sections/PageHero";
 import { CtaBand } from "@/components/sections/CtaBand";
+import { SeoRankings } from "@/components/sections/SeoRankings";
 import { FaqSection } from "@/components/sections/FaqSection";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -92,6 +93,8 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
       </section>
+
+      {s.slug === "seo-optimierung" && <SeoRankings />}
 
       {s.featureTitle && (
         <section className="section--tight dark sv__feature" aria-label={s.featureTitle}>
