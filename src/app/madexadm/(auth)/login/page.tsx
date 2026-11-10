@@ -92,6 +92,10 @@ function DatabaseDown({ reason }: { reason: string }) {
         <ol className="a-muted">
           <li>Die App beim Hosting neu starten (bei Hostinger: Website → Node.js → Neustart).</li>
           <li>Prüfen, dass die App nur einmal läuft – zwei Instanzen können die eingebaute Datenbank nicht gleichzeitig öffnen.</li>
+          <li>
+            Ist die Datenbank beschädigt: <code>ADMIN_EMAIL</code> und <code>ADMIN_PASSWORD</code> (mind. 12 Zeichen) in den Umgebungsvariablen setzen und neu starten – die App ersetzt sie dann durch die letzte
+            Datensicherung oder eine neue Datenbank (der alte Ordner bleibt erhalten).
+          </li>
           <li>Hilft das nicht: diese Meldung an Madex senden.</li>
         </ol>
         <p className="a-muted">

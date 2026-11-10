@@ -108,6 +108,15 @@ export default async function Overview() {
         }
       />
 
+      {isAdmin && (globalThis as { __dbRecovered?: string }).__dbRecovered && (
+        <p className="a-alert a-alert--error" role="alert">
+          <Icon name="alert" size={16} />
+          <span>
+            Die Datenbank liess sich beim Start nicht öffnen und wurde ersetzt ({(globalThis as { __dbRecovered?: string }).__dbRecovered}). Der alte Ordner liegt unverändert als «pglite-defekt-…» im
+            Datenordner. Prüfen Sie Benutzer, 2FA-Geräte und die E-Mail-Empfänger unter Einstellungen.
+          </span>
+        </p>
+      )}
       {isAdmin && dataDirInsideApp() && (
         <p className="a-alert a-alert--error" role="alert">
           <Icon name="alert" size={16} />

@@ -6,7 +6,7 @@
  *   It runs inside the app process, so start exactly one instance and keep DATA_DIR on
  *   persistent storage. "memory://" keeps it in RAM (tests).
  */
-import { existsSync, mkdirSync, renameSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, renameSync } from "node:fs";
 import path from "node:path";
 import { PGlite } from "@electric-sql/pglite";
 import { sql } from "drizzle-orm";
@@ -19,7 +19,7 @@ import { dataDir } from "@/server/lib/data-dir";
 export type DB = PgliteDatabase<typeof schema>;
 export type Tx = Parameters<Parameters<DB["transaction"]>[0]>[0];
 
-const g = globalThis as unknown as { __predashDb?: DB; __predashPglite?: PGlite; __pgliteDefaults?: boolean };
+const g = globalThis as unknown as { __predashDb?: DB; __predashPglite?: PGlite; __pgliteDefaults?: boolean; __pgliteLoad?: Blob };
 
 /**
  * The built-in database runs inside the app process, so its buffers count towards the
@@ -43,7 +43,10 @@ function create(): DB {
   const dir = embeddedDir();
   if (!dir.startsWith("memory://")) mkdirSync(path.dirname(path.resolve(/*turbopackIgnore: true*/ dir)), { recursive: true });
   const tuned = !g.__pgliteDefaults;
-  const client = new PGlite(dir, tuned ? { startParams: [...PGlite.defaultStartParams, ...EMBEDDED_MEMORY] } : undefined);
+  // after a recovery the new folder starts from the latest backup (see recoverEmbedded)
+  const load = g.__pgliteLoad;
+  g.__pgliteLoad = undefined;
+  const client = new PGlite(dir, { ...(tuned ? { startParams: [...PGlite.defaultStartParams, ...EMBEDDED_MEMORY] } : {}), ...(load ? { loadDataDir: load } : {}) });
   // if the database does not start with the smaller buffers, the next request opens it with PostgreSQL's defaults
   if (tuned)
     client.waitReady.catch((e) => {
@@ -95,13 +98,19 @@ export function errorChain(e: unknown) {
   return [...new Set(parts.filter(Boolean))].join(" → ").slice(0, 400) || "Unbekannter Fehler";
 }
 
+/** The owner account can be recreated from the environment (else a new database would open the setup page to anyone). */
+const ownerInEnv = () => Boolean((process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME?.includes("@")) && (process.env.ADMIN_PASSWORD ?? "").length >= 12);
+
 /**
- * PGLITE_RECOVER=true: a built-in database that cannot be opened is moved aside
- * (kept as "<folder>-defekt-<time>", nothing is deleted) and a new, empty one is
- * created. Used only at start-up when the migrations fail.
+ * A built-in database that cannot be opened at start-up is moved aside (kept as
+ * "<folder>-defekt-<time>", nothing is deleted) and replaced by the latest daily
+ * backup (DATA_DIR/backups) or, without one, by a new database. Automatic when
+ * ADMIN_EMAIL/ADMIN_PASSWORD can recreate the owner account, else only with
+ * PGLITE_RECOVER=true.
  */
 export async function recoverEmbedded(reason: string): Promise<string | null> {
-  if (!usesEmbeddedDb() || !/^(true|1|yes|ja)$/i.test(process.env.PGLITE_RECOVER?.trim() ?? "")) return null;
+  if (!usesEmbeddedDb()) return null;
+  if (!/^(true|1|yes|ja)$/i.test(process.env.PGLITE_RECOVER?.trim() ?? "") && !ownerInEnv()) return null;
   const dir = embeddedDir();
   if (dir.startsWith("memory://") || !existsSync(dir)) return null;
   await g.__predashPglite?.close().catch(() => undefined);
@@ -109,7 +118,11 @@ export async function recoverEmbedded(reason: string): Promise<string | null> {
   g.__predashPglite = undefined;
   const aside = `${dir}-defekt-${new Date().toISOString().replace(/[:.]/g, "-")}`;
   renameSync(dir, aside);
-  console.error(`[db] PGLITE_RECOVER: Datenbank liess sich nicht öffnen (${reason}). Alter Ordner: ${aside} – neue Datenbank wird angelegt.`);
+  const { latestBackup } = await import("./care");
+  const backup = latestBackup();
+  if (backup) g.__pgliteLoad = new Blob([readFileSync(backup)], { type: "application/gzip" });
+  console.error(`[db] Datenbank liess sich nicht öffnen (${reason}). Alter Ordner: ${aside} – ${backup ? `wiederhergestellt aus ${backup}` : "neue Datenbank wird angelegt"}.`);
+  (globalThis as { __dbRecovered?: string }).__dbRecovered = backup ? `Datensicherung ${path.basename(backup)}` : "neue Datenbank";
   return aside;
 }
 
